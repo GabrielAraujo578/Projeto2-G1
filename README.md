@@ -5,7 +5,7 @@
 
 ## Membros do grupo:
 
-## Desenvolvedores
+### Desenvolvedores
   - **Aline Takakura** - 
   - **Felipe Santos** - 
   - **Gabriel Belo** - 
@@ -15,7 +15,7 @@
   - **Lívia Almeida** - 
   - **Victor Tien** -
 
-## Designers
+### Designers
   - **Arthur Queiroz** - 
   - **Caio** - 
   - **Maria** - 
