@@ -7,7 +7,8 @@
 
 ### Desenvolvedores
   - **Aline Takakura** - 
-  - **Felipe Santos** - 
+  - **Felipe Santos** -
+  - **Felipe Moxotó** - 
   - **Gabriel Belo** - 
   - **Gabriel Victor** - 
   - **Jarbas Esteves** - 
