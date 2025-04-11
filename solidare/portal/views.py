@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from .forms import CandidatoForm  
+from .models import Candidato 
 
 def login_view(request):
     if request.method == "POST":
@@ -46,3 +48,13 @@ def index_view(request):
 def lista_candidatos(request):
     # Aqui você pode adicionar lógica depois, como buscar candidatos do banco
     return render(request, "lista_candidatos.html")
+
+def cadastro_candidato(request):
+    if request.method == "POST":
+        form = CandidatoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("lista_candidatos")
+    else:
+        form = CandidatoForm()
+    return render(request, "cadastro_candidato.html", {"form": form})
