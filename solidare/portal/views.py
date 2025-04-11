@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib import messages
 from .forms import CandidatoForm  
 from .models import Candidato 
 
@@ -45,16 +47,21 @@ from django.shortcuts import render
 def index_view(request):
     return render(request, "index.html")  # Renderiza a página inicial
 
+@user_passes_test(lambda u: u.is_superuser)
 def lista_candidatos(request):
-    # Aqui você pode adicionar lógica depois, como buscar candidatos do banco
-    return render(request, "lista_candidatos.html")
+    candidatos = Candidato.objects.all()
+    return render(request, "lista_candidatos.html", {"candidatos": candidatos})
 
 def cadastro_candidato(request):
     if request.method == "POST":
         form = CandidatoForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("lista_candidatos")
+            messages.success(request, "Cadastro realizado com sucesso!")
+            return redirect("cadastro_sucesso")  
     else:
         form = CandidatoForm()
     return render(request, "cadastro_candidato.html", {"form": form})
+
+def cadastro_sucesso(request):
+    return render(request, "cadastro_sucesso.html")

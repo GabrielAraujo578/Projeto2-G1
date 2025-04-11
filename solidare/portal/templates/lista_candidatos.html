@@ -1,0 +1,21 @@
+<!-- portal/templates/lista_candidatos.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Candidatos</title>
+</head>
+<body>
+    <h1>Lista de Candidatos</h1>
+
+    {% if candidatos %}
+        <ul>
+            {% for candidato in candidatos %}
+                <li>{{ candidato.nome }} - {{ candidato.email }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Nenhum candidato cadastrado.</p>
+    {% endif %}
+</body>
+</html>
