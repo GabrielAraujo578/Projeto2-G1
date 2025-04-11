@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Candidatos</title>
+</head>
+<body>
+    <h1>Candidatos</h1>
+    <ul>
+    {% for candidato in candidatos %}
+        <li>{{ candidato.nome_completo }} - {{ candidato.cpf }}</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

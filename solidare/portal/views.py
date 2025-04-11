@@ -42,3 +42,7 @@ from django.shortcuts import render
 
 def index_view(request):
     return render(request, "index.html")  # Renderiza a página inicial
+
+def lista_candidatos(request):
+    # Aqui você pode adicionar lógica depois, como buscar candidatos do banco
+    return render(request, "lista_candidatos.html")
