@@ -1,10 +1,10 @@
 from django.db import models
+from datetime import date
 
 class Candidato(models.Model):
-    # Dados Pessoais
     nome_completo = models.CharField(max_length=200)
     data_nascimento = models.DateField()
-    idade = models.IntegerField()
+    idade = models.IntegerField(editable = False)
     sexo = models.CharField(max_length=20)
     raca_cor = models.CharField(max_length=50)
     cpf = models.CharField(max_length=14)
@@ -13,7 +13,6 @@ class Candidato(models.Model):
     estado_civil = models.CharField(max_length=50, blank=True)
     email = models.EmailField(blank=True)
 
-    # Endereço
     endereco_principal = models.CharField(max_length=200)
     numero = models.CharField(max_length=20)
     bairro = models.CharField(max_length=100)
@@ -21,22 +20,11 @@ class Candidato(models.Model):
     microrregiao = models.CharField(max_length=100, blank=True)
     cep = models.CharField(max_length=20)
 
-    # Projeto
     ingressara_no_projeto = models.BooleanField()
     turno = models.CharField(max_length=50, blank=True)
     apadrinhado = models.BooleanField()
 
-    # Responsável (se criança ou adolescente)
-    responsavel_nome = models.CharField(max_length=200, blank=True)
-    responsavel_data_nascimento = models.DateField(null=True, blank=True)
-    responsavel_idade = models.IntegerField(null=True, blank=True)
-    responsavel_sexo = models.CharField(max_length=20, blank=True)
-    responsavel_raca_cor = models.CharField(max_length=50, blank=True)
-    responsavel_cpf = models.CharField(max_length=14, blank=True)
-    responsavel_telefone = models.CharField(max_length=20, blank=True)
-    responsavel_whatsapp = models.BooleanField(default=False)
-    responsavel_estado_civil = models.CharField(max_length=50, blank=True)
-    responsavel_email = models.EmailField(blank=True)
+
 
     # Escolaridade
     escolaridade = models.CharField(max_length=100, blank=True)
@@ -81,7 +69,7 @@ class Candidato(models.Model):
 
     # Moradia
     tipo_casa = models.CharField(max_length=100, blank=True)
-    moradia_tipo = models.CharField(max_length=100, blank=True)
+    tipo_moradia = models.CharField(max_length=100, blank=True)
     vulnerabilidade = models.TextField(blank=True)
     numero_comodos = models.IntegerField(null=True, blank=True)
     divisorias_crianca_adulto = models.BooleanField(null=True)
@@ -106,8 +94,29 @@ class Candidato(models.Model):
     faixa_renda_familiar = models.CharField(max_length=100, blank=True)
     renda_per_capita = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
+
+    def save(self, *args, **kwargs):
+        hoje = date.today()
+        self.idade = hoje.year - self.data_nascimento.year - (
+            (hoje.month, hoje.day) < (self.data_nascimento.month, self.data_nascimento.day)
+        )
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.nome_completo
+
+
+class Responsavel(models.Model):
+    responsavel_nome = models.CharField(max_length=200, blank=True)
+    responsavel_data_nascimento = models.DateField(null=True, blank=True)
+    responsavel_idade = models.IntegerField(null=True, blank=True)
+    responsavel_sexo = models.CharField(max_length=20, blank=True)
+    responsavel_raca_cor = models.CharField(max_length=50, blank=True)
+    responsavel_cpf = models.CharField(max_length=14, blank=True)
+    responsavel_telefone = models.CharField(max_length=20, blank=True)
+    responsavel_whatsapp = models.BooleanField(default=False)
+    responsavel_estado_civil = models.CharField(max_length=50, blank=True)
+    responsavel_email = models.EmailField(blank=True)
 
 class Aluno(models.Model):
     Candidato = models.OneToOneField('Candidato', on_delete=models.CASCADE)
