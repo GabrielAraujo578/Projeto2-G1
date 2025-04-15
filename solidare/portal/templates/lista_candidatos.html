@@ -1,21 +1,66 @@
-<!-- portal/templates/lista_candidatos.html -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <title>Lista de Candidatos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+    </style>
 </head>
 <body>
     <h1>Lista de Candidatos</h1>
-
-    {% if candidatos %}
-        <ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>E-mail</th>
+                <th>CPF</th>
+                <th>Telefone</th>
+                <th>Data de Nascimento</th>
+                <th>Gênero</th>
+                <th>CEP</th>
+                <th>Moradia</th>
+                <th>Renda Familiar</th>
+                <th>Portador de Deficiência?</th>
+            </tr>
+        </thead>
+        <tbody>
             {% for candidato in candidatos %}
-                <li>{{ candidato.nome }} - {{ candidato.email }}</li>
+                <tr>
+                    <td>{{ candidato.nome }}</td>
+                    <td>{{ candidato.email }}</td>
+                    <td>{{ candidato.cpf }}</td>
+                    <td>{{ candidato.telefone }}</td>
+                    <td>{{ candidato.data_nascimento }}</td>
+                    <td>{{ candidato.genero }}</td>
+                    <td>{{ candidato.cep }}</td>
+                    <td>{{ candidato.tipo_moradia }}</td>
+                    <td>{{ candidato.renda_familiar }}</td>
+                    <td>{{ candidato.possui_deficiencia|yesno:"Sim,Não" }}</td>
+                </tr>
             {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nenhum candidato cadastrado.</p>
-    {% endif %}
+        </tbody>
+    </table>
 </body>
 </html>

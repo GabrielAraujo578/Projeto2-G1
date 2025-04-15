@@ -119,11 +119,11 @@ class Responsavel(models.Model):
     responsavel_email = models.EmailField(blank=True)
 
 class Aluno(models.Model):
-    Candidato = models.OneToOneField('Candidato', on_delete=models.CASCADE)
+    candidato = models.OneToOneField('Candidato', on_delete=models.CASCADE)
     turma = models.ForeignKey('Turma', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
-        return f'Aluno: {self.beneficiario.nome_completo}'
+        return f'Aluno: {self.candidato.nome_completo}'
 
 class Turma(models.Model):
     nome = models.CharField(max_length=100)
