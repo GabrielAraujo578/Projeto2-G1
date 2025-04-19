@@ -1,0 +1,15 @@
+.sidebar button {
+    display: block;
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .sidebar button:hover {
+    background-color: #0056b3;
+  }
+  

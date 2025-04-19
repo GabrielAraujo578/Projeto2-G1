@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel do Aluno</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    .container { display: flex; height: 100vh; }
+    .sidebar {
+      background-color: #444;
+      width: 200px;
+      color: white;
+      padding: 20px;
+    }
+    .sidebar h3 { margin-top: 0; }
+    .sidebar ul { list-style: none; padding: 0; }
+    .sidebar li { margin: 20px 0; }
+    .content {
+      flex-grow: 1;
+      background: #eee;
+      padding: 20px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: flex-end;
+      padding-bottom: 10px;
+    }
+    .novidades {
+      display: flex;
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h3>Menu</h3>
+      <ul>
+        <li>Faltas</li>
+        <li>Atividades</li>
+        <li>Mentoria</li>
+        <li>Feedback</li>
+      </ul>
+    </div>
+    <div class="content">
+      <div class="topbar">
+        <div>
+          <strong>Nome do Aluno</strong><br>
+          Turma XYZ
+        </div>
+      </div>
+      <h2>Novidades</h2>
+      <div class="novidades">
+        <div class="card">
+          <p><strong>Nova atividade disponível!</strong></p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+        </div>
+        <div class="card">
+          <p><strong>Mentoria marcada</strong></p>
+          <p>Proxima sessão dia 24/04 às 14h.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -7,16 +7,16 @@ from .forms import CandidatoForm
 from .models import Candidato 
 
 def login_view(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect("/")  # Redireciona para a home (pode ajustar)
+            return redirect('home')
         else:
-            return render(request, "login.html", {"erro": "Usuário ou senha inválidos"})
-    return render(request, "login.html")
+            return render(request, 'login.html', {'error': 'Credenciais inválidas'})
+    return render(request, 'login.html')
 
 def cadastro_view(request):
     if request.method == "POST":
@@ -45,7 +45,7 @@ def logout_view(request):
 from django.shortcuts import render
 
 def index_view(request):
-    return render(request, "index.html")  # Renderiza a página inicial
+    return render(request, "index.html")  
 
 @user_passes_test(lambda u: u.is_superuser)
 def lista_candidatos(request):
@@ -65,3 +65,9 @@ def cadastro_candidato(request):
 
 def cadastro_sucesso(request):
     return render(request, "cadastro_sucesso.html")
+
+def pagina_aluno(request):
+    return render(request, 'aluno.html')
+
+def pagina_professor(request):
+    return render(request, 'professor.html')

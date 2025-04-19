@@ -12,6 +12,7 @@ class Candidato(models.Model):
     whatsapp = models.BooleanField()
     estado_civil = models.CharField(max_length=50, blank=True)
     email = models.EmailField(blank=True)
+    senha = models.CharField(max_length=128, blank=True)
 
     endereco_principal = models.CharField(max_length=200)
     numero = models.CharField(max_length=20)

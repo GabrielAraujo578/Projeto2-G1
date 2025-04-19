@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel do Professor</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    .container { display: flex; height: 100vh; }
+    .sidebar {
+      background-color: #333;
+      width: 200px;
+      color: white;
+      padding: 20px;
+    }
+    .sidebar h3 { margin-top: 0; }
+
+    .sidebar button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #444;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      text-align: left;
+    }
+
+    .sidebar button:hover {
+      background-color: #555;
+    }
+
+    .content {
+      flex-grow: 1;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: flex-end;
+      padding-bottom: 10px;
+    }
+    .novidades {
+      display: flex;
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      flex: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h3>Menu</h3>
+      <button onclick="window.location.href='/candidatos/'">Candidatos</button>
+    </div>
+    <div class="content">
+      <div class="topbar">
+        <div>
+          <strong>Nome do Professor</strong><br>
+          Supervisor de Turma
+        </div>
+      </div>
+      <h2>Novidades</h2>
+      <div class="novidades">
+        <div class="card">
+          <p><strong>Nova inscrição aguardando aprovação</strong></p>
+          <p>Verifique os dados do candidato Fulano de Tal.</p>
+        </div>
+        <div class="card">
+          <p><strong>Relatório mensal disponível</strong></p>
+          <p>Dados de presença e desempenho da turma atualizados.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
