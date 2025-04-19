@@ -17,8 +17,6 @@
     >
 </details>
 
-<details>
-
 ### Desenvolvedores:
   - **Aline Takakura** - [amt2@cesar.school](mailto:amt2@cesar.school)
   - **Felipe Santos** - [fsfmf@cesar.school](mailto:fsfmf@cesar.school)
