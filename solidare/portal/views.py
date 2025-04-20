@@ -100,3 +100,19 @@ def verificar_aprovacao(request, candidato_id):
         return render(request, 'aluno.html', {'candidato': candidato})
     else:
         return render(request, 'candidato_em_analise.html', {'candidato': candidato})
+
+def sobre_view(request):
+    if request.method == 'POST':
+        # Aqui você pode adicionar lógica para processar o formulário de contato
+        # Por exemplo, enviar um e-mail ou salvar a mensagem no banco de dados
+        nome = request.POST.get('nome')
+        email = request.POST.get('email')
+        assunto = request.POST.get('assunto')
+        mensagem = request.POST.get('mensagem')
+        
+        # Adicione aqui a lógica para processar os dados do formulário
+        # Por enquanto, apenas redirecionamos para a mesma página
+        messages.success(request, "Mensagem enviada com sucesso! Entraremos em contato em breve.")
+        return redirect('sobre')
+    
+    return render(request, 'sobre.html')
