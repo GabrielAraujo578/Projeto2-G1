@@ -53,7 +53,7 @@ from django.shortcuts import render
 def index_view(request):
     return render(request, "index.html")  
 
-@user_passes_test(lambda u: u.is_superuser)
+
 def lista_candidatos(request):
     candidatos = Candidato.objects.all()
     return render(request, "candidatos.html", {"candidatos": candidatos})
