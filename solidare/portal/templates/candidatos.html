@@ -1,14 +1,239 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Candidatos</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Lista de Candidatos{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #fafafa;
+    }
+
+    h1 {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 2em;
+    }
+
+    .container {
+        max-width: 97%; 
+        width: 97%;
+        margin: 0;
+        padding: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+        background-color: white;
+    }
+
+    th, td {
+        padding: 16px 20px;
+        text-align: left;
+        vertical-align: top;
+        border-top: 1px solid #ddd;
+        font-size: 0.95rem;
+    }
+
+    th {
+        background-color: #f0f0f0;
+        font-weight: bold;
+        font-size: 1rem;
+        border-top: none;
+    }
+
+    tr {
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .acoes form {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .acoes button {
+        border: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .acoes button[name="status"][value="aprovar"] {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .acoes button[name="status"][value="reprovar"] {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .status-aprovado {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .status-reprovado {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .status-pendente {
+        color: #888;
+        font-weight: bold;
+    }
+
+    details {
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        line-height: 1.6;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    summary {
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    details strong {
+        display: inline-block;
+        width: 220px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    details br + strong {
+        margin-top: 8px;
+        display: block;
+    }
+
+    details::after {
+        display: block;
+        content: "";
+        margin-top: 10px;
+    }
+</style>
+
+<div class="container">
     <h1>Candidatos</h1>
-    <ul>
-    {% for candidato in candidatos %}
-        <li>{{ candidato.nome_completo }} - {{ candidato.cpf }}</li>
-    {% endfor %}
-    </ul>
-</body>
-</html>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Status</th>
+                <th>Detalhes</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for candidato in candidatos %}
+            <tr>
+                <td>{{ candidato.nome_completo }}</td>
+                <td>{{ candidato.cpf }}</td>
+                <td class="acoes">
+                    <div class="status-checkbox">
+                        <form method="post" action="{% url 'alterar_status' candidato.id %}">
+                            {% csrf_token %}
+                            <label class="checkbox-wrapper" title="Clique para aprovar/reprovar">
+                                <input type="checkbox" name="status" value="aprovar" onchange="this.form.submit()" {% if candidato.aprovado %}checked{% endif %}>
+                                <span class="custom-checkbox"></span>
+                            </label>
+                        </form>
+                    </div>
+                    
+                </td>
+                <td>
+                    <details>
+                        <summary>Ver mais</summary>
+                        <strong>Data de Nascimento:</strong> {{ candidato.data_nascimento }}<br>
+                        <strong>Idade:</strong> {{ candidato.idade }}<br>
+                        <strong>Sexo:</strong> {{ candidato.sexo }}<br>
+                        <strong>Raça/Cor:</strong> {{ candidato.raca_cor }}<br>
+                        <strong>Telefone:</strong> {{ candidato.telefone }}<br>
+                        <strong>WhatsApp:</strong> {{ candidato.whatsapp }}<br>
+                        <strong>Estado Civil:</strong> {{ candidato.estado_civil }}<br>
+                        <strong>Email:</strong> {{ candidato.email }}<br>
+                        <strong>Endereço:</strong> {{ candidato.endereco_principal }}, {{ candidato.numero }} - {{ candidato.bairro }}<br>
+                        <strong>Município/UF:</strong> {{ candidato.municipio_uf }}<br>
+                        <strong>Microrregião:</strong> {{ candidato.microrregiao }}<br>
+                        <strong>CEP:</strong> {{ candidato.cep }}<br>
+                        <strong>Ingressará no Projeto:</strong> {{ candidato.ingressara_no_projeto }}<br>
+                        <strong>Turno:</strong> {{ candidato.turno }}<br>
+                        <strong>Apadrinhado:</strong> {{ candidato.apadrinhado }}<br><br>
+
+                        <strong>Escolaridade:</strong> {{ candidato.escolaridade }}<br>
+                        <strong>Rede de Ensino:</strong> {{ candidato.rede_ensino }}<br>
+                        <strong>Ano ou Período:</strong> {{ candidato.ano_ou_periodo }}<br>
+                        <strong>Turno Escolar:</strong> {{ candidato.turno_escolar }}<br>
+                        <strong>Motivo de Não Estudo:</strong> {{ candidato.motivo_nao_estuda }}<br>
+                        <strong>Pretende Estudar:</strong> {{ candidato.pretende_estudar }}<br><br>
+
+                        <strong>Situação Profissional:</strong> {{ candidato.situacao_profissional }}<br>
+                        <strong>Profissão:</strong> {{ candidato.profissao }}<br>
+                        <strong>Local de Trabalho:</strong> {{ candidato.local_trabalho }}<br>
+                        <strong>Bairro do Trabalho:</strong> {{ candidato.bairro_trabalho }}<br>
+                        <strong>Salário:</strong> R$ {{ candidato.salario }}<br><br>
+
+                        <strong>Conhece ECA:</strong> {{ candidato.conhece_eca }}<br>
+                        <strong>Noção de Cidadania:</strong> {{ candidato.nocao_cidadania }}<br>
+                        <strong>Referência Familiar:</strong> {{ candidato.referencia_familiar }}<br>
+                        <strong>Conhece Conselho:</strong> {{ candidato.conhece_conselho }}<br>
+                        <strong>Conhece FOSCAR:</strong> {{ candidato.conhece_foscar }}<br><br>
+
+                        <strong>Possui Plano de Saúde:</strong> {{ candidato.possui_plano }}<br>
+                        <strong>Nome do Plano:</strong> {{ candidato.nome_plano }}<br>
+                        <strong>Problema de Saúde:</strong> {{ candidato.problema_saude }}<br>
+                        <strong>Acompanhamento Médico:</strong> {{ candidato.acompanhamento_medico }}<br>
+                        <strong>Cirurgia:</strong> {{ candidato.cirurgia }}<br>
+                        <strong>Problema Atual:</strong> {{ candidato.problema_atual }}<br>
+                        <strong>Deficiência Física:</strong> {{ candidato.deficiencia_fisica }}<br>
+                        <strong>Tipo de Deficiência:</strong> {{ candidato.tipo_deficiencia }}<br>
+                        <strong>Desenvolvimento Mental:</strong> {{ candidato.desenvolvimento_mental }}<br>
+                        <strong>Onde Procura Saúde:</strong> {{ candidato.onde_procura_saude }}<br><br>
+
+                        <strong>Refeições por Dia:</strong> {{ candidato.refeicoes_dia }}<br>
+                        <strong>Alimentação:</strong> {{ candidato.alimentacao }}<br><br>
+
+                        <strong>Participa de Grupos:</strong> {{ candidato.participa_grupo }}<br><br>
+
+                        <strong>Tipo de Casa:</strong> {{ candidato.tipo_casa }}<br>
+                        <strong>Tipo de Moradia:</strong> {{ candidato.tipo_moradia }}<br>
+                        <strong>Vulnerabilidade:</strong> {{ candidato.vulnerabilidade }}<br>
+                        <strong>Número de Cômodos:</strong> {{ candidato.numero_comodos }}<br>
+                        <strong>Divisória Criança/Adulto:</strong> {{ candidato.divisorias_crianca_adulto }}<br>
+                        <strong>Tem Banheiro:</strong> {{ candidato.tem_banheiro }}<br>
+                        <strong>Banheiro Dentro:</strong> {{ candidato.banheiro_dentro }}<br>
+                        <strong>Energia Pública:</strong> {{ candidato.energia_publica }}<br>
+                        <strong>Água:</strong> {{ candidato.agua }}<br>
+                        <strong>Destino do Lixo:</strong> {{ candidato.destino_lixo }}<br>
+                        <strong>Destino do Esgoto:</strong> {{ candidato.destino_esgoto }}<br><br>
+
+                        <strong>Bens:</strong> {{ candidato.bens }}<br>
+                        <strong>Origem dos Bens:</strong> {{ candidato.origem_bens }}<br><br>
+
+                        <strong>Cadastrado no CadÚnico:</strong> {{ candidato.cadastrado_cadunico }}<br>
+                        <strong>Recebe Bolsa Família:</strong> {{ candidato.bolsa_familia }}<br>
+                        <strong>Auxílio Moradia:</strong> {{ candidato.auxilio_moradia }}<br>
+                        <strong>Recebe BPC:</strong> {{ candidato.recebe_bpc }}<br><br>
+
+                        <strong>Faixa de Renda Familiar:</strong> {{ candidato.faixa_renda_familiar }}<br>
+                    </details>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

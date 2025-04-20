@@ -95,6 +95,8 @@ class Candidato(models.Model):
     faixa_renda_familiar = models.CharField(max_length=100, blank=True)
     renda_per_capita = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
+    # Status
+    aprovado = models.BooleanField(null=True, blank=True)
 
     def save(self, *args, **kwargs):
         hoje = date.today()
@@ -105,6 +107,7 @@ class Candidato(models.Model):
 
     def __str__(self):
         return self.nome_completo
+    
 
 
 class Responsavel(models.Model):

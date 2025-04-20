@@ -5,7 +5,7 @@ from datetime import date
 class CandidatoForm(forms.ModelForm):
     class Meta:
         model = Candidato
-        fields = '__all__'
+        exclude = ['idade', 'aprovado']
         widgets = {
             'data_nascimento': forms.DateInput(attrs={'type': 'date'}),
             'responsavel_data_nascimento': forms.DateInput(attrs={'type': 'date'}),

@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from .forms import CandidatoForm  
 from .models import Candidato 
+from django.shortcuts import get_object_or_404
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -50,7 +52,8 @@ def index_view(request):
 @user_passes_test(lambda u: u.is_superuser)
 def lista_candidatos(request):
     candidatos = Candidato.objects.all()
-    return render(request, "lista_candidatos.html", {"candidatos": candidatos})
+    return render(request, "candidatos.html", {"candidatos": candidatos})
+
 
 def cadastro_candidato(request):
     if request.method == "POST":
@@ -71,3 +74,25 @@ def pagina_aluno(request):
 
 def pagina_professor(request):
     return render(request, 'professor.html')
+
+@user_passes_test(lambda u: u.is_superuser)
+def alterar_status(request, candidato_id):
+    candidato = get_object_or_404(Candidato, id=candidato_id)
+    
+    if request.method == 'POST':
+        aprovado = request.POST.get('status') == 'aprovar'
+        candidato.aprovado = aprovado
+        candidato.save()
+
+    return redirect('lista_candidatos')
+
+from django.shortcuts import render, redirect
+from .models import Candidato
+
+def verificar_aprovacao(request, candidato_id):
+    candidato = Candidato.objects.get(id=candidato_id)
+    
+    if candidato.aprovado == aprovado:
+        return render(request, 'aluno.html', {'candidato': candidato})
+    else:
+        return render(request, 'candidato_em_analise.html', {'candidato': candidato})
