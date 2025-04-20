@@ -122,6 +122,11 @@ LOGIN_URL = '/login/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # se quiser manter o login por username também
+    'portal.backends.EmailBackend',  # caminho para seu backend customizado
+]
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CSRF_TRUSTED_ORIGINS = [

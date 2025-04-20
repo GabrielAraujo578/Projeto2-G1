@@ -3,6 +3,7 @@ from datetime import date
 from django.contrib.auth.models import User
 
 class Candidato(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     nome_completo = models.CharField(max_length=200)
     data_nascimento = models.DateField()
     idade = models.IntegerField(editable = False)
@@ -13,7 +14,7 @@ class Candidato(models.Model):
     whatsapp = models.BooleanField()
     estado_civil = models.CharField(max_length=50, blank=True)
     email = models.EmailField(blank=True)
-    senha = models.CharField(max_length=128, blank=True)
+    
 
     endereco_principal = models.CharField(max_length=200)
     numero = models.CharField(max_length=20)

@@ -125,30 +125,41 @@
     <form method="POST" id="multi-step-form">
         {% csrf_token %}
         
-        <!-- Etapa 1: Dados Pessoais -->
-        <div class="step-content active" id="step-1-content">
-            <h3>Dados Pessoais</h3>
-            {{ form.nome_completo.label_tag }}
-            {{ form.nome_completo }}
-            {{ form.data_nascimento.label_tag }}
-            {{ form.data_nascimento }}
-            {{ form.sexo.label_tag }}
-            {{ form.sexo }}
-            {{ form.raca_cor.label_tag }}
-            {{ form.raca_cor }}
-            {{ form.cpf.label_tag }}
-            {{ form.cpf }}
-            {{ form.telefone.label_tag }}
-            {{ form.telefone }}
-            {{ form.whatsapp.label_tag }}
-            {{ form.whatsapp }}
-            {{ form.estado_civil.label_tag }}
-            {{ form.estado_civil }}
-            {{ form.email.label_tag }}
-            {{ form.email }}
-            {{ form.senha.label_tag }}
-            {{ form.senha }}
-        </div>
+    <!-- Etapa 1: Dados Pessoais -->
+    <div class="step-content active" id="step-1-content">
+        <h3>Dados Pessoais</h3>
+        {{ form.nome_completo.label_tag }}
+        {{ form.nome_completo }}
+        {{ form.data_nascimento.label_tag }}
+        {{ form.data_nascimento }}
+        {{ form.sexo.label_tag }}
+        {{ form.sexo }}
+        {{ form.raca_cor.label_tag }}
+        {{ form.raca_cor }}
+        {{ form.cpf.label_tag }}
+        {{ form.cpf }}
+        {{ form.telefone.label_tag }}
+        {{ form.telefone }}
+        {{ form.whatsapp.label_tag }}
+        {{ form.whatsapp }}
+        {{ form.estado_civil.label_tag }}
+        {{ form.estado_civil }}
+
+        <!-- E-mail e senha são usados também no cadastro do User -->
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        
+
+        <!-- Campos extras para criar o User -->
+        {{ form.username.label_tag }}
+        {{ form.username }}
+
+        <label for="password1">Senha</label>
+        <input type="password" name="password1" id="password1" required>
+
+        <label for="password2">Confirme a senha</label>
+        <input type="password" name="password2" id="password2" required>
+    </div>
 
         <!-- Etapa 2: Endereço -->
         <div class="step-content" id="step-2-content">
