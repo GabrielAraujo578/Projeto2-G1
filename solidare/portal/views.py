@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib import messages
 from .forms import CandidatoForm  
-from .models import Candidato 
+from .models import Candidato, Professor
 from django.shortcuts import get_object_or_404
 
 
@@ -15,6 +15,10 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+
+            # Verifica se o usuário é um professor
+            if Professor.objects.filter(user=user).exists():
+                return redirect('pagina_professor')
             return redirect('home')
         else:
             return render(request, 'login.html', {'error': 'Credenciais inválidas'})
