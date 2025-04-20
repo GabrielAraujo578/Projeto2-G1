@@ -40,10 +40,19 @@
         border: none;
         border-radius: 6px;
         cursor: pointer;
+        margin: 0 5px;
     }
 
     .form-container form button:hover {
         background-color: #45a049;
+    }
+
+    .form-container form button.prev {
+        background-color: #6c757d;
+    }
+
+    .form-container form button.prev:hover {
+        background-color: #5a6268;
     }
 
     .form-container p {
@@ -58,6 +67,44 @@
     .form-container a:hover {
         text-decoration: underline;
     }
+
+    .step-indicator {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .step {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        color: #333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 5px;
+        font-weight: bold;
+    }
+
+    .step.active {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .step-content {
+        display: none;
+    }
+
+    .step-content.active {
+        display: block;
+    }
+
+    .form-buttons {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
 </style>
 
 <div class="form-container">
@@ -67,12 +114,247 @@
         <p style="color: red;">Corrija os erros abaixo:</p>
     {% endif %}
 
-    <form method="POST">
+    <div class="step-indicator">
+        <div class="step active" id="step-1">1</div>
+        <div class="step" id="step-2">2</div>
+        <div class="step" id="step-3">3</div>
+        <div class="step" id="step-4">4</div>
+        <div class="step" id="step-5">5</div>
+    </div>
+
+    <form method="POST" id="multi-step-form">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Cadastrar</button>
+        
+        <!-- Etapa 1: Dados Pessoais -->
+        <div class="step-content active" id="step-1-content">
+            <h3>Dados Pessoais</h3>
+            {{ form.nome_completo.label_tag }}
+            {{ form.nome_completo }}
+            {{ form.data_nascimento.label_tag }}
+            {{ form.data_nascimento }}
+            {{ form.sexo.label_tag }}
+            {{ form.sexo }}
+            {{ form.raca_cor.label_tag }}
+            {{ form.raca_cor }}
+            {{ form.cpf.label_tag }}
+            {{ form.cpf }}
+            {{ form.telefone.label_tag }}
+            {{ form.telefone }}
+            {{ form.whatsapp.label_tag }}
+            {{ form.whatsapp }}
+            {{ form.estado_civil.label_tag }}
+            {{ form.estado_civil }}
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {{ form.senha.label_tag }}
+            {{ form.senha }}
+        </div>
+
+        <!-- Etapa 2: Endereço -->
+        <div class="step-content" id="step-2-content">
+            <h3>Endereço</h3>
+            {{ form.endereco_principal.label_tag }}
+            {{ form.endereco_principal }}
+            {{ form.numero.label_tag }}
+            {{ form.numero }}
+            {{ form.bairro.label_tag }}
+            {{ form.bairro }}
+            {{ form.municipio_uf.label_tag }}
+            {{ form.municipio_uf }}
+            {{ form.microrregiao.label_tag }}
+            {{ form.microrregiao }}
+            {{ form.cep.label_tag }}
+            {{ form.cep }}
+            {{ form.ingressara_no_projeto.label_tag }}
+            {{ form.ingressara_no_projeto }}
+            {{ form.turno.label_tag }}
+            {{ form.turno }}
+            {{ form.apadrinhado.label_tag }}
+            {{ form.apadrinhado }}
+        </div>
+
+        <!-- Etapa 3: Escolaridade e Situação Profissional -->
+        <div class="step-content" id="step-3-content">
+            <h3>Escolaridade e Situação Profissional</h3>
+            {{ form.escolaridade.label_tag }}
+            {{ form.escolaridade }}
+            {{ form.rede_ensino.label_tag }}
+            {{ form.rede_ensino }}
+            {{ form.ano_ou_periodo.label_tag }}
+            {{ form.ano_ou_periodo }}
+            {{ form.turno_escolar.label_tag }}
+            {{ form.turno_escolar }}
+            {{ form.motivo_nao_estuda.label_tag }}
+            {{ form.motivo_nao_estuda }}
+            {{ form.pretende_estudar.label_tag }}
+            {{ form.pretende_estudar }}
+            {{ form.situacao_profissional.label_tag }}
+            {{ form.situacao_profissional }}
+            {{ form.profissao.label_tag }}
+            {{ form.profissao }}
+            {{ form.local_trabalho.label_tag }}
+            {{ form.local_trabalho }}
+            {{ form.bairro_trabalho.label_tag }}
+            {{ form.bairro_trabalho }}
+            {{ form.salario.label_tag }}
+            {{ form.salario }}
+        </div>
+
+        <!-- Etapa 4: Saúde e Alimentação -->
+        <div class="step-content" id="step-4-content">
+            <h3>Saúde e Alimentação</h3>
+            {{ form.possui_plano.label_tag }}
+            {{ form.possui_plano }}
+            {{ form.nome_plano.label_tag }}
+            {{ form.nome_plano }}
+            {{ form.problema_saude.label_tag }}
+            {{ form.problema_saude }}
+            {{ form.acompanhamento_medico.label_tag }}
+            {{ form.acompanhamento_medico }}
+            {{ form.cirurgia.label_tag }}
+            {{ form.cirurgia }}
+            {{ form.problema_atual.label_tag }}
+            {{ form.problema_atual }}
+            {{ form.deficiencia_fisica.label_tag }}
+            {{ form.deficiencia_fisica }}
+            {{ form.tipo_deficiencia.label_tag }}
+            {{ form.tipo_deficiencia }}
+            {{ form.desenvolvimento_mental.label_tag }}
+            {{ form.desenvolvimento_mental }}
+            {{ form.onde_procura_saude.label_tag }}
+            {{ form.onde_procura_saude }}
+            {{ form.refeicoes_dia.label_tag }}
+            {{ form.refeicoes_dia }}
+            {{ form.alimentacao.label_tag }}
+            {{ form.alimentacao }}
+        </div>
+
+        <!-- Etapa 5: Moradia e Informações Adicionais -->
+        <div class="step-content" id="step-5-content">
+            <h3>Moradia e Informações Adicionais</h3>
+            {{ form.tipo_casa.label_tag }}
+            {{ form.tipo_casa }}
+            {{ form.tipo_moradia.label_tag }}
+            {{ form.tipo_moradia }}
+            {{ form.vulnerabilidade.label_tag }}
+            {{ form.vulnerabilidade }}
+            {{ form.numero_comodos.label_tag }}
+            {{ form.numero_comodos }}
+            {{ form.divisorias_crianca_adulto.label_tag }}
+            {{ form.divisorias_crianca_adulto }}
+            {{ form.tem_banheiro.label_tag }}
+            {{ form.tem_banheiro }}
+            {{ form.banheiro_dentro.label_tag }}
+            {{ form.banheiro_dentro }}
+            {{ form.energia_publica.label_tag }}
+            {{ form.energia_publica }}
+            {{ form.agua.label_tag }}
+            {{ form.agua }}
+            {{ form.destino_lixo.label_tag }}
+            {{ form.destino_lixo }}
+            {{ form.destino_esgoto.label_tag }}
+            {{ form.destino_esgoto }}
+            {{ form.bens.label_tag }}
+            {{ form.bens }}
+            {{ form.origem_bens.label_tag }}
+            {{ form.origem_bens }}
+            {{ form.cadastrado_cadunico.label_tag }}
+            {{ form.cadastrado_cadunico }}
+            {{ form.bolsa_familia.label_tag }}
+            {{ form.bolsa_familia }}
+            {{ form.auxilio_moradia.label_tag }}
+            {{ form.auxilio_moradia }}
+            {{ form.recebe_bpc.label_tag }}
+            {{ form.recebe_bpc }}
+            {{ form.faixa_renda_familiar.label_tag }}
+            {{ form.faixa_renda_familiar }}
+            {{ form.renda_per_capita.label_tag }}
+            {{ form.renda_per_capita }}
+            {{ form.participa_grupo.label_tag }}
+            {{ form.participa_grupo }}
+            {{ form.conhece_eca.label_tag }}
+            {{ form.conhece_eca }}
+            {{ form.nocao_cidadania.label_tag }}
+            {{ form.nocao_cidadania }}
+            {{ form.referencia_familiar.label_tag }}
+            {{ form.referencia_familiar }}
+            {{ form.conhece_conselho.label_tag }}
+            {{ form.conhece_conselho }}
+            {{ form.conhece_foscar.label_tag }}
+            {{ form.conhece_foscar }}
+            
+            <!-- Campos para responsável (se menor de idade) -->
+            {{ form.responsavel_nome.label_tag }}
+            {{ form.responsavel_nome }}
+            {{ form.responsavel_cpf.label_tag }}
+            {{ form.responsavel_cpf }}
+            {{ form.responsavel_data_nascimento.label_tag }}
+            {{ form.responsavel_data_nascimento }}
+        </div>
+
+        <div class="form-buttons">
+            <button type="button" class="prev" id="prev-btn" style="display: none;">Anterior</button>
+            <button type="button" class="next" id="next-btn">Próximo</button>
+            <button type="submit" id="submit-btn" style="display: none;">Cadastrar</button>
+        </div>
     </form>
 
     <p><a href="{% url 'index' %}">Voltar para a página inicial</a></p>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('multi-step-form');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        const steps = document.querySelectorAll('.step');
+        const contents = document.querySelectorAll('.step-content');
+        let currentStep = 1;
+        const totalSteps = steps.length;
+
+        // Função para mostrar a etapa atual
+        function showStep(stepNumber) {
+            contents.forEach(content => content.classList.remove('active'));
+            steps.forEach(step => step.classList.remove('active'));
+            
+            document.getElementById(`step-${stepNumber}-content`).classList.add('active');
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
+            
+            // Mostrar/ocultar botões conforme necessário
+            if (stepNumber === 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+            } else if (stepNumber === totalSteps) {
+                prevBtn.style.display = 'inline-block';
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'inline-block';
+            } else {
+                prevBtn.style.display = 'inline-block';
+                nextBtn.style.display = 'inline-block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        // Botão Próximo
+        nextBtn.addEventListener('click', function() {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        });
+
+        // Botão Anterior
+        prevBtn.addEventListener('click', function() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        });
+
+        // Inicializar na primeira etapa
+        showStep(1);
+    });
+</script>
 {% endblock %}
