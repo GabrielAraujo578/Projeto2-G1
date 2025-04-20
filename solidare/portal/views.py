@@ -7,7 +7,10 @@ from .forms import CandidatoForm
 from .models import Candidato, Professor, Aluno
 from django.shortcuts import get_object_or_404
 from django.db import transaction
-
+from .models import Aviso
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import Aviso
+from .forms import AvisoForm
 
 def login_view(request):
     if request.method == 'POST':
@@ -164,3 +167,35 @@ def sobre_view(request):
         return redirect('sobre')
     
     return render(request, 'sobre.html')
+
+def is_professor(user):
+    return Professor.objects.filter(user=user).exists()    
+
+@login_required
+def lista_avisos(request):
+    avisos = Aviso.objects.all().order_by('-data_criacao')
+    eh_professor = Professor.objects.filter(user=request.user).exists()
+
+    return render(request, 'lista_avisos.html', {
+        'avisos': avisos,
+        'eh_professor': eh_professor,
+    })
+
+@login_required
+@user_passes_test(is_professor)
+def criar_aviso(request):
+    if not hasattr(request.user, 'professor'):
+        return HttpResponseForbidden("Apenas professores podem criar avisos.")
+
+    # Resto do código para criar aviso
+    if request.method == 'POST':
+        form = AvisoForm(request.POST)
+        if form.is_valid():
+            aviso = form.save(commit=False)
+            aviso.autor = request.user
+            aviso.save()
+            return redirect('lista_avisos')
+    else:
+        form = AvisoForm()
+
+    return render(request, 'criar_aviso.html', {'form': form})

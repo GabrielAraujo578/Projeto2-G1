@@ -15,6 +15,13 @@
     .sidebar h3 { margin-top: 0; }
     .sidebar ul { list-style: none; padding: 0; }
     .sidebar li { margin: 20px 0; }
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      text-decoration: underline;
+    }
     .content {
       flex-grow: 1;
       background: #eee;
@@ -42,10 +49,7 @@
     <div class="sidebar">
       <h3>Menu</h3>
       <ul>
-        <li>Faltas</li>
-        <li>Atividades</li>
-        <li>Mentoria</li>
-        <li>Feedback</li>
+        <li><a href="{% url 'lista_avisos' %}">Avisos</a></li> <!-- ADICIONADO -->
       </ul>
     </div>
     <div class="content">
@@ -63,7 +67,7 @@
         </div>
         <div class="card">
           <p><strong>Mentoria marcada</strong></p>
-          <p>Proxima sessão dia 24/04 às 14h.</p>
+          <p>Próxima sessão dia 24/04 às 14h.</p>
         </div>
       </div>
     </div>

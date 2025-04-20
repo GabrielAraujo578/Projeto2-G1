@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2 style="margin-bottom: 20px;">📝 Avisos Gerais</h2>
+
+  {% if eh_professor %}
+    <a href="{% url 'criar_aviso' %}" style="
+      padding: 10px 15px;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 5px;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 20px;
+      font-weight: bold;
+    ">
+      ➕ Criar Novo Aviso
+    </a>
+  {% endif %}
+
+  {% for aviso in avisos %}
+    <div style="
+      border: 1px solid #ddd;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    ">
+      <h3 style="margin-top: 0;">{{ aviso.titulo }}</h3>
+      <small style="color: #555;">
+        Enviado por <strong>{{ aviso.autor.username }}</strong> em {{ aviso.data_criacao|date:"d/m/Y H:i" }}
+      </small>
+      <p style="margin-top: 10px;">{{ aviso.mensagem }}</p>
+    </div>
+  {% empty %}
+    <p style="color: #777;">Nenhum aviso ainda.</p>
+  {% endfor %}
+{% endblock %}

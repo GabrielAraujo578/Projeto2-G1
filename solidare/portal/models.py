@@ -148,3 +148,12 @@ class Professor(models.Model):
 
     def __str__(self):
         return f'Prof. {self.nome}'
+
+class Aviso(models.Model):
+    titulo = models.CharField(max_length=100)
+    mensagem = models.TextField()
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.titulo

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Criar Aviso</h2>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Publicar</button>
+  </form>
+  <br>
+  <a href="{% url 'lista_avisos' %}">Voltar para avisos</a>
+{% endblock %}

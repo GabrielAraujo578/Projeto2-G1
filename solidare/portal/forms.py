@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from .models import Candidato
 from django.contrib.auth.hashers import make_password
 from datetime import date
+from .models import Aviso
 
 
 class CandidatoForm(forms.ModelForm):
@@ -43,3 +44,8 @@ class CandidatoForm(forms.ModelForm):
         # Não cria o user aqui! Só salva o Candidato.
         candidato = super().save(commit=False)
         return candidato
+
+class AvisoForm(forms.ModelForm):
+    class Meta:
+        model = Aviso
+        fields = ['titulo', 'mensagem']
