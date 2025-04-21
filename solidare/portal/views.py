@@ -227,14 +227,15 @@ def calendario(request):
     return render(request, 'calendario.html', context)
 
 @login_required
-# views.py
 def adicionar_evento(request):
-    data = request.GET.get('data')
+    data = request.GET.get('data')  
+
     if request.method == 'POST':
-        form = EventoForm(request.POST)
+        form = EventoCalendarioForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('calendario')
+            return redirect('home')  
     else:
-        form = EventoForm(initial={'data': data})
+        form = EventoCalendarioForm(initial={'data': data})
+
     return render(request, 'adicionar_evento.html', {'form': form})
