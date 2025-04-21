@@ -1,6 +1,3 @@
-{% load static %}
-{% load widget_tweaks %}
-<!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
@@ -71,9 +68,8 @@
       padding: 6px;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
+      justify-content: space-between;
       align-items: flex-start;
-      overflow-y: auto;
     }
 
     .today {
@@ -105,18 +101,6 @@
     .add-btn:hover {
       background-color: #3e8e41;
     }
-
-    .event-box {
-      background-color: #42b983;
-      color: white;
-      padding: 2px 6px;
-      margin-top: 4px;
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
-      width: 100%;
-      box-sizing: border-box;
-    }
   </style>
 </head>
 <body>
@@ -141,15 +125,11 @@
     <div class="days" id="days"></div>
   </div>
 
-  {# Transforma os eventos em JSON e disponibiliza no JavaScript #}
-  {{ eventos|json_script:"eventos-data" }}
-
   <script>
     const daysContainer = document.getElementById("days");
     const monthYear = document.getElementById("monthYear");
     const prevBtn = document.getElementById("prev");
     const nextBtn = document.getElementById("next");
-    const eventosData = JSON.parse(document.getElementById("eventos-data").textContent);
 
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho",
                     "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -157,59 +137,50 @@
     let date = new Date();
 
     function renderCalendar() {
-      const year = date.getFullYear();
-      const month = date.getMonth();
+  const year = date.getFullYear();
+  const month = date.getMonth();
 
-      const firstDayOfMonth = new Date(year, month, 1).getDay();
-      const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
+  const firstDayOfMonth = new Date(year, month, 1).getDay();
+  const lastDateOfMonth = new Date(year, month + 1, 0).getDate();
 
-      monthYear.textContent = `${months[month]} ${year}`;
-      daysContainer.innerHTML = "";
+  // CORRIGIDO AQUI
+  monthYear.textContent = `${months[month]} ${year}`;
+  daysContainer.innerHTML = "";
 
-      for (let i = 0; i < firstDayOfMonth; i++) {
-        const empty = document.createElement("div");
-        empty.style.backgroundColor = "#f5f5f5";
-        daysContainer.appendChild(empty);
-      }
+  for (let i = 0; i < firstDayOfMonth; i++) {
+    const empty = document.createElement("div");
+    empty.style.backgroundColor = "#f5f5f5";
+    daysContainer.appendChild(empty);
+  }
 
-      for (let d = 1; d <= lastDateOfMonth; d++) {
-        const day = document.createElement("div");
+  for (let d = 1; d <= lastDateOfMonth; d++) {
+    const day = document.createElement("div");
 
-        const number = document.createElement("span");
-        number.classList.add("day-number");
-        number.textContent = d;
+    const number = document.createElement("span");
+    number.classList.add("day-number");
+    number.textContent = d;
 
-        const plus = document.createElement("button");
-        plus.textContent = "+";
-        plus.classList.add("add-btn");
+    const plus = document.createElement("button");
+    plus.textContent = "+";
+    plus.classList.add("add-btn");
 
-        const dayStr = String(d).padStart(2, '0');
-        const monthStr = String(month + 1).padStart(2, '0');
-        const dateStr = `${year}-${monthStr}-${dayStr}`;
+    const dayStr = String(d).padStart(2, '0');
+    const monthStr = String(month + 1).padStart(2, '0');
+    const url = `/adicionar-evento/?data=${year}-${monthStr}-${dayStr}`;
+    plus.onclick = () => {
+      window.location.href = url;
+    };
 
-        plus.onclick = () => window.location.href = `/adicionar-evento/?data=${dateStr}`;
-
-        day.appendChild(number);
-        day.appendChild(plus);
-
-        // Adicionar eventos do dia
-        eventosData.forEach(ev => {
-          if (ev.data === dateStr) {
-            const evBox = document.createElement("div");
-            evBox.classList.add("event-box");
-            evBox.textContent = ev.titulo;
-            day.appendChild(evBox);
-          }
-        });
-
-        const today = new Date();
-        if (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
-          day.classList.add("today");
-        }
-
-        daysContainer.appendChild(day);
-      }
+    const today = new Date();
+    if (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
+      day.classList.add("today");
     }
+
+    day.appendChild(number);
+    day.appendChild(plus);
+    daysContainer.appendChild(day);
+  }
+}
 
     prevBtn.addEventListener("click", () => {
       date.setMonth(date.getMonth() - 1);
@@ -225,4 +196,5 @@
   </script>
 
 </body>
-</html>
+</html>                                                                                                                                                               {% load static %}
+{% load widget_tweaks %}
