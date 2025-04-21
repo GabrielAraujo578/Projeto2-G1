@@ -157,3 +157,21 @@ class Aviso(models.Model):
 
     def __str__(self):
         return self.titulo
+
+# models.py
+class Evento(models.Model):
+    titulo = models.CharField(max_length=100)
+    descricao = models.TextField(blank=True)
+    data = models.DateField()
+    hora = models.TimeField(null=True, blank=True)
+
+
+class EventoCalendario(models.Model):
+    aluno = models.ForeignKey(User, on_delete=models.CASCADE)
+    titulo = models.CharField(max_length=200)
+    descricao = models.TextField(blank=True)
+    data = models.DateField()
+    hora = models.TimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.titulo} - {self.data}"

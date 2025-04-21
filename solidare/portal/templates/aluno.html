@@ -6,36 +6,50 @@
   <style>
     body { margin: 0; font-family: Arial, sans-serif; }
     .container { display: flex; height: 100vh; }
+    
     .sidebar {
-      background-color: #444;
+      background-color: #333;
       width: 200px;
       color: white;
       padding: 20px;
     }
     .sidebar h3 { margin-top: 0; }
-    .sidebar ul { list-style: none; padding: 0; }
-    .sidebar li { margin: 20px 0; }
-    .sidebar a {
+
+    .sidebar button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #444;
       color: white;
-      text-decoration: none;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      text-align: left;
     }
-    .sidebar a:hover {
-      text-decoration: underline;
+
+    .sidebar button:hover {
+      background-color: #555;
     }
+
     .content {
       flex-grow: 1;
       background: #eee;
       padding: 20px;
     }
+
     .topbar {
       display: flex;
       justify-content: flex-end;
       padding-bottom: 10px;
     }
+
     .novidades {
       display: flex;
       gap: 20px;
     }
+
     .card {
       background: white;
       padding: 15px;
@@ -48,9 +62,8 @@
   <div class="container">
     <div class="sidebar">
       <h3>Menu</h3>
-      <ul>
-        <li><a href="{% url 'lista_avisos' %}">Avisos</a></li> <!-- ADICIONADO -->
-      </ul>
+      <button onclick="window.location.href='/avisos/'">Avisos</button>
+      <button onclick="window.location.href='/calendario/'">Calendário</button>
     </div>
     <div class="content">
       <div class="topbar">

@@ -11,6 +11,13 @@ from .models import Aviso
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Aviso
 from .forms import AvisoForm
+from .forms import EventoCalendarioForm
+from .models import EventoCalendario
+from datetime import datetime
+import calendar
+from django.utils.dateparse import parse_date
+
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -199,3 +206,35 @@ def criar_aviso(request):
         form = AvisoForm()
 
     return render(request, 'criar_aviso.html', {'form': form})
+
+@login_required
+def calendario(request):
+    now = datetime.now()
+    year = now.year
+    month = now.month
+    today = now.day
+
+    cal = calendar.Calendar(firstweekday=0)
+    month_days = cal.monthdayscalendar(year, month)
+
+    context = {
+        'month_days': month_days,
+        'weekdays': ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
+        'today': today,
+        'month_name': calendar.month_name[month],
+        'year': year,
+    }
+    return render(request, 'calendario.html', context)
+
+@login_required
+# views.py
+def adicionar_evento(request):
+    data = request.GET.get('data')
+    if request.method == 'POST':
+        form = EventoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('calendario')
+    else:
+        form = EventoForm(initial={'data': data})
+    return render(request, 'adicionar_evento.html', {'form': form})

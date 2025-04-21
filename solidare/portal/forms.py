@@ -4,6 +4,7 @@ from .models import Candidato
 from django.contrib.auth.hashers import make_password
 from datetime import date
 from .models import Aviso
+from .models import EventoCalendario
 
 
 class CandidatoForm(forms.ModelForm):
@@ -49,3 +50,8 @@ class AvisoForm(forms.ModelForm):
     class Meta:
         model = Aviso
         fields = ['titulo', 'mensagem']
+
+class EventoCalendarioForm(forms.ModelForm):
+    class Meta:
+        model = EventoCalendario
+        fields = ['titulo', 'descricao', 'data', 'hora']
