@@ -70,8 +70,9 @@
       padding: 6px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: flex-start;
+      overflow-y: auto;
     }
 
     .today {
@@ -103,6 +104,24 @@
     .add-btn:hover {
       background-color: #3e8e41;
     }
+
+    .evento {
+      color: white;
+      padding: 5px 8px;
+      margin-top: 4px;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 13px;
+      width: fit-content;
+    }
+
+    .evento.meeting {
+      background-color: #2ecc71;
+    }
+
+    .evento.lunch {
+      background-color: #e74c3c;
+    }
   </style>
 </head>
 <body>
@@ -133,8 +152,9 @@
     const prevBtn = document.getElementById("prev");
     const nextBtn = document.getElementById("next");
 
-    // Passa a URL Django para o JS
     const adicionarEventoBaseURL = "{% url 'adicionar_evento' %}";
+
+    const eventos = JSON.parse('{{ eventos_json|escapejs }}');
 
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho",
                     "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -182,6 +202,23 @@
 
         day.appendChild(number);
         day.appendChild(plus);
+
+        // Adiciona eventos se houver
+        const eventosDoDia = eventos.filter(ev => ev.dia === d);
+        eventosDoDia.forEach(ev => {
+          const e = document.createElement("div");
+          e.classList.add("evento");
+
+          if (ev.titulo.toLowerCase().includes("almoço") || ev.titulo.toLowerCase().includes("lunch")) {
+            e.classList.add("lunch");
+          } else {
+            e.classList.add("meeting");
+          }
+
+          e.innerText = `${ev.hora} ${ev.titulo}`;
+          day.appendChild(e);
+        });
+
         daysContainer.appendChild(day);
       }
     }

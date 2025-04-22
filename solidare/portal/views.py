@@ -16,6 +16,10 @@ from .models import EventoCalendario
 from datetime import datetime
 import calendar
 from django.utils.dateparse import parse_date
+from django.utils.safestring import mark_safe
+from datetime import datetime
+import json
+
 
 
 
@@ -214,14 +218,21 @@ def calendario(request):
     month = now.month
     today = now.day
 
-    cal = calendar.Calendar(firstweekday=0)
-    month_days = cal.monthdayscalendar(year, month)
+    # Pegue os eventos do mês atual
+    eventos = EventoCalendario.objects.filter(data__year=year, data__month=month)
+
+    # Transforma em JSON simples
+    eventos_json = [
+        {
+            'dia': evento.data.day,
+            'hora': evento.hora.strftime('%I:%M%p').lower() if evento.hora else '',
+            'titulo': evento.titulo
+        } for evento in eventos
+    ]
 
     context = {
-        'month_days': month_days,
-        'weekdays': ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'],
-        'today': today,
-        'month_name': calendar.month_name[month],
+        'eventos_json': mark_safe(json.dumps(eventos_json)),
+        'month': month,
         'year': year,
     }
     return render(request, 'calendario.html', context)
