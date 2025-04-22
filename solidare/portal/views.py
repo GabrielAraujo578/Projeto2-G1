@@ -242,7 +242,7 @@ def adicionar_evento(request):
     data = request.GET.get('data')  
 
     if request.method == 'POST':
-        form = EventoCalendarioForm(request.POST)
+        form = EventoCalendarioForm(request.POST, aluno=request.user)
         if form.is_valid():
             form.save()
             return redirect('home')  

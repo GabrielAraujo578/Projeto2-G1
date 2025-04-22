@@ -55,3 +55,15 @@ class EventoCalendarioForm(forms.ModelForm):
     class Meta:
         model = EventoCalendario
         fields = ['titulo', 'descricao', 'data', 'hora']
+
+    def __init__(self, *args, **kwargs):
+        self.aluno = kwargs.pop('aluno', None)
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        if self.aluno:
+            instance.aluno = self.aluno
+        if commit:
+            instance.save()
+        return instance
