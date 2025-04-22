@@ -223,12 +223,16 @@ def calendario(request):
 
     # Transforma em JSON simples
     eventos_json = [
-        {
-            'dia': evento.data.day,
-            'hora': evento.hora.strftime('%I:%M%p').lower() if evento.hora else '',
-            'titulo': evento.titulo
-        } for evento in eventos
-    ]
+    {
+        'id': evento.id,
+        'dia': evento.data.day,
+        'mes': evento.data.month,
+        'ano': evento.data.year,
+        'hora': evento.hora.strftime('%H:%M') if evento.hora else '',
+        'titulo': evento.titulo
+    } for evento in eventos
+]
+
 
     context = {
         'eventos_json': mark_safe(json.dumps(eventos_json)),
@@ -245,8 +249,32 @@ def adicionar_evento(request):
         form = EventoCalendarioForm(request.POST, aluno=request.user)
         if form.is_valid():
             form.save()
-            return redirect('home')  
+            return redirect('calendario')  
     else:
         form = EventoCalendarioForm(initial={'data': data})
 
     return render(request, 'adicionar_evento.html', {'form': form})
+
+@login_required
+def detalhe_evento(request, id):
+    evento = get_object_or_404(EventoCalendario, id=id)
+
+    if request.method == 'POST':
+        evento.delete()
+        return redirect('calendario')
+
+    return render(request, 'detalhe_evento.html', {'evento': evento})
+
+@login_required
+def editar_evento(request, id):
+    evento = get_object_or_404(EventoCalendario, id=id)
+
+    if request.method == 'POST':
+        form = EventoCalendarioForm(request.POST, instance=evento, aluno=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('detalhe_evento', id=evento.id)
+    else:
+        form = EventoCalendarioForm(instance=evento)
+
+    return render(request, 'editar_evento.html', {'form': form, 'evento': evento})

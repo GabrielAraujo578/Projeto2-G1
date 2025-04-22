@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Evento</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --background: #f4f6f8;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--background);
+            padding: 40px;
+            margin: 0;
+        }
+
+        .form-container {
+            background: white;
+            padding: 40px;
+            max-width: 600px;
+            margin: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+            color: var(--primary);
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            margin-top: 15px;
+            color: var(--text);
+        }
+
+        input, select, textarea {
+            padding: 10px;
+            font-size: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        button, a.button {
+            margin-top: 25px;
+            padding: 12px 20px;
+            font-size: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        button {
+            background-color: var(--success);
+            color: white;
+        }
+
+        a.button {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        button:hover {
+            background-color: #27ae60;
+        }
+
+        a.button:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Editar Evento: {{ evento.titulo }}</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Salvar Alterações</button>
+            <a href="{% url 'detalhe_evento' evento.id %}" class="button">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html>

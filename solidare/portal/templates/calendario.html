@@ -106,14 +106,21 @@
     }
 
     .evento {
+      background-color: #3c3c3c;
       color: white;
-      padding: 5px 8px;
+      padding: 4px 10px;
       margin-top: 4px;
-      border-radius: 5px;
-      font-weight: bold;
+      border-radius: 4px;
       font-size: 13px;
-      width: fit-content;
+      font-weight: 500;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      display: inline-block;
+      width: 80%;        
+      white-space: nowrap; 
+      overflow: hidden;    
+      text-overflow: ellipsis;
     }
+
 
     .evento.meeting {
       background-color: #2ecc71;
@@ -204,7 +211,7 @@
         day.appendChild(plus);
 
         // Adiciona eventos se houver
-        const eventosDoDia = eventos.filter(ev => ev.dia === d);
+        const eventosDoDia = eventos.filter(ev =>ev.dia === d && ev.mes === (month + 1) && ev.ano === year);
         eventosDoDia.forEach(ev => {
           const e = document.createElement("div");
           e.classList.add("evento");
@@ -215,7 +222,7 @@
             e.classList.add("meeting");
           }
 
-          e.innerText = `${ev.hora} ${ev.titulo}`;
+          e.innerHTML = `<a href="/evento/${ev.id}/" style="color: white; text-decoration: none; display: block;">${ev.hora} ${ev.titulo}</a>`;
           day.appendChild(e);
         });
 
