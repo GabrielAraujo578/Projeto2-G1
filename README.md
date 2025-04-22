@@ -32,7 +32,7 @@
 |------------------|-------------------------------------|
 | Aline Takakura   | [amt2@cesar.school](mailto:amt2@cesar.school) |
 | Felipe Santos    | [fsmf@cesar.school](mailto:fsmf@cesar.school) |
-| Felipe Moxotó    | *(sem email)*                       |
+| Felipe Moxotó    | [fgm@cesar.school](mailto:fgm@cesar.school)   |
 | Gabriel Belo     | [gnbo2@cesar.chool](mailto:gnbo2@cesar.chool) |
 | Gabriel Victor   | [gvag@cesar.school](mailto:gvag@cesar.school) |
 | Jarbas Esteves   | [jean@cesar.school](mailto:jean@cesar.school) |
