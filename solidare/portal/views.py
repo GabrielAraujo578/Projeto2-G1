@@ -19,7 +19,7 @@ from django.utils.dateparse import parse_date
 from django.utils.safestring import mark_safe
 from datetime import datetime
 import json
-
+from django.core.mail import send_mail
 
 
 
@@ -165,19 +165,37 @@ def verificar_aprovacao(request, candidato_id):
 
 def sobre_view(request):
     if request.method == 'POST':
-        # Aqui você pode adicionar lógica para processar o formulário de contato
-        # Por exemplo, enviar um e-mail ou salvar a mensagem no banco de dados
         nome = request.POST.get('nome')
         email = request.POST.get('email')
         assunto = request.POST.get('assunto')
         mensagem = request.POST.get('mensagem')
-        
-        # Adicione aqui a lógica para processar os dados do formulário
-        # Por enquanto, apenas redirecionamos para a mesma página
+
+        corpo_mensagem = f"""
+        Você recebeu uma nova mensagem pelo site:
+
+        Nome: {nome}
+        E-mail: {email}
+        Assunto: {assunto}
+        Mensagem:
+        {mensagem}
+        """
+
+        send_mail(
+            subject=f"[Contato do site] {assunto}",
+            message=corpo_mensagem,
+            from_email='solidareg1@gmail.com',
+            recipient_list=['solidareg1@gmail.com'],
+            fail_silently=False,
+        )
+
         messages.success(request, "Mensagem enviada com sucesso! Entraremos em contato em breve.")
-        return redirect('sobre')
-    
+        return redirect('confirmacao_email')
+
+    # Aqui trata o GET — renderiza a página de contato
     return render(request, 'sobre.html')
+
+def confirmacao_email_view(request):
+    return render(request, 'confirmacao_email.html')
 
 def is_professor(user):
     return Professor.objects.filter(user=user).exists()    

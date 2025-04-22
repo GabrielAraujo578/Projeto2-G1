@@ -13,10 +13,11 @@ urlpatterns = [
     path('professor/', views.pagina_professor, name='pagina_professor'),    
     path('candidatos/<int:candidato_id>/status/', views.alterar_status, name='alterar_status'),
     path('sobre/', views.sobre_view, name='sobre'),
+    path('confirmacao_email/', views.confirmacao_email_view, name='confirmacao_email'),
     path('avisos/', views.lista_avisos, name='lista_avisos'),
     path('avisos/criar/', views.criar_aviso, name='criar_aviso'),
     path('calendario/', views.calendario, name='calendario'),
     path('adicionar-evento/', views.adicionar_evento, name='adicionar_evento'),
     path('evento/<int:id>/', views.detalhe_evento, name='detalhe_evento'),
-    path('evento/<int:id>/editar/', views.editar_evento, name='editar_evento'),
+    path('evento/<int:id>/editar/', views.editar_evento, name='editar_evento'), 
 ]
