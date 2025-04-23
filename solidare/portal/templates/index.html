@@ -1,13 +1,71 @@
+{% load static %}
+
 <!DOCTYPE html>
- <html lang="pt-br">
- <head>
-     <meta charset="UTF-8">
-     <title>Bem-vindo</title>
- </head>
- <body>
-     <h1>Bem-vindo ao site!</h1>
-     <a href="{% url 'login' %}">Login</a> | 
-     <a href="{% url 'cadastro_candidato' %}">Cadastro de Candidato</a> |
-     <a href="{% url 'sobre' %}">Sobre a Instituição</a>
- </body>
- </html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Bem-vindo</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        .header {
+            background-color: white;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 2px solid #000;
+        }
+
+        .header img {
+            height: 60px;
+        }
+
+        .header h1 {
+            margin-left: 20px;
+            font-size: 24px;
+            color: #007bff;
+        }
+
+        .main {
+            background-color: #49a6e9;
+            height: calc(100vh - 80px); /* Ajusta com base na altura do cabeçalho */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+        }
+
+        .main a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .main a:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="{% static 'portal/img/logo.png' %}" alt="Logo">
+        <!-- <h1>Rascunhando</h1> -->
+    </div>
+    <div class="main">
+        <h1>Bem-vindo ao site!</h1>
+        <a href="{% url 'login' %}">Login</a>
+        <a href="{% url 'cadastro_candidato' %}">Cadastro de Candidato</a>
+        <a href="{% url 'sobre' %}">Sobre a Instituição</a>
+    </div>
+</body>
+</html>
