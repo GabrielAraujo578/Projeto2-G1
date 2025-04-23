@@ -1,68 +1,87 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Sobre a Instituição{% endblock %}
 
-
 {% block content %}
-
-<div class="container-central">
-    
+<div class="main-content">
+  <div class="about-container">
     <a href="{% url 'index' %}" class="home-icon">
       <i class="fas fa-home"></i>
     </a>
+    
     <h2>Sobre a Solidare</h2>
     
-    <div class="instituicao-info">
-        <h3>Nossa Missão</h3>
+    <div class="about-section">
+      <div class="about-card">
+        <h3><i class="fas fa-bullseye"></i> Nossa Missão</h3>
         <p>A Solidare é uma instituição dedicada a promover educação de qualidade e inclusiva para todos. Nossa missão é transformar vidas através do conhecimento, oferecendo oportunidades educacionais para pessoas em situação de vulnerabilidade social.</p>
-        
-        <h3>Nossa História</h3>
+      </div>
+      
+      <div class="about-card">
+        <h3><i class="fas fa-history"></i> Nossa História</h3>
         <p>Fundada em 2010, a Solidare nasceu do sonho de educadores comprometidos com a transformação social. Ao longo dos anos, temos trabalhado incansavelmente para expandir nosso alcance e impacto na comunidade.</p>
-        
-        <h3>Nossos Valores</h3>
-        <ul>
-            <li>Inclusão e diversidade</li>
-            <li>Excelência acadêmica</li>
-            <li>Responsabilidade social</li>
-            <li>Inovação educacional</li>
-            <li>Desenvolvimento sustentável</li>
+      </div>
+      
+      <div class="about-card">
+        <h3><i class="fas fa-heart"></i> Nossos Valores</h3>
+        <ul class="values-list">
+          <li><i class="fas fa-check-circle"></i> Inclusão e diversidade</li>
+          <li><i class="fas fa-check-circle"></i> Excelência acadêmica</li>
+          <li><i class="fas fa-check-circle"></i> Responsabilidade social</li>
+          <li><i class="fas fa-check-circle"></i> Inovação educacional</li>
+          <li><i class="fas fa-check-circle"></i> Desenvolvimento sustentável</li>
         </ul>
+      </div>
     </div>
     
-    <div class="contato-info">
-        <h3>Entre em Contato</h3>
-        <p>Estamos à disposição para esclarecer suas dúvidas e fornecer mais informações sobre nossos programas e iniciativas.</p>
-        
-        <div class="contato-detalhes">
-            <p><strong>Endereço:</strong> Av. Principal, 1000 - Centro, São Paulo - SP</p>
-            <p><strong>Telefone:</strong> (11) 3333-4444</p>
-            <p><strong>E-mail:</strong> contato@solidare.org.br</p>
-            <p><strong>Horário de Atendimento:</strong> Segunda a Sexta, das 8h às 18h</p>
+    <div class="contact-section">
+      <h3><i class="fas fa-envelope"></i> Entre em Contato</h3>
+      <p>Estamos à disposição para esclarecer suas dúvidas e fornecer mais informações sobre nossos programas e iniciativas.</p>
+      
+      <div class="contact-info">
+        <div class="contact-item">
+          <i class="fas fa-map-marker-alt"></i>
+          <span>Av. Principal, 1000 - Centro, São Paulo - SP</span>
         </div>
-        
-        <div class="formulario-contato">
-            <h4>Formulário de Contato</h4>
-            <form method="POST" action="#">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="nome">Nome:</label>
-                    <input type="text" id="nome" name="nome" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">E-mail:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="assunto">Assunto:</label>
-                    <input type="text" id="assunto" name="assunto" required>
-                </div>
-                <div class="form-group">
-                    <label for="mensagem">Mensagem:</label>
-                    <textarea id="mensagem" name="mensagem" rows="5" required></textarea>
-                </div>
-                <button type="submit">Enviar Mensagem</button>
-            </form>
+        <div class="contact-item">
+          <i class="fas fa-phone"></i>
+          <span>(11) 3333-4444</span>
         </div>
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span>contato@solidare.org.br</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-clock"></i>
+          <span>Segunda a Sexta, das 8h às 18h</span>
+        </div>
+      </div>
+      
+      <div class="contact-form">
+        <h4>Formulário de Contato</h4>
+        <form method="POST" action="#">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" required>
+          </div>
+          <div class="form-group">
+            <label for="email">E-mail:</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="assunto">Assunto:</label>
+            <input type="text" id="assunto" name="assunto" required>
+          </div>
+          <div class="form-group">
+            <label for="mensagem">Mensagem:</label>
+            <textarea id="mensagem" name="mensagem" rows="5" required></textarea>
+          </div>
+          <button type="submit" class="btn">Enviar Mensagem</button>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}

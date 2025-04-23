@@ -174,7 +174,7 @@ body {
 
 .main-content {
     background-color: #49a6e9;
-    min-height: calc(100vh - 82px);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -182,6 +182,7 @@ body {
     color: white;
     text-align: center;
     padding: 20px;
+    box-sizing: border-box;
 }
 
 .welcome-container {
@@ -204,7 +205,7 @@ body {
     position: relative;
     background-color: rgba(255, 255, 255, 0.9);
     padding: 30px;
-    border-radius: 0px;
+    border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 400px;
@@ -236,8 +237,8 @@ body {
 }
 
 .form-group input {
-    width: 100%;
-    padding: 10px;
+    width: 98.2%;
+    padding: 8px;
     border: 0px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
@@ -264,4 +265,74 @@ body {
 
 .text-link:hover {
     text-decoration: underline;
+}
+
+.about-container {
+    position: relative;
+    background-color: rgba(246, 246, 246, 0.9);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 900px;
+    margin: 20px auto;
+    color: black;
+}
+
+.about-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.about-card {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.about-card h3 {
+    color: #007bff;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.values-list {
+    list-style: none;
+    padding: 0;
+}
+
+.values-list li {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.contact-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #eee;
+}
+
+.contact-info {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 10px;
+}
+
+.contact-form {
+    margin-top: 30px;
 }
