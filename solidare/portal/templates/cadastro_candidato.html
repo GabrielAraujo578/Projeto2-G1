@@ -109,9 +109,12 @@
 
 <div class="form-container">
     <h2>Cadastro de Candidato</h2>
-
-    {% if form.errors %}
-        <p style="color: red;">Corrija os erros abaixo:</p>
+    {% if erros %}
+        <ul style="color: red;">
+        {% for erro in erros %}
+            <li>{{ erro }}</li>
+        {% endfor %}
+        </ul>
     {% endif %}
 
     <div class="step-indicator">
@@ -122,195 +125,195 @@
         <div class="step" id="step-5">5</div>
     </div>
 
-    <form method="POST" id="multi-step-form">
-        {% csrf_token %}
-        
-    <!-- Etapa 1: Dados Pessoais -->
+<form method="POST" id="multi-step-form">
+    {% csrf_token %}
+
+    <!-- ========== ETAPA 1 ========== -->
     <div class="step-content active" id="step-1-content">
         <h3>Dados Pessoais</h3>
-        {{ form.nome_completo.label_tag }}
-        {{ form.nome_completo }}
-        {{ form.data_nascimento.label_tag }}
-        {{ form.data_nascimento }}
-        {{ form.sexo.label_tag }}
-        {{ form.sexo }}
-        {{ form.raca_cor.label_tag }}
-        {{ form.raca_cor }}
-        {{ form.cpf.label_tag }}
-        {{ form.cpf }}
-        {{ form.telefone.label_tag }}
-        {{ form.telefone }}
-        {{ form.whatsapp.label_tag }}
-        {{ form.whatsapp }}
-        {{ form.estado_civil.label_tag }}
-        {{ form.estado_civil }}
-
-        <!-- E-mail e senha são usados também no cadastro do User -->
-        {{ form.email.label_tag }}
-        {{ form.email }}
-        
-
-        <!-- Campos extras para criar o User -->
-        {{ form.username.label_tag }}
-        {{ form.username }}
-
-        <label for="password1">Senha</label>
-        <input type="password" name="password1" id="password1" required>
-
-        <label for="password2">Confirme a senha</label>
-        <input type="password" name="password2" id="password2" required>
+        <label>Nome Completo</label>
+        <input name="nome_completo" type="text" required value="{{ dados.nome_completo|default_if_none:'' }}">
+        <label>Data de Nascimento</label>
+        <input type="date" name="data_nascimento" value="{% if dados.data_nascimento %}{{ dados.data_nascimento|date:'Y-m-d' }}{% endif %}">
+        <label>Sexo</label>
+        <select name="sexo" required>
+            <option value="">Selecione</option>
+            <option value="Masculino" {% if dados.sexo == "Masculino" %}selected{% endif %}>Masculino</option>
+            <option value="Feminino" {% if dados.sexo == "Feminino" %}selected{% endif %}>Feminino</option>
+            <option value="Outro" {% if dados.sexo == "Outro" %}selected{% endif %}>Outro</option>
+        </select>
+        <label>Raça/Cor</label>
+        <input name="raca_cor" type="text" value="{{ dados.raca_cor|default_if_none:'' }}">
+        <label>CPF</label>
+        <input name="cpf" type="text" value="{{ dados.cpf|default_if_none:'' }}">
+        <label>Telefone</label>
+        <input name="telefone" type="text" value="{{ dados.telefone|default_if_none:'' }}">
+        <label>WhatsApp</label>
+        <input name="whatsapp" type="checkbox" {% if dados.whatsapp %}checked{% endif %}>
+        <label>Estado Civil</label>
+        <input name="estado_civil" type="text" value="{{ dados.estado_civil|default_if_none:'' }}">
+        <label>E-mail</label>
+        <input name="email" type="email" required value="{{ dados.email|default_if_none:'' }}">
+        <label>Senha</label>
+        <input type="password" name="password1" required>
+        <label>Confirmar Senha</label>
+        <input type="password" name="password2" required>
     </div>
 
-        <!-- Etapa 2: Endereço -->
-        <div class="step-content" id="step-2-content">
-            <h3>Endereço</h3>
-            {{ form.endereco_principal.label_tag }}
-            {{ form.endereco_principal }}
-            {{ form.numero.label_tag }}
-            {{ form.numero }}
-            {{ form.bairro.label_tag }}
-            {{ form.bairro }}
-            {{ form.municipio_uf.label_tag }}
-            {{ form.municipio_uf }}
-            {{ form.microrregiao.label_tag }}
-            {{ form.microrregiao }}
-            {{ form.cep.label_tag }}
-            {{ form.cep }}
-            {{ form.ingressara_no_projeto.label_tag }}
-            {{ form.ingressara_no_projeto }}
-            {{ form.turno.label_tag }}
-            {{ form.turno }}
-            {{ form.apadrinhado.label_tag }}
-            {{ form.apadrinhado }}
-        </div>
+    <!-- ========== ETAPA 2 ========== -->
+    <div class="step-content" id="step-2-content">
+        <h3>Endereço</h3>
+        <label>Endereço Principal</label>
+        <input name="endereco_principal" type="text" value="{{ dados.endereco_principal|default_if_none:'' }}">
+        <label>Número</label>
+        <input name="numero" type="text" value="{{ dados.numero|default_if_none:'' }}">
+        <label>Bairro</label>
+        <input name="bairro" type="text" value="{{ dados.bairro|default_if_none:'' }}">
+        <label>Município/UF</label>
+        <input name="municipio_uf" type="text" value="{{ dados.municipio_uf|default_if_none:'' }}">
+        <label>Microrregião</label>
+        <input name="microrregiao" type="text" value="{{ dados.microrregiao|default_if_none:'' }}">
+        <label>CEP</label>
+        <input name="cep" type="text" value="{{ dados.cep|default_if_none:'' }}">
+        <label>Ingressará no Projeto</label>
+        <input name="ingressara_no_projeto" type="checkbox" {% if dados.ingressara_no_projeto %}checked{% endif %}>
+        <label>Turno</label>
+        <input name="turno" type="text" value="{{ dados.turno|default_if_none:'' }}">
+        <label>Apadrinhado</label>
+        <input name="apadrinhado" type="checkbox" {% if dados.apadrinhado %}checked{% endif %}>
+    </div>
 
-        <!-- Etapa 3: Escolaridade e Situação Profissional -->
-        <div class="step-content" id="step-3-content">
-            <h3>Escolaridade e Situação Profissional</h3>
-            {{ form.escolaridade.label_tag }}
-            {{ form.escolaridade }}
-            {{ form.rede_ensino.label_tag }}
-            {{ form.rede_ensino }}
-            {{ form.ano_ou_periodo.label_tag }}
-            {{ form.ano_ou_periodo }}
-            {{ form.turno_escolar.label_tag }}
-            {{ form.turno_escolar }}
-            {{ form.motivo_nao_estuda.label_tag }}
-            {{ form.motivo_nao_estuda }}
-            {{ form.pretende_estudar.label_tag }}
-            {{ form.pretende_estudar }}
-            {{ form.situacao_profissional.label_tag }}
-            {{ form.situacao_profissional }}
-            {{ form.profissao.label_tag }}
-            {{ form.profissao }}
-            {{ form.local_trabalho.label_tag }}
-            {{ form.local_trabalho }}
-            {{ form.bairro_trabalho.label_tag }}
-            {{ form.bairro_trabalho }}
-            {{ form.salario.label_tag }}
-            {{ form.salario }}
-        </div>
+    <!-- ========== ETAPA 3 ========== -->
+    <div class="step-content" id="step-3-content">
+        <h3>Escolaridade e Profissional</h3>
+        <label>Escolaridade</label>
+        <input name="escolaridade" type="text" value="{{ dados.escolaridade|default_if_none:'' }}">
+        <label>Rede de Ensino</label>
+        <input name="rede_ensino" type="text" value="{{ dados.rede_ensino|default_if_none:'' }}">
+        <label>Ano ou Período</label>
+        <input name="ano_ou_periodo" type="text" value="{{ dados.ano_ou_periodo|default_if_none:'' }}">
+        <label>Turno Escolar</label>
+        <input name="turno_escolar" type="text" value="{{ dados.turno_escolar|default_if_none:'' }}">
+        <label>Motivo Não Estuda</label>
+        <input name="motivo_nao_estuda" type="text" value="{{ dados.motivo_nao_estuda|default_if_none:'' }}">
+        <label>Pretende Estudar</label>
+        <input name="pretende_estudar" type="checkbox" {% if dados.pretende_estudar %}checked{% endif %}>
+        <label>Situação Profissional</label>
+        <input name="situacao_profissional" type="text" value="{{ dados.situacao_profissional|default_if_none:'' }}">
+        <label>Profissão</label>
+        <input name="profissao" type="text" value="{{ dados.profissao|default_if_none:'' }}">
+        <label>Local de Trabalho</label>
+        <input name="local_trabalho" type="text" value="{{ dados.local_trabalho|default_if_none:'' }}">
+        <label>Bairro do Trabalho</label>
+        <input name="bairro_trabalho" type="text" value="{{ dados.bairro_trabalho|default_if_none:'' }}">
+        <label>Salário</label>
+        <input name="salario" type="number" step="0.01" value="{{ dados.salario|default_if_none:'' }}">
+    </div>
 
-        <!-- Etapa 4: Saúde e Alimentação -->
-        <div class="step-content" id="step-4-content">
-            <h3>Saúde e Alimentação</h3>
-            {{ form.possui_plano.label_tag }}
-            {{ form.possui_plano }}
-            {{ form.nome_plano.label_tag }}
-            {{ form.nome_plano }}
-            {{ form.problema_saude.label_tag }}
-            {{ form.problema_saude }}
-            {{ form.acompanhamento_medico.label_tag }}
-            {{ form.acompanhamento_medico }}
-            {{ form.cirurgia.label_tag }}
-            {{ form.cirurgia }}
-            {{ form.problema_atual.label_tag }}
-            {{ form.problema_atual }}
-            {{ form.deficiencia_fisica.label_tag }}
-            {{ form.deficiencia_fisica }}
-            {{ form.tipo_deficiencia.label_tag }}
-            {{ form.tipo_deficiencia }}
-            {{ form.desenvolvimento_mental.label_tag }}
-            {{ form.desenvolvimento_mental }}
-            {{ form.onde_procura_saude.label_tag }}
-            {{ form.onde_procura_saude }}
-            {{ form.refeicoes_dia.label_tag }}
-            {{ form.refeicoes_dia }}
-            {{ form.alimentacao.label_tag }}
-            {{ form.alimentacao }}
-        </div>
+    <!-- ========== ETAPA 4 ========== -->
+    <div class="step-content" id="step-4-content">
+        <h3>Saúde e Alimentação</h3>
+        <label>Possui Plano</label>
+        <input name="possui_plano" type="checkbox" {% if dados.possui_plano %}checked{% endif %}>
+        <label>Nome do Plano</label>
+        <input name="nome_plano" type="text" value="{{ dados.nome_plano|default_if_none:'' }}">
+        <label>Problema de Saúde</label>
+        <input name="problema_saude" type="checkbox" {% if dados.problema_saude %}checked{% endif %}>
+        <label>Acompanhamento Médico</label>
+        <input name="acompanhamento_medico" type="checkbox" {% if dados.acompanhamento_medico %}checked{% endif %}>
+        <label>Cirurgia</label>
+        <input name="cirurgia" type="checkbox" {% if dados.cirurgia %}checked{% endif %}>
+        <label>Problema Atual</label>
+        <input name="problema_atual" type="text" value="{{ dados.problema_atual|default_if_none:'' }}">
+        <label>Deficiência Física</label>
+        <input name="deficiencia_fisica" type="checkbox" {% if dados.deficiencia_fisica %}checked{% endif %}>
+        <label>Tipo de Deficiência</label>
+        <input name="tipo_deficiencia" type="text" value="{{ dados.tipo_deficiencia|default_if_none:'' }}">
+        <label>Desenvolvimento Mental</label>
+        <input name="desenvolvimento_mental" type="text" value="{{ dados.desenvolvimento_mental|default_if_none:'' }}">
+        <label>Onde Procura Saúde</label>
+        <input name="onde_procura_saude" type="text" value="{{ dados.onde_procura_saude|default_if_none:'' }}">
+        <label>Refeições por dia</label>
+        <input name="refeicoes_dia" type="number" value="{{ dados.refeicoes_dia|default_if_none:'' }}">
+        <label>Alimentação</label>
+        <input name="alimentacao" type="text" value="{{ dados.alimentacao|default_if_none:'' }}">
+    </div>
 
-        <!-- Etapa 5: Moradia e Informações Adicionais -->
-        <div class="step-content" id="step-5-content">
-            <h3>Moradia e Informações Adicionais</h3>
-            {{ form.tipo_casa.label_tag }}
-            {{ form.tipo_casa }}
-            {{ form.tipo_moradia.label_tag }}
-            {{ form.tipo_moradia }}
-            {{ form.vulnerabilidade.label_tag }}
-            {{ form.vulnerabilidade }}
-            {{ form.numero_comodos.label_tag }}
-            {{ form.numero_comodos }}
-            {{ form.divisorias_crianca_adulto.label_tag }}
-            {{ form.divisorias_crianca_adulto }}
-            {{ form.tem_banheiro.label_tag }}
-            {{ form.tem_banheiro }}
-            {{ form.banheiro_dentro.label_tag }}
-            {{ form.banheiro_dentro }}
-            {{ form.energia_publica.label_tag }}
-            {{ form.energia_publica }}
-            {{ form.agua.label_tag }}
-            {{ form.agua }}
-            {{ form.destino_lixo.label_tag }}
-            {{ form.destino_lixo }}
-            {{ form.destino_esgoto.label_tag }}
-            {{ form.destino_esgoto }}
-            {{ form.bens.label_tag }}
-            {{ form.bens }}
-            {{ form.origem_bens.label_tag }}
-            {{ form.origem_bens }}
-            {{ form.cadastrado_cadunico.label_tag }}
-            {{ form.cadastrado_cadunico }}
-            {{ form.bolsa_familia.label_tag }}
-            {{ form.bolsa_familia }}
-            {{ form.auxilio_moradia.label_tag }}
-            {{ form.auxilio_moradia }}
-            {{ form.recebe_bpc.label_tag }}
-            {{ form.recebe_bpc }}
-            {{ form.faixa_renda_familiar.label_tag }}
-            {{ form.faixa_renda_familiar }}
-            {{ form.renda_per_capita.label_tag }}
-            {{ form.renda_per_capita }}
-            {{ form.participa_grupo.label_tag }}
-            {{ form.participa_grupo }}
-            {{ form.conhece_eca.label_tag }}
-            {{ form.conhece_eca }}
-            {{ form.nocao_cidadania.label_tag }}
-            {{ form.nocao_cidadania }}
-            {{ form.referencia_familiar.label_tag }}
-            {{ form.referencia_familiar }}
-            {{ form.conhece_conselho.label_tag }}
-            {{ form.conhece_conselho }}
-            {{ form.conhece_foscar.label_tag }}
-            {{ form.conhece_foscar }}
-            
-            <!-- Campos para responsável (se menor de idade) -->
-            {{ form.responsavel_nome.label_tag }}
-            {{ form.responsavel_nome }}
-            {{ form.responsavel_cpf.label_tag }}
-            {{ form.responsavel_cpf }}
-            {{ form.responsavel_data_nascimento.label_tag }}
-            {{ form.responsavel_data_nascimento }}
-        </div>
+    <!-- ========== ETAPA 5 ========== -->
+    <div class="step-content" id="step-5-content">
+        <h3>Moradia e Informações Adicionais</h3>
+        <label>Tipo de Casa</label>
+        <input name="tipo_casa" type="text" value="{{ dados.tipo_casa|default_if_none:'' }}">
+        <label>Tipo de Moradia</label>
+        <input name="tipo_moradia" type="text" value="{{ dados.tipo_moradia|default_if_none:'' }}">
+        <label>Vulnerabilidade</label>
+        <input name="vulnerabilidade" type="text" value="{{ dados.vulnerabilidade|default_if_none:'' }}">
+        <label>Número de Cômodos</label>
+        <input name="numero_comodos" type="number" value="{{ dados.numero_comodos|default_if_none:'' }}">
+        <label>Divisória Criança/Adulto</label>
+        <input name="divisorias_crianca_adulto" type="checkbox" {% if dados.divisorias_crianca_adulto %}checked{% endif %}>
+        <label>Tem Banheiro</label>
+        <input name="tem_banheiro" type="checkbox" {% if dados.tem_banheiro %}checked{% endif %}>
+        <label>Banheiro Interno</label>
+        <input name="banheiro_dentro" type="checkbox" {% if dados.banheiro_dentro %}checked{% endif %}>
+        <label>Energia Pública</label>
+        <input name="energia_publica" type="checkbox" {% if dados.energia_publica %}checked{% endif %}>
+        <label>Água</label>
+        <input name="agua" type="text" value="{{ dados.agua|default_if_none:'' }}">
+        <label>Destino do Lixo</label>
+        <input name="destino_lixo" type="text" value="{{ dados.destino_lixo|default_if_none:'' }}">
+        <label>Destino do Esgoto</label>
+        <input name="destino_esgoto" type="text" value="{{ dados.destino_esgoto|default_if_none:'' }}">
+        <label>Bens</label>
+        <input name="bens" type="text" value="{{ dados.bens|default_if_none:'' }}">
+        <label>Origem dos Bens</label>
+        <input name="origem_bens" type="text" value="{{ dados.origem_bens|default_if_none:'' }}">
 
-        <div class="form-buttons">
-            <button type="button" class="prev" id="prev-btn" style="display: none;">Anterior</button>
-            <button type="button" class="next" id="next-btn">Próximo</button>
-            <button type="submit" id="submit-btn" style="display: none;">Cadastrar</button>
-        </div>
-    </form>
+        <label>Cadastrado no CadÚnico</label>
+        <input name="cadastrado_cadunico" type="checkbox" {% if dados.cadastrado_cadunico %}checked{% endif %}>
+        <label>Bolsa Família</label>
+        <input name="bolsa_familia" type="checkbox" {% if dados.bolsa_familia %}checked{% endif %}>
+        <label>Auxílio Moradia</label>
+        <input name="auxilio_moradia" type="checkbox" {% if dados.auxilio_moradia %}checked{% endif %}>
+        <label>Recebe BPC</label>
+        <input name="recebe_bpc" type="checkbox" {% if dados.recebe_bpc %}checked{% endif %}>
 
-    <p><a href="{% url 'index' %}">Voltar para a página inicial</a></p>
+        <label>Faixa de Renda Familiar</label>
+        <input name="faixa_renda_familiar" type="text" value="{{ dados.faixa_renda_familiar|default_if_none:'' }}">
+        <label>Renda Per Capita</label>
+        <input name="renda_per_capita" type="number" step="0.01" value="{{ dados.renda_per_capita|default_if_none:'' }}">
+
+        <label>Participa de Grupo Comunitário</label>
+        <input name="participa_grupo" type="text" value="{{ dados.participa_grupo|default_if_none:'' }}">
+        <label>Conhece ECA</label>
+        <input name="conhece_eca" type="text" value="{{ dados.conhece_eca|default_if_none:'' }}">
+        <label>Noção de Cidadania</label>
+        <input name="nocao_cidadania" type="checkbox" {% if dados.nocao_cidadania %}checked{% endif %}>
+        <label>Referência Familiar</label>
+        <input name="referencia_familiar" type="text" value="{{ dados.referencia_familiar|default_if_none:'' }}">
+        <label>Conhece Conselho</label>
+        <input name="conhece_conselho" type="text" value="{{ dados.conhece_conselho|default_if_none:'' }}">
+        <label>Conhece FOSCAR</label>
+        <input name="conhece_foscar" type="text" value="{{ dados.conhece_foscar|default_if_none:'' }}">
+
+        <!-- Responsável (para menores de idade) -->
+        <label>Nome do Responsável</label>
+        <input name="responsavel_nome" type="text" value="{{ dados.responsavel_nome|default_if_none:'' }}">
+        <label>CPF Responsável</label>
+        <input name="responsavel_cpf" type="text" value="{{ dados.responsavel_cpf|default_if_none:'' }}">
+        <label>Data de Nascimento do Responsável</label>
+        <input name="responsavel_data_nascimento" type="date" value="{{ dados.responsavel_data_nascimento|default_if_none:'' }}">
+
+    </div>
+    <!-- Botões do formulário -->
+    <div class="form-buttons">
+        <button type="button" class="prev" id="prev-btn" style="display: none;">Anterior</button>
+        <button type="button" class="next" id="next-btn">Próximo</button>
+        <button type="submit" id="submit-btn" style="display: none;">Cadastrar</button>
+    </div>
+</form>
+
+<p><a href="{% url 'index' %}">Voltar para a página inicial</a></p>
 </div>
 
 <script>
