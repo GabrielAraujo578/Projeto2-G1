@@ -1,28 +1,19 @@
-from django.shortcuts import render, redirect
+from datetime import datetime
+from .models import Professor, Candidato
+from .models import Aluno, Aviso, EventoCalendario
+import calendar
+import json
+from decimal import Decimal, InvalidOperation
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib import messages
-from .forms import CandidatoForm  
-from .models import Candidato, Professor, Aluno
-from django.shortcuts import get_object_or_404
-from django.db import transaction
-from .models import Aviso
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Aviso
-from .forms import AvisoForm
-from .forms import EventoCalendarioForm
-from .models import EventoCalendario
-from datetime import datetime
-import calendar
+from django.db import transaction
+from django.core.mail import send_mail
 from django.utils.dateparse import parse_date
 from django.utils.safestring import mark_safe
-from datetime import datetime
-import json
-from django.core.mail import send_mail
-from decimal import Decimal, InvalidOperation
-
-
+from datetime import date
 
 def login_view(request):
     if request.method == 'POST':
@@ -81,9 +72,6 @@ def logout_view(request):
     logout(request)
     return redirect("login")
 
-
-from django.shortcuts import render
-
 def index_view(request):
     return render(request, "index.html")  
 
@@ -93,16 +81,31 @@ def lista_candidatos(request):
     return render(request, "candidatos.html", {"candidatos": candidatos})
 
 
+def get_bool(value):
+    return {'on': True, 'true': True, 'True': True, True: True}.get(value, False)
+
+def get_decimal(value):
+    try:
+        return Decimal(value) if value else None
+    except InvalidOperation:
+        return None
+
+def get_int(value):
+    try:
+        return int(value) if value else None
+    except ValueError:
+        return None
+
 def cadastro_candidato(request):
     if request.method == "POST":
         # 1. Coleta campos principais obrigatórios
         data_nascimento_str = request.POST.get('data_nascimento')
-        email = request.POST.get('email')
+        email = request.POST.get('email', '').strip()
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
-        nome_completo = request.POST.get('nome_completo')
+        nome_completo = request.POST.get('nome_completo', '').strip()
         sexo = request.POST.get('sexo')
-        aprovado = None  # Adapte se quiser lógica automática
+        aprovado = None
 
         # 2. Checagens iniciais
         erros = []
@@ -114,126 +117,104 @@ def cadastro_candidato(request):
             erros.append("Preencha todos os campos obrigatórios.")
 
         # 3. Gera idade
-        data_nascimento_str = request.POST.get('data_nascimento')
         data_nascimento = None
         idade = None
         try:
             if data_nascimento_str:
                 data_nascimento = date.fromisoformat(data_nascimento_str)
-        except Exception:
-            data_nascimento = None
-
-        if data_nascimento is not None:
-            hoje = date.today()
-            idade = hoje.year - data_nascimento.year - int(
-                (hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day)
-            )
+                hoje = date.today()
+                idade = hoje.year - data_nascimento.year - int(
+                    (hoje.month, hoje.day) < (data_nascimento.month, data_nascimento.day)
+                )
+        except ValueError:
+            erros.append("Data de nascimento inválida.")
 
         if erros:
-            contexto = {"erros": erros, "dados": request.POST}
-            return render(request, "cadastro_candidato.html", contexto)
+            return render(request, "cadastro_candidato.html", {"erros": erros, "dados": request.POST})
 
         try:
             with transaction.atomic():
-                # 4. Criação do usuário
                 user = User.objects.create_user(username=email, email=email, password=password1)
-                # 5. Criação do Candidato (preenchendo TODOS os campos)
                 candidato = Candidato(
-                    # User
                     user=user,
-                    # Dados pessoais
                     nome_completo=nome_completo,
                     data_nascimento=data_nascimento,
                     idade=idade,
                     sexo=sexo,
-                    raca_cor=request.POST.get('raca_cor', ''),
-                    cpf=request.POST.get('cpf', ''),
-                    telefone=request.POST.get('telefone', ''),
-                    whatsapp=request.POST.get('whatsapp') == 'on',
+                    raca_cor=request.POST.get('raca_cor', '').strip(),
+                    cpf=request.POST.get('cpf', '').strip(),
+                    telefone=request.POST.get('telefone', '').strip(),
+                    whatsapp=get_bool(request.POST.get('whatsapp')),
                     estado_civil=request.POST.get('estado_civil', ''),
                     email=email,
-                    # Endereço
                     endereco_principal=request.POST.get('endereco_principal', ''),
                     numero=request.POST.get('numero', ''),
                     bairro=request.POST.get('bairro', ''),
                     municipio_uf=request.POST.get('municipio_uf', ''),
                     microrregiao=request.POST.get('microrregiao', ''),
                     cep=request.POST.get('cep', ''),
-                    # Projeto
-                    ingressara_no_projeto=request.POST.get('ingressara_no_projeto') == 'on',
+                    ingressara_no_projeto=get_bool(request.POST.get('ingressara_no_projeto')),
                     turno=request.POST.get('turno', ''),
-                    apadrinhado=request.POST.get('apadrinhado') == 'on',
-                    # Escolaridade
+                    apadrinhado=get_bool(request.POST.get('apadrinhado')),
                     escolaridade=request.POST.get('escolaridade', ''),
                     rede_ensino=request.POST.get('rede_ensino', ''),
                     ano_ou_periodo=request.POST.get('ano_ou_periodo', ''),
                     turno_escolar=request.POST.get('turno_escolar', ''),
                     motivo_nao_estuda=request.POST.get('motivo_nao_estuda', ''),
-                    pretende_estudar={'on': True, 'True': True, True: True}.get(request.POST.get('pretende_estudar'), None),
-                    # Situação Profissional
+                    pretende_estudar=get_bool(request.POST.get('pretende_estudar')),
                     situacao_profissional=request.POST.get('situacao_profissional', ''),
                     profissao=request.POST.get('profissao', ''),
                     local_trabalho=request.POST.get('local_trabalho', ''),
                     bairro_trabalho=request.POST.get('bairro_trabalho', ''),
-                    salario=Decimal(request.POST['salario']) if request.POST.get('salario') else None,
-                    # Conhecimentos
+                    salario=get_decimal(request.POST.get('salario')),
                     conhece_eca=request.POST.get('conhece_eca', ''),
-                    nocao_cidadania={'on': True, 'True': True, True: True}.get(request.POST.get('nocao_cidadania'), None),
+                    nocao_cidadania=get_bool(request.POST.get('nocao_cidadania')),
                     referencia_familiar=request.POST.get('referencia_familiar', ''),
                     conhece_conselho=request.POST.get('conhece_conselho', ''),
                     conhece_foscar=request.POST.get('conhece_foscar', ''),
-                    # Saúde
-                    possui_plano={'on': True, 'True': True, True: True}.get(request.POST.get('possui_plano'), None),
+                    possui_plano=get_bool(request.POST.get('possui_plano')),
                     nome_plano=request.POST.get('nome_plano', ''),
-                    problema_saude={'on': True, 'True': True, True: True}.get(request.POST.get('problema_saude'), None),
-                    acompanhamento_medico={'on': True, 'True': True, True: True}.get(request.POST.get('acompanhamento_medico'), None),
-                    cirurgia={'on': True, 'True': True, True: True}.get(request.POST.get('cirurgia'), None),
+                    problema_saude=get_bool(request.POST.get('problema_saude')),
+                    acompanhamento_medico=get_bool(request.POST.get('acompanhamento_medico')),
+                    cirurgia=get_bool(request.POST.get('cirurgia')),
                     problema_atual=request.POST.get('problema_atual', ''),
-                    deficiencia_fisica={'on': True, 'True': True, True: True}.get(request.POST.get('deficiencia_fisica'), None),
+                    deficiencia_fisica=get_bool(request.POST.get('deficiencia_fisica')),
                     tipo_deficiencia=request.POST.get('tipo_deficiencia', ''),
                     desenvolvimento_mental=request.POST.get('desenvolvimento_mental', ''),
                     onde_procura_saude=request.POST.get('onde_procura_saude', ''),
-                    # Alimentação
-                    refeicoes_dia=int(request.POST['refeicoes_dia']) if request.POST.get('refeicoes_dia') else None,
+                    refeicoes_dia=get_int(request.POST.get('refeicoes_dia')),
                     alimentacao=request.POST.get('alimentacao', ''),
-                    # Grupos comunitários
                     participa_grupo=request.POST.get('participa_grupo', ''),
-                    # Moradia
                     tipo_casa=request.POST.get('tipo_casa', ''),
                     tipo_moradia=request.POST.get('tipo_moradia', ''),
                     vulnerabilidade=request.POST.get('vulnerabilidade', ''),
-                    numero_comodos=int(request.POST['numero_comodos']) if request.POST.get('numero_comodos') else None,
-                    divisorias_crianca_adulto={'on': True, 'True': True, True: True}.get(request.POST.get('divisorias_crianca_adulto'), None),
-                    tem_banheiro={'on': True, 'True': True, True: True}.get(request.POST.get('tem_banheiro'), None),
-                    banheiro_dentro={'on': True, 'True': True, True: True}.get(request.POST.get('banheiro_dentro'), None),
-                    energia_publica={'on': True, 'True': True, True: True}.get(request.POST.get('energia_publica'), None),
+                    numero_comodos=get_int(request.POST.get('numero_comodos')),
+                    divisorias_crianca_adulto=get_bool(request.POST.get('divisorias_crianca_adulto')),
+                    tem_banheiro=get_bool(request.POST.get('tem_banheiro')),
+                    banheiro_dentro=get_bool(request.POST.get('banheiro_dentro')),
+                    energia_publica=get_bool(request.POST.get('energia_publica')),
                     agua=request.POST.get('agua', ''),
                     destino_lixo=request.POST.get('destino_lixo', ''),
                     destino_esgoto=request.POST.get('destino_esgoto', ''),
-                    # Bens
                     bens=request.POST.get('bens', ''),
                     origem_bens=request.POST.get('origem_bens', ''),
-                    # Política de Assistência
-                    cadastrado_cadunico={'on': True, 'True': True, True: True}.get(request.POST.get('cadastrado_cadunico'), None),
-                    bolsa_familia={'on': True, 'True': True, True: True}.get(request.POST.get('bolsa_familia'), None),
-                    auxilio_moradia={'on': True, 'True': True, True: True}.get(request.POST.get('auxilio_moradia'), None),
-                    recebe_bpc={'on': True, 'True': True, True: True}.get(request.POST.get('recebe_bpc'), None),
-                    # Renda
+                    cadastrado_cadunico=get_bool(request.POST.get('cadastrado_cadunico')),
+                    bolsa_familia=get_bool(request.POST.get('bolsa_familia')),
+                    auxilio_moradia=get_bool(request.POST.get('auxilio_moradia')),
+                    recebe_bpc=get_bool(request.POST.get('recebe_bpc')),
                     faixa_renda_familiar=request.POST.get('faixa_renda_familiar', ''),
-                    renda_per_capita=Decimal(request.POST['renda_per_capita']) if request.POST.get('renda_per_capita') else None,
-                    # Status
+                    renda_per_capita=get_decimal(request.POST.get('renda_per_capita')),
                     aprovado=aprovado,
                 )
                 candidato.save()
                 messages.success(request, "Cadastro realizado com sucesso!")
                 return redirect('cadastro_sucesso')
 
-        except (InvalidOperation, Exception) as e:
+        except Exception as e:
             erros.append(f"Erro ao salvar: {e}")
-            contexto = {"erros": erros, "dados": request.POST}
-            return render(request, "cadastro_candidato.html", contexto)
-    else:
-        return render(request, "cadastro_candidato.html")
+            return render(request, "cadastro_candidato.html", {"erros": erros, "dados": request.POST})
+
+    return render(request, "cadastro_candidato.html")
 
 def cadastro_sucesso(request):
     return render(request, "cadastro_sucesso.html")
@@ -327,21 +308,19 @@ def lista_avisos(request):
 @login_required
 @user_passes_test(is_professor)
 def criar_aviso(request):
-    if not hasattr(request.user, 'professor'):
-        return HttpResponseForbidden("Apenas professores podem criar avisos.")
-
-    # Resto do código para criar aviso
     if request.method == 'POST':
-        form = AvisoForm(request.POST)
-        if form.is_valid():
-            aviso = form.save(commit=False)
-            aviso.autor = request.user
-            aviso.save()
-            return redirect('lista_avisos')
-    else:
-        form = AvisoForm()
+        titulo = request.POST.get('titulo')
+        mensagem = request.POST.get('mensagem')
 
-    return render(request, 'criar_aviso.html', {'form': form})
+        if titulo and mensagem:
+            Aviso.objects.create(
+                titulo=titulo,
+                mensagem=mensagem,
+                autor=request.user  
+            )
+            return redirect('lista_avisos')
+
+    return render(request, 'criar_aviso.html')
 
 @login_required
 def calendario(request):
@@ -375,17 +354,24 @@ def calendario(request):
 
 @login_required
 def adicionar_evento(request):
-    data = request.GET.get('data')  
-
     if request.method == 'POST':
-        form = EventoCalendarioForm(request.POST, aluno=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('calendario')  
-    else:
-        form = EventoCalendarioForm(initial={'data': data})
+        titulo = request.POST.get('titulo')
+        descricao = request.POST.get('descricao')
+        data = request.GET.get('data')  
+        hora = request.POST.get('hora')
 
-    return render(request, 'adicionar_evento.html', {'form': form})
+        if titulo and descricao and data:
+            EventoCalendario.objects.create(
+                titulo=titulo,
+                descricao=descricao,
+                data=data,
+                hora=hora,
+                aluno=request.user  
+            )
+            return redirect('calendario')
+    
+    return render(request, 'adicionar_evento.html')
+
 
 @login_required
 def detalhe_evento(request, id):
@@ -397,16 +383,24 @@ def detalhe_evento(request, id):
 
     return render(request, 'detalhe_evento.html', {'evento': evento})
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import EventoCalendario
+
 @login_required
 def editar_evento(request, id):
     evento = get_object_or_404(EventoCalendario, id=id)
 
     if request.method == 'POST':
-        form = EventoCalendarioForm(request.POST, instance=evento, aluno=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('detalhe_evento', id=evento.id)
-    else:
-        form = EventoCalendarioForm(instance=evento)
+        evento.titulo = request.POST.get('titulo', '')
+        evento.descricao = request.POST.get('descricao', '')
+        evento.data_inicio = request.POST.get('data_inicio') or None
+        evento.data_fim = request.POST.get('data_fim') or None
+        evento.horario_inicio = request.POST.get('horario_inicio') or None
+        evento.horario_fim = request.POST.get('horario_fim') or None
+        evento.local = request.POST.get('local', '')
+        evento.save()
+        return redirect('detalhe_evento', id=evento.id)
 
-    return render(request, 'editar_evento.html', {'form': form, 'evento': evento})
+    return render(request, 'editar_evento.html', {'evento': evento})
+

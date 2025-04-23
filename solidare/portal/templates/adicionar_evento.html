@@ -1,5 +1,4 @@
 {% load static %}
-{% load widget_tweaks %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -14,31 +13,25 @@
 
             <form method="post">
                 {% csrf_token %}
+
                 <div class="field">
                     <label class="label">Título</label>
                     <div class="control">
-                        {{ form.titulo|add_class:"input" }}
+                        <input type="text" name="titulo" class="input" required>
                     </div>
                 </div>
 
                 <div class="field">
                     <label class="label">Descrição</label>
                     <div class="control">
-                        {{ form.descricao|add_class:"textarea" }}
-                    </div>
-                </div>
-
-                <div class="field">
-                    <label class="label">Data</label>
-                    <div class="control">
-                        {{ form.data|add_class:"input" }}
+                        <textarea name="descricao" class="textarea" required></textarea>
                     </div>
                 </div>
 
                 <div class="field">
                     <label class="label">Hora</label>
                     <div class="control">
-                        {{ form.hora|add_class:"input" }}
+                        <input type="time" name="hora" class="input" required>
                     </div>
                 </div>
 

@@ -4,7 +4,13 @@
   <h2>Criar Aviso</h2>
   <form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+    
+    <label for="titulo">Título:</label><br>
+    <input type="text" id="titulo" name="titulo" required><br><br>
+
+    <label for="mensagem">Mensagem:</label><br>
+    <textarea id="mensagem" name="mensagem" rows="5" required></textarea><br><br>
+
     <button type="submit">Publicar</button>
   </form>
   <br>

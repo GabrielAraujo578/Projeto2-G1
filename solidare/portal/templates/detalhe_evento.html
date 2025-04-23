@@ -29,6 +29,7 @@
             border-radius: 5px;
             color: white;
             border: none;
+            cursor: pointer;
         }
         .btn-delete {
             background-color: #e74c3c;
@@ -36,21 +37,30 @@
         .btn-back {
             background-color: #3498db;
         }
+        .btn-edit {
+            background-color: #2ecc71;
+        }
+        .btn + .btn {
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>{{ evento.titulo }}</h1>
-        <p><strong>Data:</strong> {{ evento.data }}</p>
-        <p><strong>Hora:</strong> {{ evento.hora }}</p>
+        <p><strong>Data:</strong> {{ evento.data|date:"d/m/Y" }}</p>
+        <p><strong>Hora:</strong> {{ evento.hora|time:"H:i" }}</p>
         <p><strong>Descrição:</strong> {{ evento.descricao }}</p>
 
-        <form method="post">
+        <!-- Botão de exclusão (formulário POST) -->
+        <form method="post" style="display: inline;">
             {% csrf_token %}
             <button type="submit" class="btn btn-delete">Excluir Evento</button>
-            <a href="{% url 'calendario' %}" class="btn btn-back">Voltar</a>
-            <a href="{% url 'editar_evento' evento.id %}" class="btn btn-edit" style="background-color: #2ecc71;">Editar Evento</a>
         </form>
+
+        <!-- Botões de voltar e editar (apenas links) -->
+        <a href="{% url 'calendario' %}" class="btn btn-back">Voltar</a>
+        <a href="{% url 'editar_evento' evento.id %}" class="btn btn-edit">Editar Evento</a>
     </div>
 </body>
 </html>

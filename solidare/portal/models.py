@@ -158,7 +158,6 @@ class Aviso(models.Model):
     def __str__(self):
         return self.titulo
 
-# models.py
 class Evento(models.Model):
     titulo = models.CharField(max_length=100)
     descricao = models.TextField(blank=True)

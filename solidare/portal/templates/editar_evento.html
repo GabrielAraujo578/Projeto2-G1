@@ -89,7 +89,28 @@
         <h2>Editar Evento: {{ evento.titulo }}</h2>
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+        
+            <label for="titulo">Título</label>
+            <input type="text" id="titulo" name="titulo" value="{{ evento.titulo }}">
+        
+            <label for="descricao">Descrição</label>
+            <textarea id="descricao" name="descricao">{{ evento.descricao }}</textarea>
+        
+            <label for="data_inicio">Data de Início</label>
+            <input type="date" id="data_inicio" name="data_inicio" value="{{ evento.data_inicio|date:'Y-m-d' }}">
+        
+            <label for="data_fim">Data de Fim</label>
+            <input type="date" id="data_fim" name="data_fim" value="{{ evento.data_fim|date:'Y-m-d' }}">
+        
+            <label for="horario_inicio">Horário de Início</label>
+            <input type="time" id="horario_inicio" name="horario_inicio" value="{{ evento.horario_inicio|time:'H:i' }}">
+        
+            <label for="horario_fim">Horário de Fim</label>
+            <input type="time" id="horario_fim" name="horario_fim" value="{{ evento.horario_fim|time:'H:i' }}">
+        
+            <label for="local">Local</label>
+            <input type="text" id="local" name="local" value="{{ evento.local }}">
+        
             <button type="submit">Salvar Alterações</button>
             <a href="{% url 'detalhe_evento' evento.id %}" class="button">Cancelar</a>
         </form>
