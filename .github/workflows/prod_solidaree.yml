@@ -4,6 +4,22 @@
 
 name: Build and deploy Python app to Azure Web App - solidaree
 
+- name: Install dependencies
+        run: pip install -r solidare/requirements.txt
+
+- name: Cleaning testing files
+        run: |
+          cd solidare/
+          rm db.sqlite3
+          rm .env
+          cd ..
+
+ - name: Zip artifact for deployment
+        run: |
+          cd solidare/
+          zip release.zip ./* -r
+          cd ..
+          mv solidare/release.zip .
 on:
   push:
     branches:
@@ -30,7 +46,7 @@ jobs:
           source venv/bin/activate
       
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r solidare/requirements.txt
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
