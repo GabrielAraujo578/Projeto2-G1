@@ -1,27 +1,38 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
-  <div class="login-container">
+<div class="main-content">
+  <div class="auth-container">
     <h2>Login</h2>
 
     {% if error %}
-      <p style="color: red;">{{ error }}</p>
+      <p class="error-message">{{ error }}</p>
     {% endif %}
 
-    <form method="POST">
+    <form method="POST" class="auth-form">
       {% csrf_token %}
-      
-      <label for="id_email">Email:</label><br>
-      <input type="email" name="email" id="id_email" placeholder="Digite seu email" required><br><br>
 
-      <label for="id_password">Senha:</label><br>
-      <input type="password" name="password" id="id_password" placeholder="Digite sua senha" required><br><br>
+      <div class="form-group">
+        <label for="id_email">Email:</label>
+        <input type="email" name="email" id="id_email" placeholder="Digite seu email" required>
+      </div>
 
-      <button type="submit">Entrar</button>
+      <div class="form-group">
+        <label for="id_password">Senha:</label>
+        <input type="password" name="password" id="id_password" placeholder="Digite sua senha" required>
+      </div>
+
+      <button type="button.btn" class="btn">Entrar</button>
     </form>
 
-    <p>Não tem uma conta? <a href="{% url 'cadastro_candidato' %}">Cadastre-se</a></p>
+    <p class="auth-link">Não tem uma conta? <a href="{% url 'cadastro_candidato' %}" class="text-link">Cadastre-se</a></p>
+
+    <a href="{% url 'index' %}" class="home-icon">
+      <i class="fas fa-home"></i>
+    </a>
   </div>
+</div>
 {% endblock %}
