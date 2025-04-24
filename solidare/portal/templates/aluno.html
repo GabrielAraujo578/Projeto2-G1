@@ -2,26 +2,69 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Painel do Aluno</title>
+  <title>Painel do aluno</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
     body { margin: 0; font-family: Arial, sans-serif; }
-    .container { display: flex; height: 100vh; }
+    .container { display: flex; height: calc(100vh - 60px); }
+    
+    /* Header vermelho */
+    .header {
+      background-color: #FBEE4F;
+      color: white;
+      height: 60px;
+      display: flex;
+      padding-left: 50px;
+      padding-bottom: 10px;
+      padding: 0 20px;
+      justify-content: space-between;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    
+    .header h2 {
+      margin: 10px;
+    }
+
+    .header .nome_aluno {
+      margin-top: 10px;
+      color: black;
+    }
+    
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px;
+    }
     
     .sidebar {
-      background-color: #333;
-      width: 200px;
-      color: white;
+      background-color: #FBEE4F;
+      width: 250px;
+      color: rgb(0, 0, 0);
       padding: 20px;
+      transition: all 0.3s ease;
+      position: relative;
     }
-    .sidebar h3 { margin-top: 0; }
+    
+    .sidebar.closed {
+      margin-left: -290px;
+    }
+    
+    .sidebar h3 {
+      border-width: 10px;
+      border-color: black;
+      margin-top: 0; 
+    }
 
     .sidebar button {
       display: block;
       width: 100%;
       margin: 10px 0;
       padding: 10px;
-      background-color: #444;
-      color: white;
+      background-color: #ffffff;
+      color: rgb(0, 0, 0);
       border: none;
       border-radius: 4px;
       cursor: pointer;
@@ -30,60 +73,87 @@
     }
 
     .sidebar button:hover {
-      background-color: #555;
+      background-color: #b0b0b0;
     }
 
     .content {
       flex-grow: 1;
-      background: #eee;
+      background: #f2f2f2;
       padding: 20px;
+      transition: all 0.3s ease;
     }
+    
 
-    .topbar {
-      display: flex;
-      justify-content: flex-end;
-      padding-bottom: 10px;
-    }
-
+    
     .novidades {
       display: flex;
       gap: 20px;
+      flex-wrap: wrap;
     }
-
+    
     .card {
       background: white;
       padding: 15px;
       border-radius: 8px;
       flex: 1;
+      min-width: 250px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        position: absolute;
+        z-index: 100;
+        height: calc(100vh - 60px);
+      }
+      
+      .novidades {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="header">
+    <button class="toggle-btn" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="nome_aluno">
+      <strong>Nome do aluno</strong><br>
+      Turma à definir
+    </div>
+  </div>
+  
   <div class="container">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
       <h3>Menu</h3>
+      <button onclick="window.location.href='/calendario/'">calendario</button>
       <button onclick="window.location.href='/avisos/'">Avisos</button>
-      <button onclick="window.location.href='/calendario/'">Calendário</button>
     </div>
     <div class="content">
       <div class="topbar">
         <div>
-          <strong>Nome do Aluno</strong><br>
-          Turma XYZ
+          
         </div>
       </div>
       <h2>Novidades</h2>
       <div class="novidades">
         <div class="card">
           <p><strong>Nova atividade disponível!</strong></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
+          <p>Você foi aprovado!</p>
         </div>
         <div class="card">
           <p><strong>Mentoria marcada</strong></p>
-          <p>Próxima sessão dia 24/04 às 14h.</p>
-        </div>
+          <p>Próxima sessão dia 24/04 às 14h.</p></div>
       </div>
     </div>
   </div>
+  
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('closed');
+    }
+  </script>
 </body>
 </html>
