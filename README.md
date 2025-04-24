@@ -15,7 +15,7 @@
 
 - **Sprint atual**  
   ![Sprint do Jira](#)
-(![Image](https://github.com/user-attachments/assets/8a45005d-0fb7-42d0-9845-6b9503d5d391))
+![Image](https://github.com/user-attachments/assets/8a45005d-0fb7-42d0-9845-6b9503d5d391)
 - **Backlog**  
   ![Backlog](#)
   ![image](https://github.com/user-attachments/assets/54de73d8-da35-49f8-982f-693cb920540b)
