@@ -14,7 +14,7 @@
 ### 📋 Jira
 
 - **Sprint atual**  
-  ![Sprint do Jira](#)
+  ![Sprint do Jira](![Image](https://github.com/user-attachments/assets/8a45005d-0fb7-42d0-9845-6b9503d5d391))
 
 - **Backlog**  
   ![Backlog](#)
