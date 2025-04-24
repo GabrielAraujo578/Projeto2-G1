@@ -1,9 +1,18 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
   <h2 style="margin-bottom: 20px;">📝 Avisos Gerais</h2>
 
+  {% if not eh_professor %}
+    <a href="{% url 'pagina_aluno' %}" class="home-icon">
+      <i class="fas fa-arrow-left"></i>
+    </a>  
+  {% endif %}
   {% if eh_professor %}
+    <a href="{% url 'pagina_professor' %}" class="home-icon">
+      <i class="fas fa-arrow-left"></i>
+    </a>  
     <a href="{% url 'criar_aviso' %}" style="
       padding: 10px 15px;
       background-color: #007BFF;

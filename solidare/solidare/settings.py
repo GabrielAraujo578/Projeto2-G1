@@ -87,7 +87,7 @@ NOT_PROD = not (TARGET_ENV or '').lower().startswith('prod')
 
 if NOT_PROD:
     # SECURITY WARNING: don't run with debug turned on in production!
-    DEBUG = False
+    DEBUG = True
     # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = 'django-insecure-@&!tcg*%wu01y#^1)a386mf1v2z)+azngf5pjdo-1f^u8r&!+w'
     ALLOWED_HOSTS = []
@@ -116,7 +116,9 @@ else:
             'HOST': os.environ.get('DBHOST'),
             'USER': os.environ.get('DBUSER'),
             'PASSWORD': os.environ.get('DBPASS'),
-            'OPTIONS': {'sslmode': 'require'},
+            'OPTIONS': {'sslmode': 'require',
+                        'options': f'-c search_path=public',
+                        },
         }
     }
     

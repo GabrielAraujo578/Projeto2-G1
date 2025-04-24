@@ -3,6 +3,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <title>Calendário Estilo Real</title>
   <style>
     body {
@@ -132,8 +133,10 @@
   </style>
 </head>
 <body>
-
-  <div class="calendar">
+  <a href="{% url 'pagina_aluno' %}" class="home-icon">
+    <i class="fas fa-arrow-left"></i>
+  </a> 
+  <div class="calendar"> 
     <header>
       <button id="prev">◀</button>
       <h2 id="monthYear"></h2>
