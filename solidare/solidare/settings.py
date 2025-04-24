@@ -82,14 +82,15 @@ load_dotenv(BASE_DIR / '.env')
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 TARGET_ENV = os.getenv('TARGET_ENV')
-NOT_PROD = not TARGET_ENV.lower().startswith('prod')
+NOT_PROD = not (TARGET_ENV or '').lower().startswith('prod')
+
 
 if NOT_PROD:
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = False
     # SECURITY WARNING: keep the secret key used in production secret!
     SECRET_KEY = 'django-insecure-@&!tcg*%wu01y#^1)a386mf1v2z)+azngf5pjdo-1f^u8r&!+w'
-    ALLOWED_HOSTS = ['*']
+    ALLOWED_HOSTS = []
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -97,7 +98,7 @@ if NOT_PROD:
         }
     }
 else:
-    SECRET_KEY = os.getenv('django-insecure-@&!tcg*%wu01y#^1)a386mf1v2z)+azngf5pjdo-1f^u8r&!+w')
+    SECRET_KEY = os.getenv('SECRET_KEY')
     DEBUG = os.getenv('DEBUG', '0').lower() in ['true', 't', '1']
     ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
     CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS').split(' ')
