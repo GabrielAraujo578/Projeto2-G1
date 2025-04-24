@@ -9,7 +9,7 @@
 
 - **Jira Board**: [Acessar Jira](https://leonardojadm.atlassian.net/jira/software/projects/KAN/boards/1)
 - **Figma Design**: [Acessar Figma](https://www.figma.com/design/9ReksTr1F9ioQS0nLxh8uD/Design-Site---App?node-id=0-1&p=f&t=4Yl58wzYC7nyVaBB-0)
-- **Screencast**: [Assistir vídeo]([#](https://www.youtube.com/watch?v=fthNQrWa0UU))
+- **Screencast**: [Assistir vídeo]((https://www.youtube.com/watch?v=fthNQrWa0UU))
 
 ### 📋 Jira
 
