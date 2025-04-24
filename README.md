@@ -9,7 +9,7 @@
 
 - **Jira Board**: [Acessar Jira](https://leonardojadm.atlassian.net/jira/software/projects/KAN/boards/1)
 - **Figma Design**: [Acessar Figma](https://www.figma.com/design/9ReksTr1F9ioQS0nLxh8uD/Design-Site---App?node-id=0-1&p=f&t=4Yl58wzYC7nyVaBB-0)
-- **Screencast**: [Assistir vídeo](#)
+- **Screencast**: [Assistir vídeo]([#](https://www.youtube.com/watch?v=fthNQrWa0UU))
 
 ### 📋 Jira
 
@@ -21,6 +21,7 @@
   ![image](https://github.com/user-attachments/assets/54de73d8-da35-49f8-982f-693cb920540b)
 - **Bug Tracker**  
   ![Bugtracker](#)
+  ![image](https://github.com/user-attachments/assets/d566be7f-fc58-4e18-93a0-381e0e008c9e)
 
 </details>
 
