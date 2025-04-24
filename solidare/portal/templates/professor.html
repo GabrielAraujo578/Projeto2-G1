@@ -3,15 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <title>Painel do Professor</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
   <style>
     body { margin: 0; font-family: Arial, sans-serif; }
-    .container { display: flex; height: 100vh; }
-    .sidebar {
-      background-color: #FBEE4F;
-      width: 200px;
+    .container { display: flex; height: calc(100vh - 60px); }
+    
+    /* Header vermelho */
+    .header {
+      background-color: #CE2C25;
       color: white;
-      padding: 20px;
+      height: 60px;
+      display: flex;
+      padding-left: 50px;
+      padding-bottom: 10px;
+      padding: 0 20px;
+      justify-content: space-between;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
+    
+    .header h2 {
+      margin: 10px;
+    }
+
+    .header .nome_professor {
+      margin-top: 10px;
+    }
+    
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 5px;
+    }
+    
+    /* Sidebar retrátil */
+    .sidebar {
+      background-color: #CE2C25;
+      width: 250px;
+      color: rgb(0, 0, 0);
+      padding: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+    
+    .sidebar.closed {
+      margin-left: -290px;
+    }
+    
     .sidebar h3 {
       border-width: 10px;
       border-color: black;
@@ -40,27 +80,53 @@
       flex-grow: 1;
       background: #f2f2f2;
       padding: 20px;
+      transition: all 0.3s ease;
     }
-    .topbar {
-      display: flex;
-      justify-content: flex-end;
-      padding-bottom: 10px;
-    }
+    
+
+    
     .novidades {
       display: flex;
       gap: 20px;
+      flex-wrap: wrap;
     }
+    
     .card {
       background: white;
       padding: 15px;
       border-radius: 8px;
       flex: 1;
+      min-width: 250px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar {
+        position: absolute;
+        z-index: 100;
+        height: calc(100vh - 60px);
+      }
+      
+      .novidades {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Header vermelho -->
+  <div class="header">
+    <button class="toggle-btn" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </button>
+    <div class="nome_professor">
+      <strong>Nome do Professor</strong><br>
+      Supervisor de Turma
+    </div>
+  </div>
+  
   <div class="container">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
       <h3>Menu</h3>
       <button onclick="window.location.href='/candidatos/'">Candidatos</button>
       <button onclick="window.location.href='/avisos/'">Avisos</button>
@@ -68,8 +134,7 @@
     <div class="content">
       <div class="topbar">
         <div>
-          <strong>Nome do Professor</strong><br>
-          Supervisor de Turma
+          
         </div>
       </div>
       <h2>Novidades</h2>
@@ -85,5 +150,12 @@
       </div>
     </div>
   </div>
+  
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('closed');
+    }
+  </script>
 </body>
 </html>
