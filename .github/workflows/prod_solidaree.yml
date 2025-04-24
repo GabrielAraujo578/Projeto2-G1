@@ -42,7 +42,7 @@ jobs:
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
-       - name: Zip artifact for deployment
+      - name: Zip artifact for deployment
         run: |
           cd solidare/
           zip release.zip ./* -r
