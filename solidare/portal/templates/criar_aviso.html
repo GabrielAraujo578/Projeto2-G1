@@ -1,18 +1,39 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Criar Aviso</h2>
-  <form method="post">
-    {% csrf_token %}
-    
-    <label for="titulo">Título:</label><br>
-    <input type="text" id="titulo" name="titulo" required><br><br>
+  <button onclick="history.back()" 
+          style="position: absolute; top: 20px; left: 20px; 
+                 padding: 10px 20px; font-size: 16px; 
+                 background-color: #f0f0f0; border: 1px solid #ccc; 
+                 border-radius: 5px; cursor: pointer;">
+      ⬅
+  </button>
 
-    <label for="mensagem">Mensagem:</label><br>
-    <textarea id="mensagem" name="mensagem" rows="5" required></textarea><br><br>
+  <div style="max-width: 600px; margin: 80px auto; padding: 30px; 
+              border: 1px solid #ddd; border-radius: 10px; 
+              background-color: #fafafa; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+    <h2 style="text-align: center; margin-bottom: 20px;">Criar Aviso</h2>
 
-    <button type="submit">Publicar</button>
-  </form>
-  <br>
-  <a href="{% url 'lista_avisos' %}">Voltar para avisos</a>
+    <form method="post">
+      {% csrf_token %}
+      
+      <label for="titulo" style="font-weight: bold;">Título:</label><br>
+      <input type="text" id="titulo" name="titulo" required
+             style="width: 100%; padding: 10px; margin-top: 5px; 
+                    margin-bottom: 20px; border: 1px solid #ccc; 
+                    border-radius: 5px;"><br>
+
+      <label for="mensagem" style="font-weight: bold;">Mensagem:</label><br>
+      <textarea id="mensagem" name="mensagem" rows="5" required
+                style="width: 100%; padding: 10px; margin-top: 5px; 
+                       border: 1px solid #ccc; border-radius: 5px;"></textarea><br><br>
+
+      <button type="submit" 
+              style="padding: 10px 20px; background-color: #007BFF; 
+                     color: white; border: none; border-radius: 5px; 
+                     cursor: pointer; font-size: 16px;">
+        Publicar
+      </button>
+    </form>
+  </div>
 {% endblock %}

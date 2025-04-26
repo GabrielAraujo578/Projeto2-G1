@@ -129,9 +129,29 @@
     .evento.lunch {
       background-color: #e74c3c;
     }
+    .back-arrow {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      text-decoration: none;
+      font-size: 20px;
+      color: #333;
+      background-color: #fff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      transition: background-color 0.2s;
+      z-index: 1000;
+    }
+
+    .back-arrow:hover {
+      background-color: #ddd;
+    }
+
   </style>
 </head>
 <body>
+  <a href="javascript:history.back()" class="back-arrow">←</a>
 
   <div class="calendar">
     <header>

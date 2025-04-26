@@ -4,9 +4,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Sucesso!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-yHcncfKz9S0ZKHHqZLzGl+Q7yCLJ4BfghUw3EdczXeENGe7DNz3iwZ2tRLzMzmpGzz3TyD6QYXxMl3l9Ya6L0w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #e0f7fa;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            position: relative;
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+        }
+
+        .home-icon {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 26px;
+            color: #333;
+            text-decoration: none;
+        }
+
+        .home-icon:hover {
+            color: #00796b;
+        }
+
+        h1 {
+            color: #00796b;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #555;
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Cadastro realizado com sucesso!</h1>
-    <p>Obrigado por se inscrever.</p>
+
+    <div class="container">
+        <a href="{% url 'index' %}" class="home-icon">
+            <i class="fas fa-home"></i>
+        </a>
+        <h1>Cadastro realizado com sucesso!</h1>
+        <p>Obrigado por se inscrever.</p>
+    </div>
+
 </body>
 </html>

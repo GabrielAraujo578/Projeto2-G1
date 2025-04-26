@@ -247,9 +247,6 @@ def alterar_status(request, candidato_id):
 
     return redirect('lista_candidatos')
 
-from django.shortcuts import render, redirect
-from .models import Candidato
-
 def verificar_aprovacao(request, candidato_id):
     candidato = Candidato.objects.get(id=candidato_id)
     
