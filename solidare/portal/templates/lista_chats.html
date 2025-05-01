@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .chats-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+    }
+    
+    .alunos-lista {
+        margin-top: 20px;
+    }
+    
+    .aluno-item {
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .aluno-item:hover {
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .aluno-link {
+        display: flex;
+        padding: 15px;
+        text-decoration: none;
+        color: inherit;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .aluno-info h3 {
+        margin: 0;
+        color: #333;
+    }
+    
+    .ultima-mensagem {
+        color: #666;
+        margin: 5px 0;
+        font-size: 0.9em;
+    }
+    
+    .mensagem-hora {
+        font-size: 0.8em;
+        color: #888;
+    }
+    
+    .badge {
+        background: #007bff;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.8em;
+    }
+    
+    .sem-mensagens {
+        text-align: center;
+        color: #666;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+    .page-title {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 24px;
+    }
+</style>
+
+<button onclick="history.back()" class="back-button">⬅</button>
+
+<div class="chats-container">
+    <h2 class="page-title">Conversas com Alunos</h2>
+    
+    <div class="alunos-lista">
+        {% for aluno in alunos %}
+            <div class="aluno-item">
+                <a href="{% url 'chat_professor' aluno.id %}" class="aluno-link">
+                    <div class="aluno-info">
+                        <h3>{{ aluno.candidato.nome_completo }}</h3>
+                        {% with ultima_msg=aluno.mensagens_enviadas.last %}
+                            {% if ultima_msg %}
+                                <p class="ultima-mensagem">
+                                    {{ ultima_msg.conteudo|truncatechars:50 }}
+                                </p>
+                                <span class="mensagem-hora">{{ ultima_msg.data_envio|date:'d/m H:i' }}</span>
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    {% with nao_lidas=aluno.mensagens_enviadas.filter.count %}
+                        {% if nao_lidas > 0 %}
+                            <span class="badge">{{ nao_lidas }}</span>
+                        {% endif %}
+                    {% endwith %}
+                </a>
+            </div>
+        {% empty %}
+            <p class="sem-mensagens">Nenhuma conversa iniciada.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

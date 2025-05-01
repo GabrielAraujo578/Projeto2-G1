@@ -19,5 +19,8 @@ urlpatterns = [
     path('calendario/', views.calendario, name='calendario'),
     path('adicionar-evento/', views.adicionar_evento, name='adicionar_evento'),
     path('evento/<int:id>/', views.detalhe_evento, name='detalhe_evento'),
-    path('evento/<int:id>/editar/', views.editar_evento, name='editar_evento'), 
+    path('evento/<int:id>/editar/', views.editar_evento, name='editar_evento'),
+    path('chat/aluno/', views.chat_aluno, name='chat_aluno'),
+    path('chat/professor/', views.lista_chats, name='lista_chats'),
+    path('chat/professor/<int:aluno_id>/', views.chat_professor, name='chat_professor'), 
 ]

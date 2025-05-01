@@ -14,6 +14,8 @@ from django.core.mail import send_mail
 from django.utils.dateparse import parse_date
 from django.utils.safestring import mark_safe
 from datetime import date
+from django.db.models import Q
+from .models import MensagemChat
 
 def login_view(request):
     if request.method == 'POST':
@@ -400,4 +402,84 @@ def editar_evento(request, id):
         return redirect('detalhe_evento', id=evento.id)
 
     return render(request, 'editar_evento.html', {'evento': evento})
+
+
+@login_required
+def chat_aluno(request):
+    # Obtém o professor (assumindo que só existe um)
+    professor = Professor.objects.first()
+    if not professor:
+        messages.error(request, "Nenhum professor encontrado no sistema.")
+        return redirect('pagina_aluno')
+    
+    # Obtém ou cria o candidato associado ao usuário atual
+    candidato = get_object_or_404(Candidato, user=request.user)
+    
+    if not candidato.aprovado:
+        messages.error(request, "Apenas alunos aprovados podem acessar o chat.")
+        return redirect('pagina_aluno')
+    
+    # Obtém as mensagens entre o aluno e o professor
+    mensagens = MensagemChat.objects.filter(
+        (Q(remetente=request.user) & Q(destinatario=professor.user)) |
+        (Q(remetente=professor.user) & Q(destinatario=request.user))
+    ).order_by('data_envio')
+    
+    if request.method == 'POST':
+        mensagem = request.POST.get('mensagem')
+        if mensagem:
+            MensagemChat.objects.create(
+                remetente=request.user,
+                destinatario=professor.user,
+                conteudo=mensagem
+            )
+            return redirect('chat_aluno')
+    
+    return render(request, 'chat_aluno.html', {
+        'mensagens': mensagens,
+        'professor': professor
+    })
+
+@login_required
+@user_passes_test(is_professor)
+def lista_chats(request):
+    # Obtém todos os candidatos aprovados que enviaram mensagens
+    alunos_com_mensagens = User.objects.filter(
+        Q(mensagens_enviadas__destinatario=request.user) |
+        Q(mensagens_recebidas__remetente=request.user),
+        candidato__aprovado=True
+    ).distinct()
+    
+    return render(request, 'lista_chats.html', {
+        'alunos': alunos_com_mensagens
+    })
+
+@login_required
+@user_passes_test(is_professor)
+def chat_professor(request, aluno_id):
+    aluno = get_object_or_404(User, id=aluno_id)
+    candidato = get_object_or_404(Candidato, user=aluno, aprovado=True)
+    
+    mensagens = MensagemChat.objects.filter(
+        (Q(remetente=request.user) & Q(destinatario=aluno)) |
+        (Q(remetente=aluno) & Q(destinatario=request.user))
+    ).order_by('data_envio')
+    
+    # Marca mensagens como lidas
+    mensagens.filter(destinatario=request.user, lida=False).update(lida=True)
+    
+    if request.method == 'POST':
+        mensagem = request.POST.get('mensagem')
+        if mensagem:
+            MensagemChat.objects.create(
+                remetente=request.user,
+                destinatario=aluno,
+                conteudo=mensagem
+            )
+            return redirect('chat_professor', aluno_id=aluno_id)
+    
+    return render(request, 'chat_professor.html', {
+        'mensagens': mensagens,
+        'aluno': candidato
+    })
 

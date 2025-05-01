@@ -174,3 +174,17 @@ class EventoCalendario(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.data}"
+
+
+class MensagemChat(models.Model):
+    remetente = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensagens_enviadas')
+    destinatario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensagens_recebidas')
+    conteudo = models.TextField()
+    data_envio = models.DateTimeField(auto_now_add=True)
+    lida = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['data_envio']
+
+    def __str__(self):
+        return f'Mensagem de {self.remetente} para {self.destinatario}'

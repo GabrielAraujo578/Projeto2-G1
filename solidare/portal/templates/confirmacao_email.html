@@ -2,6 +2,60 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Mensagem Enviada!</h1>
-    <p>Obrigado por entrar em contato. Sua mensagem foi enviada com sucesso. Entraremos em contato em breve.</p>
+<style>
+    .confirmation-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 30px;
+        text-align: center;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .confirmation-icon {
+        color: #28a745;
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+
+    .confirmation-title {
+        color: #333;
+        font-size: 24px;
+        margin-bottom: 15px;
+    }
+
+    .confirmation-message {
+        color: #666;
+        font-size: 16px;
+        line-height: 1.5;
+        margin-bottom: 25px;
+    }
+
+    .back-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #2980b9;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+        background-color: #2471a3;
+    }
+</style>
+
+<div class="confirmation-container">
+    <div class="confirmation-icon">
+        <i class="fas fa-check-circle"></i>
+    </div>
+    <h1 class="confirmation-title">Mensagem Enviada!</h1>
+    <p class="confirmation-message">
+        Obrigado por entrar em contato. Sua mensagem foi enviada com sucesso.<br>
+        Entraremos em contato em breve.
+    </p>
+    <a href="{% url 'index' %}" class="back-button">Voltar para Página Inicial</a>
+</div>
 {% endblock %}
