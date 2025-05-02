@@ -1,54 +1,93 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <a href="javascript:history.back()" style="
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    text-decoration: none;
-    font-size: 20px;
-    color: #333;
-    background-color: #fff;
-    padding: 8px 12px;
-    border-radius: 6px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    transition: background-color 0.2s;
-    z-index: 1000;
-  ">←</a>
+<style>
+    .container-avisos {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+    }
 
-  <h2 style="margin-bottom: 20px;">📝 Avisos Gerais</h2>
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
 
-  {% if eh_professor %}
-    <a href="{% url 'criar_aviso' %}" style="
-      padding: 10px 15px;
-      background-color: #007BFF;
-      color: white;
-      border-radius: 5px;
-      text-decoration: none;
-      display: inline-block;
-      margin-bottom: 20px;
-      font-weight: bold;
-    ">
-      ➕ Criar Novo Aviso
-    </a>
-  {% endif %}
+    .header h2 {
+        font-size: 28px;
+        color: #333;
+    }
 
-  {% for aviso in avisos %}
-    <div style="
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    ">
-      <h3 style="margin-top: 0;">{{ aviso.titulo }}</h3>
-      <small style="color: #555;">
-        Enviado por <strong>{{ aviso.autor.username }}</strong> em {{ aviso.data_criacao|date:"d/m/Y H:i" }}
-      </small>
-      <p style="margin-top: 10px;">{{ aviso.mensagem }}</p>
+    .btn-criar {
+        background-color: #CE2C25;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-criar:hover {
+        background-color: #a82320;
+    }
+
+    .aviso-card {
+        background-color: #fff;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .aviso-card h4 {
+        margin-bottom: 10px;
+        color: #CE2C25;
+        font-size: 20px;
+    }
+
+    .aviso-card p {
+        margin: 0;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .aviso-data {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 10px;
+    }
+
+    .sem-avisos {
+        text-align: center;
+        color: #555;
+        font-style: italic;
+        margin-top: 50px;
+    }
+</style>
+
+<div class="container-avisos">
+    <div class="header">
+        <h2>Lista de Avisos</h2>
+
+        {% if request.user.is_authenticated and request.user.professor %}
+            <a href="{% url 'criar_aviso' %}" class="btn-criar">Criar Aviso</a>
+        {% endif %}
     </div>
-  {% empty %}
-    <p style="color: #777;">Nenhum aviso ainda.</p>
-  {% endfor %}
-{% endblock %}
 
+    {% if avisos %}
+        {% for aviso in avisos %}
+            <div class="aviso-card">
+                <div class="aviso-data">{{ aviso.data_criacao|date:"d/m/Y H:i" }}</div>
+                <h4>{{ aviso.titulo }}</h4>
+                <p>{{ aviso.mensagem }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="sem-avisos">Nenhum aviso disponível no momento.</p>
+    {% endif %}
+</div>
+{% endblock %}

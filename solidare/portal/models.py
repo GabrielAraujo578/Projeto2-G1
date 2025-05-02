@@ -164,10 +164,10 @@ class Professor(models.Model):
         return f'Prof. {self.nome}'
 
 class Aviso(models.Model):
-    titulo = models.CharField(max_length=100)
+    titulo = models.CharField(max_length=200)
     mensagem = models.TextField()
     data_criacao = models.DateTimeField(auto_now_add=True)
-    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    criado_por = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.titulo

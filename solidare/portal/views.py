@@ -393,26 +393,28 @@ def conteudo_turma(request, turma_id):
     })
 
 @login_required
-@user_passes_test(is_professor)
-def criar_aviso(request):
-    if request.method == 'POST':
-        titulo = request.POST.get('titulo')
-        mensagem = request.POST.get('mensagem')
-
-        if titulo and mensagem:
-            Aviso.objects.create(
-                titulo=titulo,
-                mensagem=mensagem,
-                autor=request.user  
-            )
-            return redirect('lista_avisos')
-
-    return render(request, 'criar_aviso.html')
+def lista_avisos(request):
+    avisos = Aviso.objects.order_by('-data_criacao')
+    return render(request, 'lista_avisos.html', {'avisos': avisos})
 
 @login_required
-def lista_avisos(request):
-    avisos = Aviso.objects.all().order_by('-data_criacao')
-    return render(request, 'avisos/lista_avisos.html', {'avisos': avisos})
+def criar_aviso(request):
+    if not hasattr(request.user, 'professor') or not request.user.professor:
+        return redirect('lista_avisos')  # Redireciona se não for professor
+
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        mensagem = request.POST.get('conteudo')  # HTML usa 'conteudo'
+
+        if titulo and mensagem:
+            aviso = Aviso(titulo=titulo, mensagem=mensagem, criado_por=request.user)
+            aviso.save()
+            return redirect('lista_avisos')
+        else:
+            error = "Preencha todos os campos."
+            return render(request, 'criar_aviso.html', {'error': error})
+
+    return render(request, 'criar_aviso.html')
 
 @login_required
 def calendario(request):
