@@ -578,3 +578,7 @@ def chat_professor(request, aluno_id):
         'aluno': candidato
     })
 
+def horario(request):
+    return render(request, 'horario.html')
+
+
