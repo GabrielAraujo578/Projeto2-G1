@@ -1,6 +1,6 @@
 from datetime import datetime
 from .models import Professor, Candidato
-from .models import Aluno, Aviso, EventoCalendario
+from .models import Aluno, Aviso, EventoCalendario, MensagemChat
 import calendar
 import json
 from decimal import Decimal, InvalidOperation
@@ -291,17 +291,105 @@ def sobre_view(request):
 def confirmacao_email_view(request):
     return render(request, 'confirmacao_email.html')
 
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import Turma, Aluno, Professor, ConteudoTurma
+import random
+import string
+
 def is_professor(user):
-    return Professor.objects.filter(user=user).exists()    
+    return Professor.objects.filter(user=user).exists()
 
 @login_required
-def lista_avisos(request):
-    avisos = Aviso.objects.all().order_by('-data_criacao')
-    eh_professor = Professor.objects.filter(user=request.user).exists()
+def turmas_aluno(request):
+    try:
+        candidato = request.user.candidato
+        if not candidato.aprovado:
+            messages.error(request, 'Acesso não autorizado. Apenas candidatos aprovados podem acessar as turmas.')
+            return redirect('home')
+            
+        aluno, created = Aluno.objects.get_or_create(candidato=candidato)
+        turmas = Turma.objects.filter(aluno=aluno)
+        
+        if request.method == 'POST':
+            codigo = request.POST.get('codigo')
+            try:
+                turma = Turma.objects.get(codigo=codigo)
+                aluno.turma = turma
+                aluno.save()
+                messages.success(request, 'Matriculado com sucesso!')
+                return redirect('turmas_aluno')
+            except Turma.DoesNotExist:
+                messages.error(request, 'Código de turma inválido')
+                
+        return render(request, 'turmas_aluno.html', {'turmas': turmas})
+    except:
+        messages.error(request, 'Acesso não autorizado')
+        return redirect('home')
 
-    return render(request, 'lista_avisos.html', {
-        'avisos': avisos,
-        'eh_professor': eh_professor,
+@login_required
+@user_passes_test(is_professor)
+def turmas_professor(request):
+    professor = get_object_or_404(Professor, user=request.user)
+    turmas = Turma.objects.filter(professor=professor)
+    
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        horario = request.POST.get('horario')
+        descricao = request.POST.get('descricao')
+        
+        # Gerar código único
+        codigo = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+        while Turma.objects.filter(codigo=codigo).exists():
+            codigo = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+            
+        Turma.objects.create(
+            nome=nome,
+            horario=horario,
+            descricao=descricao,
+            codigo=codigo,
+            professor=professor
+        )
+        messages.success(request, 'Turma criada com sucesso!')
+        return redirect('turmas_professor')
+        
+    return render(request, 'turmas_professor.html', {'turmas': turmas})
+
+@login_required
+def conteudo_turma(request, turma_id):
+    turma = get_object_or_404(Turma, id=turma_id)
+    is_professor = Professor.objects.filter(user=request.user).exists()
+    is_aluno = False
+    
+    if not is_professor:
+        try:
+            aluno = Aluno.objects.get(candidato__user=request.user, turma=turma)
+            is_aluno = True
+        except Aluno.DoesNotExist:
+            messages.error(request, 'Você não está matriculado nesta turma')
+            return redirect('turmas_aluno')
+    
+    if request.method == 'POST' and is_professor:
+        titulo = request.POST.get('titulo')
+        descricao = request.POST.get('descricao')
+        arquivo = request.FILES.get('arquivo')
+        
+        ConteudoTurma.objects.create(
+            turma=turma,
+            titulo=titulo,
+            descricao=descricao,
+            arquivo=arquivo
+        )
+        messages.success(request, 'Conteúdo adicionado com sucesso!')
+        return redirect('conteudo_turma', turma_id=turma.id)
+    
+    conteudos = turma.conteudos.all().order_by('-data_criacao')
+    return render(request, 'conteudo_turma.html', {
+        'turma': turma,
+        'conteudos': conteudos,
+        'is_professor': is_professor,
+        'is_aluno': is_aluno
     })
 
 @login_required
@@ -320,6 +408,11 @@ def criar_aviso(request):
             return redirect('lista_avisos')
 
     return render(request, 'criar_aviso.html')
+
+@login_required
+def lista_avisos(request):
+    avisos = Aviso.objects.all().order_by('-data_criacao')
+    return render(request, 'avisos/lista_avisos.html', {'avisos': avisos})
 
 @login_required
 def calendario(request):
@@ -373,6 +466,28 @@ def adicionar_evento(request):
 
 
 @login_required
+def editar_evento(request, id):
+    evento = get_object_or_404(EventoCalendario, id=id)
+    
+    if request.method == 'POST':
+        titulo = request.POST.get('titulo')
+        descricao = request.POST.get('descricao')
+        data = request.POST.get('data')
+        hora = request.POST.get('hora')
+
+        if titulo and data:
+            evento.titulo = titulo
+            evento.descricao = descricao
+            evento.data = data
+            if hora:
+                evento.hora = hora
+            evento.save()
+            messages.success(request, 'Evento atualizado com sucesso!')
+            return redirect('calendario')
+    
+    return render(request, 'editar_evento.html', {'evento': evento})
+
+@login_required
 def detalhe_evento(request, id):
     evento = get_object_or_404(EventoCalendario, id=id)
 
@@ -381,28 +496,6 @@ def detalhe_evento(request, id):
         return redirect('calendario')
 
     return render(request, 'detalhe_evento.html', {'evento': evento})
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .models import EventoCalendario
-
-@login_required
-def editar_evento(request, id):
-    evento = get_object_or_404(EventoCalendario, id=id)
-
-    if request.method == 'POST':
-        evento.titulo = request.POST.get('titulo', '')
-        evento.descricao = request.POST.get('descricao', '')
-        evento.data_inicio = request.POST.get('data_inicio') or None
-        evento.data_fim = request.POST.get('data_fim') or None
-        evento.horario_inicio = request.POST.get('horario_inicio') or None
-        evento.horario_fim = request.POST.get('horario_fim') or None
-        evento.local = request.POST.get('local', '')
-        evento.save()
-        return redirect('detalhe_evento', id=evento.id)
-
-    return render(request, 'editar_evento.html', {'evento': evento})
-
 
 @login_required
 def chat_aluno(request):

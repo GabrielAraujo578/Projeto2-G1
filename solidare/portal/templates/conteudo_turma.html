@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>{{ turma.nome }}</h2>
+        {% if is_professor %}
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#novoConteudoModal">
+            <i class="fas fa-plus"></i> Adicionar Conteúdo
+        </button>
+        {% endif %}
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Informações da Turma</h5>
+            <p class="card-text">
+                <strong>Professor:</strong> {{ turma.professor.nome }}<br>
+                <strong>Horário:</strong> {{ turma.horario }}<br>
+                <strong>Código da Turma:</strong> {{ turma.codigo }}
+            </p>
+            <p class="card-text">{{ turma.descricao }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for conteudo in conteudos %}
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ conteudo.titulo }}</h5>
+                    <p class="card-text">{{ conteudo.descricao }}</p>
+                    {% if conteudo.arquivo %}
+                    <a href="{{ conteudo.arquivo.url }}" class="btn btn-outline-primary" target="_blank">
+                        <i class="fas fa-download"></i> Download do Material
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-muted">
+                    Adicionado em {{ conteudo.data_criacao|date:"d/m/Y H:i" }}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Nenhum conteúdo disponível nesta turma ainda.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% if is_professor %}
+<!-- Modal de Novo Conteúdo -->
+<div class="modal fade" id="novoConteudoModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adicionar Novo Conteúdo</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Título</label>
+                        <input type="text" name="titulo" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea name="descricao" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Arquivo (opcional)</label>
+                        <input type="file" name="arquivo" class="form-control-file">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar Conteúdo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

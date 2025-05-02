@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Minhas Turmas</h2>
+    
+    <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#novaTurmaModal">
+        <i class="fas fa-plus"></i> Criar Nova Turma
+    </button>
+    
+    <div class="row">
+        {% for turma in turmas %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ turma.nome }}</h5>
+                    <p class="card-text">
+                        <strong>Código:</strong> {{ turma.codigo }}<br>
+                        <strong>Horário:</strong> {{ turma.horario }}
+                    </p>
+                    <p class="card-text">{{ turma.descricao|truncatewords:30 }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'conteudo_turma' turma.id %}" class="btn btn-primary">Gerenciar Turma</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Você ainda não criou nenhuma turma.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal de Nova Turma -->
+<div class="modal fade" id="novaTurmaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Criar Nova Turma</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Nome da Turma</label>
+                        <input type="text" name="nome" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Horário</label>
+                        <input type="text" name="horario" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Descrição</label>
+                        <textarea name="descricao" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Criar Turma</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

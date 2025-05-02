@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Minhas Turmas</h2>
+    
+    <button type="button" class="btn btn-primary mb-4" data-toggle="modal" data-target="#matriculaModal">
+        <i class="fas fa-plus"></i> Matricular em Nova Turma
+    </button>
+    
+    <div class="row">
+        {% for turma in turmas %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ turma.nome }}</h5>
+                    <p class="card-text">
+                        <strong>Professor:</strong> {{ turma.professor.nome }}<br>
+                        <strong>Horário:</strong> {{ turma.horario }}
+                    </p>
+                    <p class="card-text">{{ turma.descricao|truncatewords:30 }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'conteudo_turma' turma.id %}" class="btn btn-primary">Acessar Turma</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Você ainda não está matriculado em nenhuma turma.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal de Matrícula -->
+<div class="modal fade" id="matriculaModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Matricular em Nova Turma</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Código da Turma</label>
+                        <input type="text" name="codigo" class="form-control" required>
+                        <small class="form-text text-muted">Digite o código fornecido pelo professor</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Matricular</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Candidato(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -135,9 +136,22 @@ class Turma(models.Model):
     nome = models.CharField(max_length=100)
     horario = models.CharField(max_length=100)
     professor = models.ForeignKey('Professor', on_delete=models.SET_NULL, null=True)
+    codigo = models.CharField(max_length=20, unique=True, default='DEFAULT001')
+    descricao = models.TextField(blank=True)
+    data_criacao = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.nome
+
+class ConteudoTurma(models.Model):
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='conteudos')
+    titulo = models.CharField(max_length=200)
+    descricao = models.TextField()
+    arquivo = models.FileField(upload_to='conteudos/', null=True, blank=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.turma.nome} - {self.titulo}"
 
 class Professor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
