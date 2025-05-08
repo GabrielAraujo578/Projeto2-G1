@@ -139,6 +139,7 @@ class Turma(models.Model):
     codigo = models.CharField(max_length=20, unique=True, default='DEFAULT001')
     descricao = models.TextField(blank=True)
     data_criacao = models.DateTimeField(default=timezone.now)
+    alunos = models.ManyToManyField(User, related_name='turmas')
 
     def __str__(self):
         return self.nome

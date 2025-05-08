@@ -1,0 +1,13 @@
+<h1>Meus Horários</h1>
+
+{% if turmas %}
+    <ul>
+        {% for turma in turmas %}
+            <li><strong>{{ turma.nome }}</strong>: {{ turma.horario }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Você não está em nenhuma turma.</p>
+{% endif %}
+
+

@@ -578,5 +578,16 @@ def chat_professor(request, aluno_id):
         'aluno': candidato
     })
 
+def horario_aluno(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    turmas = Turma.objects.filter(alunos=request.user)
+
+    return render(request, 'horario_aluno.html', {'turmas': turmas})
+
+
+def home(request):
+    return render(request, 'home.html')
 
 
