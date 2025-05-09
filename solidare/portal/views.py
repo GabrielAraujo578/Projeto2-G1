@@ -1,6 +1,6 @@
 from datetime import datetime
 from .models import Professor, Candidato
-from .models import Aluno, Aviso, EventoCalendario, MensagemChat
+from .models import Aluno, Aviso, EventoCalendario, MensagemChat, HorarioAula
 import calendar
 import json
 from decimal import Decimal, InvalidOperation
@@ -578,5 +578,53 @@ def chat_professor(request, aluno_id):
         'aluno': candidato
     })
 
+@login_required
+def horario(request):
+    if not hasattr(request.user, 'candidato') or not request.user.candidato.aprovado:
+        messages.error(request, 'Apenas alunos aprovados podem acessar o horário.')
+        return redirect('home')
 
+    horas = [f"{h:02d}:00" for h in range(7, 23)]
 
+    aulas = HorarioAula.objects.filter(aluno=request.user)
+
+    # Cria dicionário de aulas por (dia, hora) para facilitar no template
+    grade = {}
+    for aula in aulas:
+        hora_str = aula.horario.strftime("%H:%M")
+        grade[(str(aula.dia_semana), hora_str)] = aula
+
+    context = {
+        'horas': horas,
+        'grade': grade,
+    }
+    return render(request, 'horario.html', context)
+
+@login_required
+def adicionar_aula(request):
+    if request.method == 'POST':
+        try:
+            dia_semana = int(request.POST.get('dia_semana'))
+            horario_str = request.POST.get('horario')
+            disciplina = request.POST.get('disciplina')
+            professor = request.POST.get('professor')
+
+            # Converte "07:00" para objeto time
+            horario = datetime.strptime(horario_str, "%H:%M").time()
+
+            HorarioAula.objects.create(
+                aluno=request.user,
+                dia_semana=dia_semana,
+                horario=horario,
+                disciplina=disciplina,
+                professor=professor
+            )
+
+            messages.success(request, 'Aula adicionada com sucesso!')
+            return redirect('horario')
+
+        except Exception as e:
+            messages.error(request, f'Erro ao adicionar aula: {str(e)}')
+            return redirect('horario')
+
+    return redirect('horario')

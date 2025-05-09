@@ -27,5 +27,5 @@ urlpatterns = [
     path('turmas/professor/', views.turmas_professor, name='turmas_professor'),
     path('turma/<int:turma_id>/', views.conteudo_turma, name='conteudo_turma'),
     path('horario/', views.horario, name='horario'),
-
+    path('horario/adicionar/', views.adicionar_aula, name='adicionar_aula'),
 ]

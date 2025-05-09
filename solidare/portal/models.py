@@ -202,3 +202,33 @@ class MensagemChat(models.Model):
 
     def __str__(self):
         return f'Mensagem de {self.remetente} para {self.destinatario}'
+
+
+class HorarioAula(models.Model):
+    DIAS_SEMANA = [
+        (0, 'Domingo'),
+        (1, 'Segunda-feira'),
+        (2, 'Terça-feira'),
+        (3, 'Quarta-feira'),
+        (4, 'Quinta-feira'),
+        (5, 'Sexta-feira'),
+        (6, 'Sábado'),
+    ]
+
+    aluno = models.ForeignKey(User, on_delete=models.CASCADE, related_name='horarios_aula')
+    dia_semana = models.IntegerField(choices=DIAS_SEMANA)
+    horario = models.TimeField()
+    disciplina = models.CharField(max_length=100)
+    professor = models.CharField(max_length=100)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Horário de Aula'
+        verbose_name_plural = 'Horários de Aulas'
+        ordering = ['dia_semana', 'horario']
+        # Garante que não haja conflito de horários para o mesmo aluno
+        unique_together = ['aluno', 'dia_semana', 'horario']
+
+    def __str__(self):
+        return f"{self.get_dia_semana_display()} - {self.horario.strftime('%H:%M')} - {self.disciplina}"
