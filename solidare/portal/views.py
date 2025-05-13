@@ -1,6 +1,6 @@
 from datetime import datetime
 from .models import Professor, Candidato
-from .models import Aluno, Aviso, EventoCalendario, MensagemChat, HorarioAula
+from .models import Aluno, Aviso, EventoCalendario, MensagemChat, HorarioAula, HorarioTurma, DiaSemana
 import calendar
 import json
 from decimal import Decimal, InvalidOperation
@@ -310,22 +310,22 @@ def turmas_aluno(request):
             return redirect('home')
             
         aluno, created = Aluno.objects.get_or_create(candidato=candidato)
-        turmas = Turma.objects.filter(aluno=aluno)
+        turmas = Turma.objects.filter(alunos=aluno)
         
         if request.method == 'POST':
             codigo = request.POST.get('codigo')
             try:
                 turma = Turma.objects.get(codigo=codigo)
-                aluno.turma = turma
-                aluno.save()
+                # Adiciona o aluno à turma usando o relacionamento ManyToMany
+                turma.alunos.add(aluno)
                 messages.success(request, 'Matriculado com sucesso!')
                 return redirect('turmas_aluno')
             except Turma.DoesNotExist:
                 messages.error(request, 'Código de turma inválido')
                 
         return render(request, 'turmas_aluno.html', {'turmas': turmas})
-    except:
-        messages.error(request, 'Acesso não autorizado')
+    except Exception as e:
+        messages.error(request, f'Ocorreu um erro: {str(e)}')
         return redirect('home')
 
 @login_required
@@ -336,7 +336,6 @@ def turmas_professor(request):
     
     if request.method == 'POST':
         nome = request.POST.get('nome')
-        horario = request.POST.get('horario')
         descricao = request.POST.get('descricao')
         
         # Gerar código único
@@ -344,13 +343,33 @@ def turmas_professor(request):
         while Turma.objects.filter(codigo=codigo).exists():
             codigo = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
             
-        Turma.objects.create(
+        turma = Turma.objects.create(
             nome=nome,
-            horario=horario,
             descricao=descricao,
             codigo=codigo,
             professor=professor
         )
+
+        # Processar horários
+        dias_semana = request.POST.getlist('dia_semana[]')
+        horas_inicio = request.POST.getlist('hora_inicio[]')
+        horas_fim = request.POST.getlist('hora_fim[]')
+
+        # Para cada conjunto de horário
+        for inicio, fim in zip(horas_inicio, horas_fim):
+            horario = HorarioTurma.objects.create(
+                turma=turma,
+                hora_inicio=inicio,
+                hora_fim=fim
+            )
+            
+            # Criar os dias da semana para este horário
+            for dia in dias_semana:
+                DiaSemana.objects.create(
+                    horario_turma=horario,
+                    dia=int(dia)
+                )
+
         messages.success(request, 'Turma criada com sucesso!')
         return redirect('turmas_professor')
         
