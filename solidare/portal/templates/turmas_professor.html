@@ -237,19 +237,19 @@
                 <div class="horarios-container">
                     <h3>Horários da Turma</h3>
                     <div class="horario-input">
-                        <div class="dias-semana">
-                            <label><input type="checkbox" name="dia_semana[]" value="1"> Segunda-feira</label>
-                            <label><input type="checkbox" name="dia_semana[]" value="2"> Terça-feira</label>
-                            <label><input type="checkbox" name="dia_semana[]" value="3"> Quarta-feira</label>
-                            <label><input type="checkbox" name="dia_semana[]" value="4"> Quinta-feira</label>
-                            <label><input type="checkbox" name="dia_semana[]" value="5"> Sexta-feira</label>
-                            <label><input type="checkbox" name="dia_semana[]" value="6"> Sábado</label>
-                            <label><input type="checkbox" name="dia_semana[]" value="0"> Domingo</label>
-                        </div>
+                        <label>Dia da Semana:</label>
+                        <select name="dia_semana[]" class="modal-input" required>
+                            <option value="1">Segunda-feira</option>
+                            <option value="2">Terça-feira</option>
+                            <option value="3">Quarta-feira</option>
+                            <option value="4">Quinta-feira</option>
+                            <option value="5">Sexta-feira</option>
+                            <option value="6">Sábado</option>
+                            <option value="0">Domingo</option>
+                        </select>
                         <input type="time" name="hora_inicio[]" required>
                         <input type="time" name="hora_fim[]" required>
                         <button type="button" onclick="adicionarHorario()">+</button>
-                    </div>
                 </div>
                 <textarea name="descricao" class="modal-input" placeholder="Descrição da turma" rows="3"></textarea>
                 <div class="modal-actions">
@@ -270,20 +270,27 @@
         }
     </script>
     <script>
+    function abrirModal() {
+        document.getElementById('modalCriarTurma').style.display = 'block';
+    }
+
+    function fecharModal() {
+        document.getElementById('modalCriarTurma').style.display = 'none';
+    }
+
     function adicionarHorario() {
         const container = document.querySelector('.horarios-container');
         const novoHorario = document.querySelector('.horario-input').cloneNode(true);
-        
-        // Limpar as seleções do clone
-        novoHorario.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.checked = false;
-        });
+
+        // Limpar campos do clone
+        novoHorario.querySelector('select[name="dia_semana[]"]').selectedIndex = 0;
         novoHorario.querySelectorAll('input[type="time"]').forEach(input => {
             input.value = '';
         });
-        
+
         container.appendChild(novoHorario);
     }
     </script>
+
 </body>
 </html>

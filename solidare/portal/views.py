@@ -1,4 +1,3 @@
-from datetime import datetime
 from .models import Professor, Candidato
 from .models import Aluno, Aviso, EventoCalendario, MensagemChat, HorarioAula, HorarioTurma, DiaSemana
 import calendar
@@ -13,7 +12,7 @@ from django.db import transaction
 from django.core.mail import send_mail
 from django.utils.dateparse import parse_date
 from django.utils.safestring import mark_safe
-from datetime import date
+from datetime import datetime, date, timedelta
 from django.db.models import Q
 from .models import MensagemChat
 
@@ -306,43 +305,59 @@ def turmas_aluno(request):
     try:
         candidato = request.user.candidato
         if not candidato.aprovado:
-            messages.error(request, 'Acesso não autorizado. Apenas candidatos aprovados podem acessar as turmas.')
-            return redirect('home')
-            
+            messages.error(request, 'Acesso não autorizado.')
+            return redirect('pagina_aluno')
+
         aluno, created = Aluno.objects.get_or_create(candidato=candidato)
         turmas = Turma.objects.filter(alunos=aluno)
-        
+
         if request.method == 'POST':
             codigo = request.POST.get('codigo')
             try:
                 turma = Turma.objects.get(codigo=codigo)
-                # Adiciona o aluno à turma usando o relacionamento ManyToMany
+
+                # Adiciona aluno à turma
                 turma.alunos.add(aluno)
+
+                # Cria os horários da turma para o usuário
+                for horario_turma in turma.horarios.all():
+                    for dia in horario_turma.dias.all():
+                        HorarioAula.objects.get_or_create(
+                            aluno=request.user,
+                            dia_semana=dia.dia,
+                            horario=horario_turma.hora_inicio,
+                            horario_fim=horario_turma.hora_fim,
+                            disciplina=turma.nome,
+                            professor=turma.professor.nome if turma.professor else "Professor"
+                        )
+
                 messages.success(request, 'Matriculado com sucesso!')
                 return redirect('turmas_aluno')
+
             except Turma.DoesNotExist:
-                messages.error(request, 'Código de turma inválido')
-                
+                messages.error(request, 'Código de turma inválido.')
+
         return render(request, 'turmas_aluno.html', {'turmas': turmas})
+
     except Exception as e:
-        messages.error(request, f'Ocorreu um erro: {str(e)}')
-        return redirect('home')
+        messages.error(request, f'Erro: {str(e)}')
+        return redirect('pagina_aluno')
 
 @login_required
 @user_passes_test(is_professor)
 def turmas_professor(request):
     professor = get_object_or_404(Professor, user=request.user)
     turmas = Turma.objects.filter(professor=professor)
-    
+
     if request.method == 'POST':
         nome = request.POST.get('nome')
         descricao = request.POST.get('descricao')
-        
+
         # Gerar código único
         codigo = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
         while Turma.objects.filter(codigo=codigo).exists():
             codigo = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
-            
+
         turma = Turma.objects.create(
             nome=nome,
             descricao=descricao,
@@ -355,25 +370,24 @@ def turmas_professor(request):
         horas_inicio = request.POST.getlist('hora_inicio[]')
         horas_fim = request.POST.getlist('hora_fim[]')
 
-        # Para cada conjunto de horário
-        for inicio, fim in zip(horas_inicio, horas_fim):
+        # Garante que cada conjunto (dia, início, fim) é tratado separadamente
+        for dia, inicio, fim in zip(dias_semana, horas_inicio, horas_fim):
             horario = HorarioTurma.objects.create(
                 turma=turma,
                 hora_inicio=inicio,
                 hora_fim=fim
             )
-            
-            # Criar os dias da semana para este horário
-            for dia in dias_semana:
-                DiaSemana.objects.create(
-                    horario_turma=horario,
-                    dia=int(dia)
-                )
+
+            DiaSemana.objects.create(
+                horario_turma=horario,
+                dia=int(dia)
+            )
 
         messages.success(request, 'Turma criada com sucesso!')
         return redirect('turmas_professor')
-        
+
     return render(request, 'turmas_professor.html', {'turmas': turmas})
+
 
 @login_required
 def conteudo_turma(request, turma_id):
@@ -597,27 +611,48 @@ def chat_professor(request, aluno_id):
         'aluno': candidato
     })
 
+from datetime import timedelta, datetime, date
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import HorarioAula  # ajuste conforme seu app
+
+
 @login_required
 def horario(request):
     if not hasattr(request.user, 'candidato') or not request.user.candidato.aprovado:
         messages.error(request, 'Apenas alunos aprovados podem acessar o horário.')
         return redirect('home')
 
-    horas = [f"{h:02d}:00" for h in range(7, 23)]
+    # Gera horários de 15 em 15 minutos, das 7h às 23h
+    horas = [f"{h:02d}:{m:02d}" for h in range(7, 23) for m in (0, 30)]
 
     aulas = HorarioAula.objects.filter(aluno=request.user)
 
-    # Cria dicionário de aulas por (dia, hora) para facilitar no template
     grade = {}
     for aula in aulas:
-        hora_str = aula.horario.strftime("%H:%M")
-        grade[(str(aula.dia_semana), hora_str)] = aula
+        if not aula.horario or not aula.horario_fim:
+            continue
+
+        atual = datetime.combine(date.today(), aula.horario)
+        fim = datetime.combine(date.today(), aula.horario_fim)
+
+        while atual < fim:
+            hora_str = atual.strftime('%H:%M')
+            chave = f"{aula.dia_semana}-{hora_str}"
+            if chave not in grade:
+                grade[chave] = []
+            grade[chave].append(aula)
+            atual += timedelta(minutes=30)
 
     context = {
         'horas': horas,
         'grade': grade,
+        'grade_items': grade.items(),  # usado no template para não precisar de filtro custom
     }
     return render(request, 'horario.html', context)
+
+
 
 @login_required
 def adicionar_aula(request):

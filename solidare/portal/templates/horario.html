@@ -34,7 +34,6 @@
 
   .horario-cell {
     min-height: 60px;
-    cursor: pointer;
     transition: background-color 0.2s;
   }
 
@@ -45,151 +44,145 @@
   .aula-marcada {
     background-color: #2ecc71;
     color: white;
-    padding: 5px;
+    padding: 6px;
     border-radius: 4px;
-    margin: 2px;
+    margin: 4px 0;
     font-size: 12px;
-  }
-
-  .btn-adicionar {
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
+    white-space: normal;
+    overflow-wrap: break-word;
     cursor: pointer;
-    margin: 20px;
-  }
-
-  .modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-  }
-
-  .modal-content {
-    background-color: white;
-    margin: 15% auto;
-    padding: 20px;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 5px;
   }
 
   .voltar-btn {
     position: absolute;
     top: 20px;
-    left: 20px;  /* Alterado de 'right' para 'left' */
+    left: 20px;
     background-color: #4a90e2;
     color: white;
-    padding: 12px 24px;  /* Aumentado o padding para melhor aparência */
-    border-radius: 8px;  /* Aumentado o border-radius para cantos mais suaves */
+    padding: 12px 24px;
+    border-radius: 8px;
     text-decoration: none;
-    transition: all 0.3s ease;  /* Adicionado 'all' para transição mais suave */
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 10px;  /* Aumentado o espaço entre o ícone e o texto */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);  /* Adicionado sombra suave */
-    font-weight: 500;  /* Texto um pouco mais bold */
+    gap: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-weight: 500;
   }
 
   .voltar-btn:hover {
     background-color: #357abd;
-    color: white;
-    text-decoration: none;
-    transform: translateY(-2px);  /* Efeito de elevação ao passar o mouse */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);  /* Sombra mais pronunciada no hover */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   }
 
   .voltar-btn i {
-    font-size: 18px;  /* Ícone um pouco maior */
+    font-size: 18px;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.5);
+  }
+
+  .modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+
+  .modal-content h3 {
+    margin-top: 0;
+  }
+
+  .modal-content button {
+    margin-top: 15px;
+    padding: 8px 16px;
+    background-color: #4a90e2;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+  }
+
+  .modal-content button:hover {
+    background-color: #357abd;
   }
 </style>
 
 <div class="container position-relative">
-    <a href="{% url 'pagina_aluno' %}" class="voltar-btn"> 
-        <i class="fas fa-arrow-left"></i> Voltar 
-    </a>
+  <a href="{% url 'pagina_aluno' %}" class="voltar-btn">
+    <i class="fas fa-arrow-left"></i> Voltar
+  </a>
 
-    <h2 class="title">Meu Horário de Aulas</h2>
+  <h2 class="title">Meu Horário de Aulas</h2>
 
-    <div class="horario-grid">
-  <div class="horario-header"></div>
-  <div class="horario-header">Domingo</div>
-  <div class="horario-header">Segunda</div>
-  <div class="horario-header">Terça</div>
-  <div class="horario-header">Quarta</div>
-  <div class="horario-header">Quinta</div>
-  <div class="horario-header">Sexta</div>
-  <div class="horario-header">Sábado</div>
+  <div class="horario-grid">
+    <div class="horario-header"></div>
+    <div class="horario-header">Domingo</div>
+    <div class="horario-header">Segunda</div>
+    <div class="horario-header">Terça</div>
+    <div class="horario-header">Quarta</div>
+    <div class="horario-header">Quinta</div>
+    <div class="horario-header">Sexta</div>
+    <div class="horario-header">Sábado</div>
 
-  {% for hora in horas %}
-  <div class="horario-time">{{ hora }}</div>
-  {% for dia in "0123456"|make_list %}
-  <div class="horario-cell" 
-       data-dia="{{ dia }}" 
-       data-hora="{{ hora }}"
-       onclick="abrirModalAula('{{ dia }}', '{{ hora }}')">
-       {% for aula in aulas %}
-           {% if aula.dia_semana == dia and aula.horario == hora %}
-           <div class="aula-marcada">
-               <div>{{ aula.disciplina }}</div>
-               <div>{{ aula.professor }}</div>
-           </div>
-           {% endif %}
-       {% endfor %}
+    {% for hora in horas %}
+      <div class="horario-time">{{ hora }}</div>
+      {% for dia in "0123456"|make_list %}
+        <div class="horario-cell">
+          {% for chave, aulas_bloco in grade_items %}
+            {% if chave == dia|stringformat:"s"|add:"-"|add:hora %}
+              {% for aula in aulas_bloco %}
+                <div class="aula-marcada"
+                    onclick="abrirModal('{{ aula.disciplina }}', '{{ aula.professor }}', '{{ aula.horario }}', '{{ aula.dia_semana }}')">
+                  <div>{{ aula.disciplina }}</div>
+                  <div>{{ aula.professor }}</div>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endfor %}
+    {% endfor %}
   </div>
-  {% endfor %}
-  {% endfor %}
 </div>
 
 <div id="modalAula" class="modal">
   <div class="modal-content">
-    <h3>Adicionar Aula</h3>
-    <form method="POST" action="{% url 'adicionar_aula' %}">
-      {% csrf_token %}
-      <input type="hidden" name="dia_semana" id="dia_aula">
-      <input type="hidden" name="horario" id="horario_aula">
-      
-      <div class="field">
-        <label class="label">Disciplina</label>
-        <div class="control">
-          <input type="text" name="disciplina" class="input" required>
-        </div>
-      </div>
-
-      <div class="field">
-        <label class="label">Professor</label>
-        <div class="control">
-          <input type="text" name="professor" class="input" required>
-        </div>
-      </div>
-
-      <div class="field is-grouped">
-        <div class="control">
-          <button type="submit" class="button is-success">Salvar</button>
-        </div>
-        <div class="control">
-          <button type="button" class="button" onclick="fecharModalAula()">Cancelar</button>
-        </div>
-      </div>
-    </form>
+    <h3>Detalhes da Aula</h3>
+    <p><strong>Disciplina:</strong> <span id="modalDisciplina"></span></p>
+    <p><strong>Professor:</strong> <span id="modalProfessor"></span></p>
+    <p><strong>Dia:</strong> <span id="modalDia"></span></p>
+    <p><strong>Horário:</strong> <span id="modalHorario"></span></p>
+    <button onclick="fecharModal()">Fechar</button>
   </div>
 </div>
 
 <script>
-function abrirModalAula(dia, hora) {
-    document.getElementById('modalAula').style.display = 'block';
-    document.getElementById('dia_aula').value = dia;
-    document.getElementById('horario_aula').value = hora;
-}
+  const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
-function fecharModalAula() {
-    document.getElementById('modalAula').style.display = 'none';
-}
+  function abrirModal(disciplina, professor, horario, dia) {
+    document.getElementById("modalDisciplina").innerText = disciplina;
+    document.getElementById("modalProfessor").innerText = professor;
+    document.getElementById("modalHorario").innerText = horario;
+    document.getElementById("modalDia").innerText = diasSemana[parseInt(dia)];
+    document.getElementById("modalAula").style.display = "block";
+  }
+
+  function fecharModal() {
+    document.getElementById("modalAula").style.display = "none";
+  }
 </script>
 {% endblock %}

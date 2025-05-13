@@ -250,6 +250,7 @@ class HorarioAula(models.Model):
     aluno = models.ForeignKey(User, on_delete=models.CASCADE, related_name='horarios_aula')
     dia_semana = models.IntegerField(choices=DIAS_SEMANA)
     horario = models.TimeField()
+    horario_fim = models.TimeField(null=True, blank=True)
     disciplina = models.CharField(max_length=100)
     professor = models.CharField(max_length=100)
     data_criacao = models.DateTimeField(auto_now_add=True)
