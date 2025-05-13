@@ -132,14 +132,35 @@
             border-radius: 50%;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             cursor: pointer;
-            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .btn-criar i {
+            font-size: 24px;
         }
 
         .btn-criar:hover {
             background-color: #b32420;
         }
 
-        /* Modal */
+        .btn-acessar {
+            background-color: #1967d2;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-acessar:hover {
+            background-color: #1557b0;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -148,6 +169,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
+            z-index: 1001;
         }
 
         .modal-content {
@@ -157,30 +179,7 @@
             width: 90%;
             max-width: 500px;
             border-radius: 8px;
-        }
-
-        .modal-header {
-            margin-bottom: 1rem;
-        }
-
-        .modal-input {
-            width: 100%;
-            padding: 0.5rem;
-            margin-bottom: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-        }
-
-        @media (max-width: 600px) {
-            .turmas-grid {
-                grid-template-columns: 1fr;
-            }
+            position: relative;
         }
     </style>
 </head>
@@ -197,11 +196,26 @@
             {% for turma in turmas %}
             <div class="turma-card">
                 <div class="turma-header">
+                    <div class="turma-codigo">Código: {{ turma.codigo }}</div>
                     <h2 class="turma-titulo">{{ turma.nome }}</h2>
-                    <div class="turma-professor">{{ turma.professor.nome }}</div>
                 </div>
                 <div class="turma-conteudo">
                     <p>{{ turma.descricao }}</p>
+                    {% if turma.horarios.all %}
+                    <div class="horarios-section">
+                        <h3>Horários das Aulas:</h3>
+                        {% for horario in turma.horarios.all %}
+                        <div class="horario-item">
+                            <p>
+                                {% for dia in horario.dias.all %}
+                                <span class="dia-semana">{{ dia.get_dia_display }}</span>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            <p class="horario">{{ horario.hora_inicio|time:"H:i" }} às {{ horario.hora_fim|time:"H:i" }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="turma-footer">
                     <a href="{% url 'conteudo_turma' turma.id %}" class="btn-acessar">Acessar</a>
