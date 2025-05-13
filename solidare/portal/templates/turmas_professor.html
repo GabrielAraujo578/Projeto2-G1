@@ -234,7 +234,23 @@
             <form method="POST">
                 {% csrf_token %}
                 <input type="text" name="nome" class="modal-input" placeholder="Nome da turma" required>
-                <input type="text" name="horario" class="modal-input" placeholder="Horário" required>
+                <div class="horarios-container">
+                    <h3>Horários da Turma</h3>
+                    <div class="horario-input">
+                        <div class="dias-semana">
+                            <label><input type="checkbox" name="dia_semana[]" value="1"> Segunda-feira</label>
+                            <label><input type="checkbox" name="dia_semana[]" value="2"> Terça-feira</label>
+                            <label><input type="checkbox" name="dia_semana[]" value="3"> Quarta-feira</label>
+                            <label><input type="checkbox" name="dia_semana[]" value="4"> Quinta-feira</label>
+                            <label><input type="checkbox" name="dia_semana[]" value="5"> Sexta-feira</label>
+                            <label><input type="checkbox" name="dia_semana[]" value="6"> Sábado</label>
+                            <label><input type="checkbox" name="dia_semana[]" value="0"> Domingo</label>
+                        </div>
+                        <input type="time" name="hora_inicio[]" required>
+                        <input type="time" name="hora_fim[]" required>
+                        <button type="button" onclick="adicionarHorario()">+</button>
+                    </div>
+                </div>
                 <textarea name="descricao" class="modal-input" placeholder="Descrição da turma" rows="3"></textarea>
                 <div class="modal-actions">
                     <button type="button" class="btn-gerenciar" style="background-color: #666" onclick="fecharModal()">Cancelar</button>
@@ -252,6 +268,22 @@
         function fecharModal() {
             document.getElementById('modalCriarTurma').style.display = 'none';
         }
+    </script>
+    <script>
+    function adicionarHorario() {
+        const container = document.querySelector('.horarios-container');
+        const novoHorario = document.querySelector('.horario-input').cloneNode(true);
+        
+        // Limpar as seleções do clone
+        novoHorario.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+        });
+        novoHorario.querySelectorAll('input[type="time"]').forEach(input => {
+            input.value = '';
+        });
+        
+        container.appendChild(novoHorario);
+    }
     </script>
 </body>
 </html>
