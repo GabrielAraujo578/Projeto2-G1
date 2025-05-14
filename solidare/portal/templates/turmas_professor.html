@@ -234,7 +234,23 @@
             <form method="POST">
                 {% csrf_token %}
                 <input type="text" name="nome" class="modal-input" placeholder="Nome da turma" required>
-                <input type="text" name="horario" class="modal-input" placeholder="Horário" required>
+                <div class="horarios-container">
+                    <h3>Horários da Turma</h3>
+                    <div class="horario-input">
+                        <label>Dia da Semana:</label>
+                        <select name="dia_semana[]" class="modal-input" required>
+                            <option value="1">Segunda-feira</option>
+                            <option value="2">Terça-feira</option>
+                            <option value="3">Quarta-feira</option>
+                            <option value="4">Quinta-feira</option>
+                            <option value="5">Sexta-feira</option>
+                            <option value="6">Sábado</option>
+                            <option value="0">Domingo</option>
+                        </select>
+                        <input type="time" name="hora_inicio[]" required>
+                        <input type="time" name="hora_fim[]" required>
+                        <button type="button" onclick="adicionarHorario()">+</button>
+                </div>
                 <textarea name="descricao" class="modal-input" placeholder="Descrição da turma" rows="3"></textarea>
                 <div class="modal-actions">
                     <button type="button" class="btn-gerenciar" style="background-color: #666" onclick="fecharModal()">Cancelar</button>
@@ -253,5 +269,28 @@
             document.getElementById('modalCriarTurma').style.display = 'none';
         }
     </script>
+    <script>
+    function abrirModal() {
+        document.getElementById('modalCriarTurma').style.display = 'block';
+    }
+
+    function fecharModal() {
+        document.getElementById('modalCriarTurma').style.display = 'none';
+    }
+
+    function adicionarHorario() {
+        const container = document.querySelector('.horarios-container');
+        const novoHorario = document.querySelector('.horario-input').cloneNode(true);
+
+        // Limpar campos do clone
+        novoHorario.querySelector('select[name="dia_semana[]"]').selectedIndex = 0;
+        novoHorario.querySelectorAll('input[type="time"]').forEach(input => {
+            input.value = '';
+        });
+
+        container.appendChild(novoHorario);
+    }
+    </script>
+
 </body>
 </html>

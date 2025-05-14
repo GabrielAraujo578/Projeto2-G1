@@ -134,14 +134,46 @@ class Aluno(models.Model):
 
 class Turma(models.Model):
     nome = models.CharField(max_length=100)
-    horario = models.CharField(max_length=100)
     professor = models.ForeignKey('Professor', on_delete=models.SET_NULL, null=True)
     codigo = models.CharField(max_length=20, unique=True, default='DEFAULT001')
     descricao = models.TextField(blank=True)
     data_criacao = models.DateTimeField(default=timezone.now)
+    alunos = models.ManyToManyField('Aluno', related_name='turmas', blank=True)
 
     def __str__(self):
         return self.nome
+
+class DiaSemana(models.Model):
+    DIAS_SEMANA = [
+        (0, 'Domingo'),
+        (1, 'Segunda-feira'),
+        (2, 'Terça-feira'),
+        (3, 'Quarta-feira'),
+        (4, 'Quinta-feira'),
+        (5, 'Sexta-feira'),
+        (6, 'Sábado'),
+    ]
+    
+    dia = models.IntegerField(choices=DIAS_SEMANA)
+    horario_turma = models.ForeignKey('HorarioTurma', on_delete=models.CASCADE, related_name='dias')
+
+    class Meta:
+        unique_together = ['dia', 'horario_turma']
+
+    def __str__(self):
+        return self.get_dia_display()
+
+class HorarioTurma(models.Model):
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='horarios')
+    hora_inicio = models.TimeField()
+    hora_fim = models.TimeField()
+
+    class Meta:
+        ordering = ['hora_inicio']
+
+    def __str__(self):
+        dias = ", ".join([dia.get_dia_display() for dia in self.dias.all()])
+        return f"{dias} - {self.hora_inicio.strftime('%H:%M')} às {self.hora_fim.strftime('%H:%M')}"
 
 class ConteudoTurma(models.Model):
     turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='conteudos')
@@ -218,6 +250,7 @@ class HorarioAula(models.Model):
     aluno = models.ForeignKey(User, on_delete=models.CASCADE, related_name='horarios_aula')
     dia_semana = models.IntegerField(choices=DIAS_SEMANA)
     horario = models.TimeField()
+    horario_fim = models.TimeField(null=True, blank=True)
     disciplina = models.CharField(max_length=100)
     professor = models.CharField(max_length=100)
     data_criacao = models.DateTimeField(auto_now_add=True)
