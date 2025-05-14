@@ -15,6 +15,13 @@ from django.utils.safestring import mark_safe
 from datetime import datetime, date, timedelta
 from django.db.models import Q
 from .models import MensagemChat
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from .models import Turma, Aluno, Professor, ConteudoTurma
+import random
+import string
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -290,13 +297,6 @@ def sobre_view(request):
 def confirmacao_email_view(request):
     return render(request, 'confirmacao_email.html')
 
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Turma, Aluno, Professor, ConteudoTurma
-import random
-import string
-
 def is_professor(user):
     return Professor.objects.filter(user=user).exists()
 
@@ -456,31 +456,34 @@ def calendario(request):
     month = now.month
     today = now.day
 
-    # Pegue os eventos do mês atual
     eventos = EventoCalendario.objects.filter(data__year=year, data__month=month)
 
-    # Transforma em JSON simples
     eventos_json = [
-    {
-        'id': evento.id,
-        'dia': evento.data.day,
-        'mes': evento.data.month,
-        'ano': evento.data.year,
-        'hora': evento.hora.strftime('%H:%M') if evento.hora else '',
-        'titulo': evento.titulo
-    } for evento in eventos
-]
+        {
+            'id': evento.id,
+            'dia': evento.data.day,
+            'mes': evento.data.month,
+            'ano': evento.data.year,
+            'hora': evento.hora.strftime('%H:%M') if evento.hora else '',
+            'titulo': evento.titulo
+        } for evento in eventos
+    ]
 
+    is_professor = request.user.groups.filter(name="Professor").exists()
 
     context = {
         'eventos_json': mark_safe(json.dumps(eventos_json)),
         'month': month,
         'year': year,
+        'is_professor': is_professor  
     }
     return render(request, 'calendario.html', context)
 
 @login_required
 def adicionar_evento(request):
+    if not request.user.is_authenticated or not is_professor(request.user):
+        return redirect('calendario')
+    
     if request.method == 'POST':
         titulo = request.POST.get('titulo')
         descricao = request.POST.get('descricao')
@@ -502,6 +505,9 @@ def adicionar_evento(request):
 
 @login_required
 def editar_evento(request, id):
+    if not request.user.is_authenticated or not is_professor(request.user):
+        return redirect('calendario')
+
     evento = get_object_or_404(EventoCalendario, id=id)
     
     if request.method == 'POST':
@@ -524,6 +530,9 @@ def editar_evento(request, id):
 
 @login_required
 def detalhe_evento(request, id):
+    if not request.user.is_authenticated or not is_professor(request.user):
+        return redirect('calendario')
+
     evento = get_object_or_404(EventoCalendario, id=id)
 
     if request.method == 'POST':
