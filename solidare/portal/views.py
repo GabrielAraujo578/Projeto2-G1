@@ -394,20 +394,23 @@ def conteudo_turma(request, turma_id):
     turma = get_object_or_404(Turma, id=turma_id)
     is_professor = Professor.objects.filter(user=request.user).exists()
     is_aluno = False
-    
+
     if not is_professor:
         try:
-            aluno = Aluno.objects.get(candidato__user=request.user, turma=turma)
+            aluno = Aluno.objects.get(candidato__user=request.user)
+            if not turma.alunos.filter(id=aluno.id).exists():
+                messages.error(request, 'Você não está matriculado nesta turma')
+                return redirect('turmas_aluno')
             is_aluno = True
         except Aluno.DoesNotExist:
-            messages.error(request, 'Você não está matriculado nesta turma')
+            messages.error(request, 'Você não está cadastrado como aluno')
             return redirect('turmas_aluno')
-    
+
     if request.method == 'POST' and is_professor:
         titulo = request.POST.get('titulo')
         descricao = request.POST.get('descricao')
         arquivo = request.FILES.get('arquivo')
-        
+
         ConteudoTurma.objects.create(
             turma=turma,
             titulo=titulo,
@@ -416,7 +419,7 @@ def conteudo_turma(request, turma_id):
         )
         messages.success(request, 'Conteúdo adicionado com sucesso!')
         return redirect('conteudo_turma', turma_id=turma.id)
-    
+
     conteudos = turma.conteudos.all().order_by('-data_criacao')
     return render(request, 'conteudo_turma.html', {
         'turma': turma,
@@ -424,6 +427,7 @@ def conteudo_turma(request, turma_id):
         'is_professor': is_professor,
         'is_aluno': is_aluno
     })
+
 
 @login_required
 def lista_avisos(request):
