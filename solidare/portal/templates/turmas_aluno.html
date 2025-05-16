@@ -12,7 +12,7 @@
         }
 
         .header {
-            background-color: #CE2C25;
+            background-color: #FBEE4F;
             color: white;
             padding: 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -120,11 +120,11 @@
             background-color: #1557b0;
         }
 
-        .btn-criar {
+        .btn-matricular {
             position: fixed;
             right: 2rem;
             bottom: 2rem;
-            background-color: #CE2C25;
+            background-color: #FBEE4F;
             color: white;
             border: none;
             width: 56px;
@@ -136,14 +136,12 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-        }
-
-        .btn-criar i {
             font-size: 24px;
+            transition: background-color 0.2s;
         }
 
-        .btn-criar:hover {
-            background-color: #b32420;
+        .btn-matricular:hover {
+            background-color: #e6d843;
         }
 
         .btn-acessar {
@@ -180,6 +178,21 @@
             max-width: 500px;
             border-radius: 8px;
             position: relative;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
         }
     </style>
 </head>
@@ -225,10 +238,12 @@
         </div>
     </div>
 
+    <!-- Botão flutuante de matrícula -->
     <button class="btn-matricular" onclick="abrirModal()">
         <i class="fas fa-plus"></i>
     </button>
 
+    <!-- Modal de matrícula -->
     <div id="modalMatricula" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -254,9 +269,5 @@
             document.getElementById('modalMatricula').style.display = 'none';
         }
     </script>
-
-    <button class="btn-voltar" onclick="window.location.href='/aluno/'">
-        <i class="fas fa-arrow-left"></i>
-    </button>
 </body>
 </html>

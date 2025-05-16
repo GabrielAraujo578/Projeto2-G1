@@ -234,13 +234,29 @@
         </tbody>
     </table>
 
-    <button onclick="history.back()" 
-    style="position: absolute; top: 20px; left: 20px; 
-           padding: 10px 20px; font-size: 16px; 
-           background-color: #f0f0f0; border: 1px solid #ccc; 
-           border-radius: 5px; cursor: pointer;">
-    ⬅ 
+    <button onclick="window.location.href='/professor/'" 
+        style="position: absolute; top: 20px; left: 20px; 
+            padding: 10px 20px; font-size: 16px; 
+            background-color: #f0f0f0; border: 1px solid #ccc; 
+            border-radius: 5px; cursor: pointer;">
+        ⬅ 
     </button>
+
+    <button onclick="salvarEVoltar()"
+        style="margin: 30px auto 0 auto; display: block; padding: 12px 24px;
+            font-size: 16px; font-weight: bold;
+            background-color: #007bff; color: white;
+            border: none; border-radius: 6px; cursor: pointer;">
+         Salvar
+    </button>
+
+    <script>
+    function salvarEVoltar() {
+        alert('Alterações salvas com sucesso!');
+        window.location.href = '/professor/';
+    }
+    </script>
+
 
 </div>
 

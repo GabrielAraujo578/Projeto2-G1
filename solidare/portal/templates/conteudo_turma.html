@@ -12,15 +12,26 @@
         }
 
         .header {
-            background-color: #1967d2;
-            color: white;
             padding: 2rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-professor {
+            background-color: #CE2C25;
+            color: white;
+        }
+
+        .header-aluno {
+            background-color: #FBEE4F;
+            color: white;
         }
 
         .turma-info {
             max-width: 800px;
             margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .turma-titulo {
@@ -32,6 +43,24 @@
         .turma-detalhes {
             font-size: 1rem;
             opacity: 0.9;
+        }
+
+        .btn-voltar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-voltar-header:hover {
+            background-color: rgba(255, 255, 255, 0.5);
         }
 
         .container {
@@ -143,18 +172,17 @@
             gap: 1rem;
         }
 
-        .btn-voltar {
-            display: inline-block;
+        .btn-gerenciar {
             padding: 0.5rem 1rem;
-            background-color: #fff;
-            color: #1967d2;
-            text-decoration: none;
+            background-color: #1967d2;
+            color: white;
+            border: none;
             border-radius: 4px;
-            margin-bottom: 1rem;
+            cursor: pointer;
         }
 
-        .btn-voltar:hover {
-            background-color: #f1f3f4;
+        .btn-gerenciar:hover {
+            background-color: #1459b0;
         }
 
         @media (max-width: 600px) {
@@ -169,21 +197,22 @@
     </style>
 </head>
 <body>
-    <div class="header">
+    <div class="header {% if is_professor %}header-professor{% else %}header-aluno{% endif %}">
         <div class="turma-info">
-            <h1 class="turma-titulo">{{ turma.nome }}</h1>
-            <div class="turma-detalhes">
-                <p>Professor: {{ turma.professor.nome }}</p>
-                <p>Horário: {{ turma.horario }}</p>
+            <a href="{% if is_professor %}{% url 'turmas_professor' %}{% else %}{% url 'turmas_aluno' %}{% endif %}" class="btn-voltar-header">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="turma-titulo">{{ turma.nome }}</h1>
+                <div class="turma-detalhes">
+                    <p>Professor: {{ turma.professor.nome }}</p>
+                    <p>Horário: {{ turma.horario }}</p>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="container">
-        <a href="{% if is_professor %}{% url 'turmas_professor' %}{% else %}{% url 'turmas_aluno' %}{% endif %}" class="btn-voltar">
-            <i class="fas fa-arrow-left"></i> Voltar
-        </a>
-
         {% for conteudo in conteudos %}
         <div class="conteudo-card">
             <h3 class="conteudo-titulo">{{ conteudo.titulo }}</h3>

@@ -115,12 +115,11 @@
       font-weight: 500;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       display: inline-block;
-      width: 80%;        
-      white-space: nowrap; 
-      overflow: hidden;    
+      width: 80%;
+      white-space: nowrap;
+      overflow: hidden;
       text-overflow: ellipsis;
     }
-
 
     .evento.meeting {
       background-color: #2ecc71;
@@ -129,6 +128,7 @@
     .evento.lunch {
       background-color: #e74c3c;
     }
+
     .back-arrow {
       position: absolute;
       top: 20px;
@@ -151,7 +151,7 @@
   </style>
 </head>
 <body>
-  <a href="javascript:history.back()" class="back-arrow">←</a>
+  <a href="{% if request.user.professor %}/professor/{% else %}/aluno/{% endif %}" class="back-arrow">←</a>
 
   <div class="calendar">
     <header>
@@ -173,15 +173,16 @@
     <div class="days" id="days"></div>
   </div>
 
+  <!-- Variáveis passadas do backend para JS -->
   <script>
+    const isProfessor = {{ request.user.professor|yesno:"true,false" }};
+    const adicionarEventoBaseURL = "{% url 'adicionar_evento' %}";
+    const eventos = JSON.parse('{{ eventos_json|escapejs }}');
+
     const daysContainer = document.getElementById("days");
     const monthYear = document.getElementById("monthYear");
     const prevBtn = document.getElementById("prev");
     const nextBtn = document.getElementById("next");
-
-    const adicionarEventoBaseURL = "{% url 'adicionar_evento' %}";
-
-    const eventos = JSON.parse('{{ eventos_json|escapejs }}');
 
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho",
                     "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -211,27 +212,31 @@
         number.classList.add("day-number");
         number.textContent = d;
 
-        const plus = document.createElement("button");
-        plus.textContent = "+";
-        plus.classList.add("add-btn");
-
-        const dayStr = String(d).padStart(2, '0');
-        const monthStr = String(month + 1).padStart(2, '0');
-        const url = `${adicionarEventoBaseURL}?data=${year}-${monthStr}-${dayStr}`;
-        plus.onclick = () => {
-          window.location.href = url;
-        };
-
         const today = new Date();
         if (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
           day.classList.add("today");
         }
 
         day.appendChild(number);
-        day.appendChild(plus);
 
-        // Adiciona eventos se houver
-        const eventosDoDia = eventos.filter(ev =>ev.dia === d && ev.mes === (month + 1) && ev.ano === year);
+        // Adiciona o botão "+" somente se for professor
+        if (isProfessor) {
+          const plus = document.createElement("button");
+          plus.textContent = "+";
+          plus.classList.add("add-btn");
+
+          const dayStr = String(d).padStart(2, '0');
+          const monthStr = String(month + 1).padStart(2, '0');
+          const url = `${adicionarEventoBaseURL}?data=${year}-${monthStr}-${dayStr}`;
+          plus.onclick = () => {
+            window.location.href = url;
+          };
+
+          day.appendChild(plus);
+        }
+
+        // Adiciona eventos do dia
+        const eventosDoDia = eventos.filter(ev => ev.dia === d && ev.mes === (month + 1) && ev.ano === year);
         eventosDoDia.forEach(ev => {
           const e = document.createElement("div");
           e.classList.add("evento");
