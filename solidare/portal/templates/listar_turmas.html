@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Minhas Turmas{% endblock %}
+
+{% block style %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    h1 {
+        color: #333;
+        text-align: center;
+    }
+
+    .turmas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .turma-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+
+    .turma-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .turma-header {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+
+    .turma-header h2 {
+        margin: 0;
+        color: #333;
+    }
+
+    .turma-codigo {
+        color: #666;
+        font-size: 0.9em;
+        display: block;
+        margin-top: 5px;
+    }
+
+    .turma-info p {
+        margin: 0 0 10px 0;
+        color: #444;
+    }
+
+    .horarios {
+        margin-top: 10px;
+    }
+
+    .horario-item {
+        background: #f5f5f5;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin: 5px 0;
+        font-size: 0.9em;
+        color: #444;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Minhas Turmas</h1>
+
+    <div class="turmas-grid">
+        {% for turma in turmas %}
+        <div class="turma-card" onclick="window.location.href='{% url 'dias_aula' turma.id %}'">
+            <div class="turma-header">
+                <h2>{{ turma.nome }}</h2>
+                <span class="turma-codigo">Código: {{ turma.codigo }}</span>
+            </div>
+            <div class="turma-info">
+                <p>{{ turma.descricao }}</p>
+                <div class="horarios">
+                    {% for horario in turma.horarios.all %}
+                    <div class="horario-item">
+                        {% for dia in horario.dias.all %}
+                        <span>{{ dia.get_dia_display }}</span>
+                        {% endfor %}
+                        {{ horario.hora_inicio|time:"H:i" }} - {{ horario.hora_fim|time:"H:i" }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

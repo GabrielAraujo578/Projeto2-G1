@@ -18,7 +18,7 @@ from .models import MensagemChat
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Turma, Aluno, Professor, ConteudoTurma
+from .models import Turma, Aluno, Professor, ConteudoTurma, DiaAula,Presenca
 import random
 import string
 
@@ -695,3 +695,55 @@ def adicionar_aula(request):
             return redirect('horario')
 
     return redirect('horario')
+
+@login_required
+def listar_turmas(request):
+    professor = get_object_or_404(Professor, user=request.user)
+    turmas = Turma.objects.filter(professor=professor)
+    return render(request, 'listar_turmas.html', {'turmas': turmas})
+
+@login_required
+def dias_aula(request, turma_id):
+    turma = get_object_or_404(Turma, id=turma_id)
+    dias = DiaAula.objects.filter(turma=turma)
+    
+    # Gerar próximos dias de aula baseado nos horários da turma
+    hoje = date.today()
+    proximos_30_dias = [hoje + timedelta(days=x) for x in range(30)]
+    
+    for dia in proximos_30_dias:
+        for horario in turma.horarios.all():
+            if dia.weekday() in [d.dia for d in horario.dias.all()]:
+                DiaAula.objects.get_or_create(turma=turma, data=dia)
+    
+    dias = DiaAula.objects.filter(turma=turma, data__gte=hoje).order_by('data')
+    return render(request, 'dias_aula.html', {'turma': turma, 'dias': dias})
+
+@login_required
+def cadastrar_presenca(request, dia_aula_id):
+    dia_aula = get_object_or_404(DiaAula, id=dia_aula_id)
+    turma = dia_aula.turma
+    
+    if request.method == 'POST':
+        for aluno_id, presente in request.POST.items():
+            if aluno_id.startswith('aluno_'):
+                aluno_id = aluno_id.replace('aluno_', '')
+                aluno = get_object_or_404(Aluno, id=aluno_id)
+                presenca, _ = Presenca.objects.get_or_create(
+                    aluno=aluno,
+                    dia_aula=dia_aula
+                )
+                presenca.presente = presente == 'on'
+                presenca.save()
+        messages.success(request, 'Presenças registradas com sucesso!')
+        return redirect('dias_aula', turma_id=turma.id)
+    
+    alunos = turma.alunos.all()
+    presencas = {p.aluno_id: p.presente for p in Presenca.objects.filter(dia_aula=dia_aula)}
+    
+    return render(request, 'cadastrar_presenca.html', {
+        'turma': turma,
+        'dia_aula': dia_aula,
+        'alunos': alunos,
+        'presencas': presencas
+    })

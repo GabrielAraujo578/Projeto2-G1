@@ -265,3 +265,25 @@ class HorarioAula(models.Model):
 
     def __str__(self):
         return f"{self.get_dia_semana_display()} - {self.horario.strftime('%H:%M')} - {self.disciplina}"
+
+class DiaAula(models.Model):
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='dias_aula')
+    data = models.DateField()
+    
+    class Meta:
+        ordering = ['data']
+        unique_together = ['turma', 'data']
+
+    def __str__(self):
+        return f"{self.turma.nome} - {self.data}"
+
+class Presenca(models.Model):
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
+    dia_aula = models.ForeignKey(DiaAula, on_delete=models.CASCADE)
+    presente = models.BooleanField(default=False)
+    
+    class Meta:
+        unique_together = ['aluno', 'dia_aula']
+
+    def __str__(self):
+        return f"{self.aluno.candidato.nome_completo} - {self.dia_aula.data}"

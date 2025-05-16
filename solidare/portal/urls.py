@@ -28,4 +28,7 @@ urlpatterns = [
     path('turma/<int:turma_id>/', views.conteudo_turma, name='conteudo_turma'),
     path('horario/', views.horario, name='horario'),
     path('horario/adicionar/', views.adicionar_aula, name='adicionar_aula'),
+    path('turmas/listar/', views.listar_turmas, name='listar_turmas'),
+    path('turmas/<int:turma_id>/dias/', views.dias_aula, name='dias_aula'),
+    path('presenca/<int:dia_aula_id>/', views.cadastrar_presenca, name='cadastrar_presenca'),
 ]
