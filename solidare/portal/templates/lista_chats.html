@@ -12,6 +12,18 @@
         border: 1px solid #ccc;
         border-radius: 5px;
         cursor: pointer;
+        text-decoration: none;
+        color: black;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: background-color 0.3s ease;
+        z-index: 1000;
+    }
+
+    .back-button:hover {
+        background-color: #e0e0e0;
     }
 
     .chats-container {
@@ -87,7 +99,7 @@
     }
 </style>
 
-<button onclick="history.back()" class="back-button">⬅</button>
+<a href="{% url 'pagina_professor' %}" class="back-button">⬅ Voltar</a>
 
 <div class="chats-container">
     <h2 class="page-title">Conversas com Alunos</h2>

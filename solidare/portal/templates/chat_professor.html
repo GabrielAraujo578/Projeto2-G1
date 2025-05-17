@@ -8,17 +8,33 @@
         left: 20px;
         padding: 10px 20px;
         font-size: 16px;
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
+        background-color: #CE2C25;
+        color: white;
+        border: none;
         border-radius: 5px;
         cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: background-color 0.3s ease;
+        z-index: 1000;
+    }
+
+    .back-button:hover {
+        background-color: #a3201c;
     }
 
     .chat-container {
         max-width: 800px;
-        margin: 20px auto;
+        margin: 80px auto 20px; /* espaço para botão voltar */
         border: 1px solid #ddd;
         border-radius: 8px;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        height: 600px;
     }
     
     .chat-header {
@@ -29,9 +45,10 @@
     }
     
     .chat-messages {
-        height: 400px;
+        flex-grow: 1;
         overflow-y: auto;
         padding: 15px;
+        background: #fff;
     }
     
     .mensagem {
@@ -39,28 +56,34 @@
         padding: 10px;
         border-radius: 8px;
         max-width: 70%;
+        word-wrap: break-word;
     }
     
     .enviada {
         background: #007bff;
         color: white;
         margin-left: auto;
+        text-align: right;
     }
     
     .recebida {
         background: #e9ecef;
         margin-right: auto;
+        text-align: left;
     }
     
     .mensagem-hora {
         font-size: 0.8em;
         margin-top: 5px;
+        opacity: 0.7;
     }
     
     .chat-form {
         display: flex;
         padding: 15px;
         border-top: 1px solid #ddd;
+        background: #f8f9fa;
+        border-radius: 0 0 8px 8px;
     }
     
     .chat-form input {
@@ -69,6 +92,7 @@
         margin-right: 10px;
         border: 1px solid #ddd;
         border-radius: 4px;
+        font-size: 16px;
     }
     
     .chat-form button {
@@ -78,10 +102,16 @@
         border: none;
         border-radius: 4px;
         cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .chat-form button:hover {
+        background-color: #0056b3;
     }
 </style>
 
-<button onclick="history.back()" class="back-button">⬅</button>
+<a href="{% url 'lista_chats' %}" class="back-button">⬅ Voltar</a>
 
 <div class="chat-container">
     <div class="chat-header">
@@ -99,18 +129,19 @@
     
     <form method="post" class="chat-form">
         {% csrf_token %}
-        <input type="text" name="mensagem" placeholder="Digite sua mensagem..." required>
+        <input type="text" name="mensagem" placeholder="Digite sua mensagem..." required autocomplete="off">
         <button type="submit">Enviar</button>
     </form>
 </div>
 
 <script>
     const chatMessages = document.getElementById('chat-messages');
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    
-    // Auto-scroll to bottom on new messages
-    setInterval(() => {
+    function scrollToBottom() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
-    }, 1000);
+    }
+    scrollToBottom();
+
+
+    setInterval(scrollToBottom, 1000);
 </script>
 {% endblock %}
