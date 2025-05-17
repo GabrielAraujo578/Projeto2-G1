@@ -119,6 +119,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Configurações para arquivos de mídia
+MEDIA_URL = '/conteudos/'
+MEDIA_ROOT = BASE_DIR / 'conteudos'
+
 LOGIN_URL = '/login/'
 
 # Default primary key field type
@@ -142,4 +146,4 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'solidareg1@gmail.com'
-EMAIL_HOST_PASSWORD = 'jezb swpr npwt ohsu' 
+EMAIL_HOST_PASSWORD = 'jezb swpr npwt ohsu'
