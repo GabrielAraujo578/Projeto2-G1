@@ -1,0 +1,23 @@
+{
+  "name": "projeto2-g1",
+  "version": "1.0.0",
+  "description": "<details>\r   <summary><strong>SR1</strong></summary>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabrielAraujo578/Projeto2-G1.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GabrielAraujo578/Projeto2-G1/issues"
+  },
+  "homepage": "https://github.com/GabrielAraujo578/Projeto2-G1#readme",
+  "devDependencies": {
+    "cypress": "^14.3.3"
+  }
+}
