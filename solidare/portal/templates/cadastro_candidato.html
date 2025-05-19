@@ -1,8 +1,72 @@
 {% extends "base.html" %}
 
+{% load static %}
+
 {% block title %}Formulário de Candidatos{% endblock %}
 
 {% block content %}
+<style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #49a6e9;
+        }
+
+        .header {
+            background-color: white;
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 2px solid #000;
+        }
+
+        .header img {
+            height: 60px;
+        }
+
+        .header h1 {
+            margin-left: 20px;
+            font-size: 24px;
+            color: #007bff;
+        }
+
+        .main {
+            background-color: #49a6e9;
+            height: calc(100vh - 80px); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            text-align: center;
+        }
+        .home-icon:hover {
+            color:green;
+        }
+
+        .step {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgb(0, 0, 0);
+            font-weight: bold;
+            position: relative;
+        }
+
+        .step.active {
+            background-color:#CE2C25;
+            color: rgb(0, 0, 0);
+        }
+
+    </style>
+
+<div class="header">
+        <img src="{% static 'portal/img/logo.png' %}" alt="Logo">
+    </div>
 
 <div class="form-container">
 
@@ -209,9 +273,9 @@
     </div>
     <!-- Botões do formulário -->
     <div class="form-buttons">
-        <button type="button" class="prev" id="prev-btn" style="display: none;">Anterior</button>
-        <button type="button" class="next" id="next-btn">Próximo</button>
-        <button type="submit" id="submit-btn" style="display: none;">Cadastrar</button>
+        <button type="button" class="prev" id="prev-btn" style="display: none; color:rgb(0, 0, 0) ;">Anterior</button>
+        <button type="button" class="next" id="next-btn" style="display: none; color:rgb(0, 0, 0); background: #3F8F40;">Próximo</button>
+        <button type="submit" id="submit-btn" style="display: none; color:rgb(0, 0, 0); background: #3F8F40;">Cadastrar</button>
     </div>
 </form>
 
