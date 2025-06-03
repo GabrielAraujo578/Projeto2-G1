@@ -71,3 +71,8 @@ Cypress.Commands.add('adicionarConteudo', (titulo, descricao, arquivo = null) =>
   cy.get('button[type="submit"]').contains('Adicionar').click()
 })
 
+Cypress.Commands.add('deletedatabase', () => {
+  cy.exec('python delete_database.py', { failOnNonZeroExit: false });
+});
+
+

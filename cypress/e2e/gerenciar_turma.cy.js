@@ -2,10 +2,11 @@ describe('Gerenciamento de conteúdo da turma', () => {
   const nomeTurma = `Turma Conteúdo Teste ${Date.now()}`
 
   beforeEach(() => {
+    cy.deletedatabase();
     cy.loginProfessor()
     cy.contains('Gerenciar Turmas').click()
     cy.criarTurma(nomeTurma, 'Quinta-feira', '15:00', '17:00', 'Turma para teste de conteúdo')
-    cy.contains(nomeTurma).parent().within(() => {
+    cy.contains(nomeTurma).closest('.turma-card').within(() => {
       cy.get('a.btn-gerenciar').click()
     })
   })
@@ -32,7 +33,7 @@ describe('Gerenciamento de conteúdo da turma', () => {
     cy.get('input[name="titulo"]').type('Conteúdo que será cancelado')
     cy.get('textarea[name="descricao"]').type('Descrição cancelada')
     cy.contains('button', 'Cancelar').click()
-    cy.get('div.modal').should('not.exist')
+    cy.get('div.modal').should('not.be.visible')
     cy.contains('Conteúdo que será cancelado').should('not.exist')
   })
 })

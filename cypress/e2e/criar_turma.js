@@ -1,5 +1,6 @@
 describe('Criar turma', () => {
   beforeEach(() => {
+    cy.deletedatabase(); 
     cy.loginProfessor()
     cy.contains('Gerenciar Turmas').click()
   })
