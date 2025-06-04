@@ -25,7 +25,10 @@
             left: 0;
             z-index: 1000;
         }
+        .h1 {
 
+            text-align: center;
+        }
         .toggle-btn {
             font-size: 24px;
             margin-right: 20px;
@@ -122,7 +125,7 @@
             font-weight: bold;
             margin-bottom: 20px;
             text-decoration: none;
-            display: inline-block;
+            text-align: center;
         }
 
         .criar-aviso:hover {
@@ -155,11 +158,14 @@
     </div>
 
     <div class="content">
-        <h1>Lista de Avisos</h1>
+        <h1 class = "h1">Lista de Avisos</h1>
 
         {% if request.user.is_authenticated and request.user.professor %}
-            <a href="{% url 'criar_aviso' %}" class="criar-aviso">Criar Aviso</a>
+        <div style="text-align: center; margin: 20px 0;">
+        <a href="{% url 'criar_aviso' %}" class="criar-aviso">Criar Aviso</a>
+        </div>
         {% endif %}
+
 
         <div class="avisos">
             {% if avisos %}

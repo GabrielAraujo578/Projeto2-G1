@@ -5,97 +5,149 @@
 {% block content %}
 <style>
     body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #fafafa;
-    }
-
-    h1 {
-        text-align: center;
-        margin-top: 40px;
-        font-size: 2em;
-    }
-
-    .container {
-        max-width: 97%; 
-        width: 97%;
         margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+    }
+
+    /* Header igual ao segundo exemplo */
+    .header {
+        width: 100%;
+        height: 60px;
+        background: #CE2C25;
+        color: white;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .toggle-btn {
+        font-size: 24px;
+        margin-right: 20px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: white;
+    }
+
+    .nome_professor {
+        font-weight: bold;
+    }
+
+    /* Sidebar igual ao segundo exemplo */
+    .sidebar {
+        position: fixed;
+        top: 60px; /* abaixo do header */
+        left: 0;
+        width: 250px;
+        height: calc(100% - 60px);
+        background: #CE2C25;
         padding: 20px;
+        box-sizing: border-box;
+        transition: transform 0.3s ease;
+        color: white;
+    }
+
+    .sidebar.closed {
+        transform: translateX(-100%);
+    }
+
+    .sidebar h3 {
+        color: white;
+        margin-top: 0;
+        text-align: left;
+    }
+
+    .sidebar button, .sidebar a {
+        display: block;
+            width: 90%;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            font-size: 13px;
+    }
+
+    .sidebar button:hover, .sidebar a:hover {
+        background: #f0f0f0;
+    }
+
+    /* Conteúdo com margens para header e sidebar */
+    .content {
+        margin-top: 60px;
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+    }
+
+    /* Seu estilo da tabela e botões mantém-se igual */
+    .content h1 {
+        color: black;
+        font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .candidatos-container {
+        max-width: 1000px;
+        margin: 0 auto;
     }
 
     table {
         width: 100%;
         border-collapse: separate;
         border-spacing: 0 12px;
-        background-color: white;
     }
 
     th, td {
-        padding: 16px 20px;
+        padding: 12px 16px;
         text-align: left;
+        background-color: #fff;
         vertical-align: top;
-        border-top: 1px solid #ddd;
         font-size: 0.95rem;
+        border-top: 1px solid #ddd;
     }
 
     th {
         background-color: #f0f0f0;
         font-weight: bold;
-        font-size: 1rem;
-        border-top: none;
+        color: #333;
     }
 
     tr {
-        background-color: #fff;
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-radius: 8px;
     }
 
     .acoes form {
         display: flex;
         gap: 10px;
-        margin-top: 10px;
     }
 
-    .acoes button {
-        border: none;
-        padding: 8px 14px;
-        border-radius: 6px;
+    .acoes input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
         cursor: pointer;
-        font-weight: bold;
-        font-size: 0.9rem;
-    }
-
-    .acoes button[name="status"][value="aprovar"] {
-        background-color: #28a745;
-        color: white;
-    }
-
-    .acoes button[name="status"][value="reprovar"] {
-        background-color: #dc3545;
-        color: white;
-    }
-
-    .status-aprovado {
-        color: #28a745;
-        font-weight: bold;
-    }
-
-    .status-reprovado {
-        color: #dc3545;
-        font-weight: bold;
-    }
-
-    .status-pendente {
-        color: #888;
-        font-weight: bold;
     }
 
     details {
-        padding: 10px;
         background-color: #f9f9f9;
         border-radius: 8px;
-        line-height: 1.6;
+        padding: 12px;
         max-height: 300px;
         overflow-y: auto;
+        line-height: 1.6;
     }
 
     summary {
@@ -112,152 +164,92 @@
         color: #333;
     }
 
-    details br + strong {
-        margin-top: 8px;
+    .btn-salvar {
+        margin: 30px auto 0 auto;
         display: block;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: #CE2C25;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s;
     }
 
-    details::after {
-        display: block;
-        content: "";
-        margin-top: 10px;
+    .btn-salvar:hover {
+        background-color: #b9221e;
     }
 </style>
 
-<div class="container">
-    <h1>Candidatos</h1>
+<!-- Header fixo -->
+<div class="header">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="nome_professor">Supervisor de Turma</div>
+</div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>CPF</th>
-                <th>Status</th>
-                <th>Detalhes</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for candidato in candidatos %}
-            <tr>
-                <td>{{ candidato.nome_completo }}</td>
-                <td>{{ candidato.cpf }}</td>
-                <td class="acoes">
-                    <div class="status-checkbox">
-                        <form method="post" action="{% url 'alterar_status' candidato.id %}">
-                            {% csrf_token %}
-                            <label class="checkbox-wrapper" title="Clique para aprovar/reprovar">
+<!-- Sidebar fixo -->
+<div class="sidebar" id="sidebar">
+    <h3>Menu</h3>
+    <a href="/avisos/">Avisos</a>
+    <a href="/candidatos/">Candidatos</a>
+    <a href="/turmas/professor/">Gerenciar Turmas</a>
+    <a href="/turmas/listar/">Lista de Presença</a>
+    <a href="/calendario/">Calendário</a>
+    <a href="/chat/professor/">Chat com Alunos</a>
+</div>
+
+<div class="content">
+    <h1>Lista de Candidatos</h1>
+
+    <div class="candidatos-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Status</th>
+                    <th>Detalhes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for candidato in candidatos %}
+                    <tr>
+                        <td>{{ candidato.nome_completo }}</td>
+                        <td>{{ candidato.cpf }}</td>
+                        <td class="acoes">
+                            <form method="post" action="{% url 'alterar_status' candidato.id %}">
+                                {% csrf_token %}
                                 <input type="checkbox" name="status" value="aprovar" onchange="this.form.submit()" {% if candidato.aprovado %}checked{% endif %}>
-                                <span class="custom-checkbox"></span>
-                            </label>
-                        </form>
-                    </div>
-                </td>
-                <td>
-                    <details>
-                        <summary>Ver mais</summary>
-                        <strong>Data de Nascimento:</strong> {{ candidato.data_nascimento }}<br>
-                        <strong>Idade:</strong> {{ candidato.idade }}<br>
-                        <strong>Sexo:</strong> {{ candidato.sexo }}<br>
-                        <strong>Raça/Cor:</strong> {{ candidato.raca_cor }}<br>
-                        <strong>Telefone:</strong> {{ candidato.telefone }}<br>
-                        <strong>WhatsApp:</strong> {{ candidato.whatsapp }}<br>
-                        <strong>Estado Civil:</strong> {{ candidato.estado_civil }}<br>
-                        <strong>Email:</strong> {{ candidato.email }}<br>
-                        <strong>Endereço:</strong> {{ candidato.endereco_principal }}, {{ candidato.numero }} - {{ candidato.bairro }}<br>
-                        <strong>Município/UF:</strong> {{ candidato.municipio_uf }}<br>
-                        <strong>Microrregião:</strong> {{ candidato.microrregiao }}<br>
-                        <strong>CEP:</strong> {{ candidato.cep }}<br>
-                        <strong>Ingressará no Projeto:</strong> {{ candidato.ingressara_no_projeto }}<br>
-                        <strong>Turno:</strong> {{ candidato.turno }}<br>
-                        <strong>Apadrinhado:</strong> {{ candidato.apadrinhado }}<br><br>
+                            </form>
+                        </td>
+                        <td>
+                            <details>
+                                <summary>Ver mais</summary>
+                                <strong>Data de Nascimento:</strong> {{ candidato.data_nascimento }}<br>
+                                <strong>Idade:</strong> {{ candidato.idade }}<br>
+                                <strong>Faixa de Renda Familiar:</strong> {{ candidato.faixa_renda_familiar }}<br>
+                            </details>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-                        <strong>Escolaridade:</strong> {{ candidato.escolaridade }}<br>
-                        <strong>Rede de Ensino:</strong> {{ candidato.rede_ensino }}<br>
-                        <strong>Ano ou Período:</strong> {{ candidato.ano_ou_periodo }}<br>
-                        <strong>Turno Escolar:</strong> {{ candidato.turno_escolar }}<br>
-                        <strong>Motivo de Não Estudo:</strong> {{ candidato.motivo_nao_estuda }}<br>
-                        <strong>Pretende Estudar:</strong> {{ candidato.pretende_estudar }}<br><br>
+        <button class="btn-salvar" onclick="salvarEVoltar()">Salvar e Voltar</button>
+    </div>
+</div>
 
-                        <strong>Situação Profissional:</strong> {{ candidato.situacao_profissional }}<br>
-                        <strong>Profissão:</strong> {{ candidato.profissao }}<br>
-                        <strong>Local de Trabalho:</strong> {{ candidato.local_trabalho }}<br>
-                        <strong>Bairro do Trabalho:</strong> {{ candidato.bairro_trabalho }}<br>
-                        <strong>Salário:</strong> R$ {{ candidato.salario }}<br><br>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('closed');
+    }
 
-                        <strong>Conhece ECA:</strong> {{ candidato.conhece_eca }}<br>
-                        <strong>Noção de Cidadania:</strong> {{ candidato.nocao_cidadania }}<br>
-                        <strong>Referência Familiar:</strong> {{ candidato.referencia_familiar }}<br>
-                        <strong>Conhece Conselho:</strong> {{ candidato.conhece_conselho }}<br>
-                        <strong>Conhece FOSCAR:</strong> {{ candidato.conhece_foscar }}<br><br>
-
-                        <strong>Possui Plano de Saúde:</strong> {{ candidato.possui_plano }}<br>
-                        <strong>Nome do Plano:</strong> {{ candidato.nome_plano }}<br>
-                        <strong>Problema de Saúde:</strong> {{ candidato.problema_saude }}<br>
-                        <strong>Acompanhamento Médico:</strong> {{ candidato.acompanhamento_medico }}<br>
-                        <strong>Cirurgia:</strong> {{ candidato.cirurgia }}<br>
-                        <strong>Problema Atual:</strong> {{ candidato.problema_atual }}<br>
-                        <strong>Deficiência Física:</strong> {{ candidato.deficiencia_fisica }}<br>
-                        <strong>Tipo de Deficiência:</strong> {{ candidato.tipo_deficiencia }}<br>
-                        <strong>Desenvolvimento Mental:</strong> {{ candidato.desenvolvimento_mental }}<br>
-                        <strong>Onde Procura Saúde:</strong> {{ candidato.onde_procura_saude }}<br><br>
-
-                        <strong>Refeições por Dia:</strong> {{ candidato.refeicoes_dia }}<br>
-                        <strong>Alimentação:</strong> {{ candidato.alimentacao }}<br><br>
-
-                        <strong>Participa de Grupos:</strong> {{ candidato.participa_grupo }}<br><br>
-
-                        <strong>Tipo de Casa:</strong> {{ candidato.tipo_casa }}<br>
-                        <strong>Tipo de Moradia:</strong> {{ candidato.tipo_moradia }}<br>
-                        <strong>Vulnerabilidade:</strong> {{ candidato.vulnerabilidade }}<br>
-                        <strong>Número de Cômodos:</strong> {{ candidato.numero_comodos }}<br>
-                        <strong>Divisória Criança/Adulto:</strong> {{ candidato.divisorias_crianca_adulto }}<br>
-                        <strong>Tem Banheiro:</strong> {{ candidato.tem_banheiro }}<br>
-                        <strong>Banheiro Dentro:</strong> {{ candidato.banheiro_dentro }}<br>
-                        <strong>Energia Pública:</strong> {{ candidato.energia_publica }}<br>
-                        <strong>Água:</strong> {{ candidato.agua }}<br>
-                        <strong>Destino do Lixo:</strong> {{ candidato.destino_lixo }}<br>
-                        <strong>Destino do Esgoto:</strong> {{ candidato.destino_esgoto }}<br><br>
-
-                        <strong>Bens:</strong> {{ candidato.bens }}<br>
-                        <strong>Origem dos Bens:</strong> {{ candidato.origem_bens }}<br><br>
-
-                        <strong>Cadastrado no CadÚnico:</strong> {{ candidato.cadastrado_cadunico }}<br>
-                        <strong>Recebe Bolsa Família:</strong> {{ candidato.bolsa_familia }}<br>
-                        <strong>Auxílio Moradia:</strong> {{ candidato.auxilio_moradia }}<br>
-                        <strong>Recebe BPC:</strong> {{ candidato.recebe_bpc }}<br><br>
-
-                        <strong>Faixa de Renda Familiar:</strong> {{ candidato.faixa_renda_familiar }}<br>
-                    </details>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <button onclick="window.location.href='/professor/'" 
-        style="position: absolute; top: 20px; left: 20px; 
-            padding: 10px 20px; font-size: 16px; 
-            background-color: #f0f0f0; border: 1px solid #ccc; 
-            border-radius: 5px; cursor: pointer;">
-        ⬅ 
-    </button>
-
-    <button onclick="salvarEVoltar()"
-        style="margin: 30px auto 0 auto; display: block; padding: 12px 24px;
-            font-size: 16px; font-weight: bold;
-            background-color: #007bff; color: white;
-            border: none; border-radius: 6px; cursor: pointer;">
-         Salvar
-    </button>
-
-    <script>
     function salvarEVoltar() {
         alert('Alterações salvas com sucesso!');
         window.location.href = '/professor/';
     }
-    </script>
-
-
-</div>
-
+</script>
 {% endblock %}
