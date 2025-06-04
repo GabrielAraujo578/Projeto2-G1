@@ -430,9 +430,14 @@ def conteudo_turma(request, turma_id):
 
 
 @login_required
-def lista_avisos(request):
+def lista_avisos_aluno(request):
     avisos = Aviso.objects.order_by('-data_criacao')
-    return render(request, 'lista_avisos.html', {'avisos': avisos})
+    return render(request, 'lista_avisos_aluno.html', {'avisos': avisos})
+
+@login_required
+def lista_avisos_prof(request):
+    avisos = Aviso.objects.order_by('-data_criacao')
+    return render(request, 'lista_avisos_prof.html', {'avisos': avisos})
 
 @login_required
 def criar_aviso(request):

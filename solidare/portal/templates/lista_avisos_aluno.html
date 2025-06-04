@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container-avisos {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .header h2 {
+        font-size: 28px;
+        color: #333;
+    }
+
+    .btn-criar {
+        background-color: #CE2C25;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-criar:hover {
+        background-color: #a82320;
+    }
+
+    .aviso-card {
+        background-color: #fff;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .aviso-card h4 {
+        margin-bottom: 10px;
+        color: #CE2C25;
+        font-size: 20px;
+    }
+
+    .aviso-card p {
+        margin: 0;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .aviso-data {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 10px;
+    }
+
+    .sem-avisos {
+        text-align: center;
+        color: #555;
+        font-style: italic;
+        margin-top: 50px;
+    }
+</style>
+
+<div class="container-avisos">
+    <div class="header">
+        <h2>Lista de Avisos</h2>
+
+        {% if request.user.is_authenticated and request.user.professor %}
+            <a href="{% url 'criar_aviso' %}" class="btn-criar">Criar Aviso</a>
+        {% endif %}
+    </div>
+
+    {% if avisos %}
+        {% for aviso in avisos %}
+            <div class="aviso-card">
+                <div class="aviso-data">{{ aviso.data_criacao|date:"d/m/Y H:i" }}</div>
+                <h4>{{ aviso.titulo }}</h4>
+                <p>{{ aviso.mensagem }}</p>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p class="sem-avisos">Nenhum aviso disponível no momento.</p>
+    {% endif %}
+</div>
+
+            <button onclick="window.location.href='/aluno/'"
+        style="background-color: red; color: white; padding: 20px; border: 2px solid black; z-index: 9999;">
+    ⬅ TESTE VOLTAR
+</button>
+{% endblock %}

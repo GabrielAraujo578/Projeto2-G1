@@ -91,8 +91,6 @@
     {% endif %}
 </div>
 
-    {% if request.user.is_authenticated %}
-    {% if request.user.professor %}
             <button onclick="window.location.href='/professor/'" 
                 style="position: absolute; top: 20px; left: 20px; 
                     padding: 10px 20px; font-size: 16px; 
@@ -100,14 +98,4 @@
                     border-radius: 5px; cursor: pointer;">
                 ⬅ Voltar
             </button>
-    {% else %}
-            <button onclick="window.location.href='/aluno/'" 
-                style="position: absolute; top: 20px; left: 20px; 
-                    padding: 10px 20px; font-size: 16px; 
-                    background-color: #f0f0f0; border: 1px solid #ccc; 
-                    border-radius: 5px; cursor: pointer;">
-                ⬅ Voltar
-            </button>
-        {% endif %}
-    {% endif %}
 {% endblock %}
