@@ -1,60 +1,104 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Gerenciar Turmas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+        /* --- Reset e body --- */
         body {
             margin: 0;
-            font-family: 'Google Sans', Roboto, Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
         }
 
+        /* --- HEADER --- */
         .header {
-            background-color: #FBEE4F;
-            color: white;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: relative;
+            width: 100%;
+            height: 60px;
+            background: #FBEE4F;
+            color: black;
             display: flex;
             align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
         }
 
-        .btn-voltar {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+        .toggle-btn {
+            font-size: 24px;
+            margin-right: 20px;
             cursor: pointer;
-            transition: background-color 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
+            background: none;
+            border: none;
+            color: black;
         }
 
-        .btn-voltar:hover {
-            background-color: rgba(255, 255, 255, 0.3);
+        .nome_aluno {
+            font-weight: bold;
         }
 
-        .btn-voltar i {
-            font-size: 1.2rem;
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            height: calc(100% - 60px);
+            background: #FBEE4F;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
+        .sidebar.closed {
+            transform: translateX(-100%);
         }
 
+        .sidebar h3 {
+            color: black;
+            margin-top: 0;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .sidebar button:hover {
+            background: #f0f0f0;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main {
+            margin-top: 60px;
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.closed ~ .main {
+            margin-left: 0;
+        }
+
+        /* --- Grid das turmas --- */
         .turmas-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
-            padding: 1rem;
+            padding: 1rem 0 0 0;
         }
 
         .turma-card {
@@ -105,27 +149,28 @@
             justify-content: flex-end;
         }
 
-        .btn-gerenciar {
+        .btn-acessar {
             background-color: #1967d2;
             color: white;
             border: none;
             padding: 0.5rem 1rem;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 0.9rem;
-            transition: background-color 0.2s;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .btn-gerenciar:hover {
+        .btn-acessar:hover {
             background-color: #1557b0;
         }
 
+        /* Botão flutuante matrícula */
         .btn-matricular {
             position: fixed;
             right: 2rem;
             bottom: 2rem;
             background-color: #FBEE4F;
-            color: white;
+            color: black;
             border: none;
             width: 56px;
             height: 56px;
@@ -144,20 +189,7 @@
             background-color: #e6d843;
         }
 
-        .btn-acessar {
-            background-color: #1967d2;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .btn-acessar:hover {
-            background-color: #1557b0;
-        }
+        /* Modal - pode manter o original */
 
         .modal {
             display: none;
@@ -194,17 +226,45 @@
             justify-content: flex-end;
             gap: 1rem;
         }
+
+        /* Responsividade - toggle sidebar */
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main {
+                margin-left: 0;
+            }
+            .sidebar.open ~ .main {
+                margin-left: 250px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <button class="btn-voltar" onclick="window.location.href='/aluno/'">
-            <i class="fas fa-arrow-left"></i>
-        </button>
-        <h1>Minhas Turmas</h1>
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <div class="nome_aluno">
+            {{ request.user.first_name }} {{ request.user.last_name }}<br>
+            Turma: {{ request.user.turma.nome|default:"-" }}
+        </div>
     </div>
 
-    <div class="container">
+    <div class="sidebar" id="sidebar">
+        <h3>Menu</h3>
+        <button onclick="window.location.href='/avisosA/'">Avisos</button>
+        <button onclick="window.location.href='/turmas/aluno/'">Minhas Turmas</button>
+        <button onclick="window.location.href='/calendario/'">Calendário</button>
+        <button onclick="window.location.href='/chat/aluno/'">Chat</button>
+        <button onclick="window.location.href='/horario/'">Horário</button>
+    </div>
+
+    <div class="main">
+        <h1>Minhas Turmas</h1>
         <div class="turmas-grid">
             {% for turma in turmas %}
             <div class="turma-card">
@@ -261,6 +321,11 @@
     </div>
 
     <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
+        }
+
         function abrirModal() {
             document.getElementById('modalMatricula').style.display = 'block';
         }

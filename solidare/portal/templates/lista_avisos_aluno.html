@@ -1,98 +1,181 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Avisos do Aluno</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
 
-{% block content %}
-<style>
-    .container-avisos {
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 20px;
-    }
+        .header {
+            width: 100%;
+            height: 60px;
+            background: #FBEE4F;
+            color: black;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
 
-    .header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-    }
+        .toggle-btn {
+            font-size: 24px;
+            margin-right: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: black;
+        }
 
-    .header h2 {
-        font-size: 28px;
-        color: #333;
-    }
+        .nome_aluno {
+            font-weight: bold;
+        }
 
-    .btn-criar {
-        background-color: #CE2C25;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 16px;
-        transition: background-color 0.3s ease;
-    }
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            height: calc(100% - 60px);
+            background: #FBEE4F;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease;
+        }
 
-    .btn-criar:hover {
-        background-color: #a82320;
-    }
+        .sidebar.closed {
+            transform: translateX(-100%);
+        }
 
-    .aviso-card {
-        background-color: #fff;
-        padding: 20px;
-        margin-bottom: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
+        .sidebar h3 {
+            color: black;
+            margin-top: 0;
+        }
 
-    .aviso-card h4 {
-        margin-bottom: 10px;
-        color: #CE2C25;
-        font-size: 20px;
-    }
+        .sidebar button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 5px;
+            font-weight: bold;
+        }
 
-    .aviso-card p {
-        margin: 0;
-        color: #333;
-        font-size: 16px;
-    }
+        .sidebar button:hover {
+            background: #f0f0f0;
+        }
 
-    .aviso-data {
-        font-size: 14px;
-        color: #777;
-        margin-bottom: 10px;
-    }
+        .main {
+            margin-top: 60px;
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
 
-    .sem-avisos {
-        text-align: center;
-        color: #555;
-        font-style: italic;
-        margin-top: 50px;
-    }
-</style>
+        .sidebar.closed ~ .main {
+            margin-left: 0;
+        }
 
-<div class="container-avisos">
+        .aviso-card {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .aviso-card h4 {
+            color: #FBEE4F;
+            margin-bottom: 10px;
+        }
+
+        .aviso-card p {
+            margin: 0;
+        }
+
+        .aviso-data {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .sem-avisos {
+            font-style: italic;
+            color: #777;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .sidebar.open ~ .main {
+                margin-left: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
     <div class="header">
-        <h2>Lista de Avisos</h2>
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <div class="nome_aluno">
+            {{ request.user.first_name }} {{ request.user.last_name }}<br />
+            Turma: {{ request.user.turma.nome|default:"-" }}
+        </div>
+    </div>
 
-        {% if request.user.is_authenticated and request.user.professor %}
-            <a href="{% url 'criar_aviso' %}" class="btn-criar">Criar Aviso</a>
+    <div class="sidebar" id="sidebar">
+        <h3>Menu</h3>
+        <button onclick="window.location.href='/avisosA/'">Avisos</button>
+        <button onclick="window.location.href='/turmas/aluno/'">Minhas Turmas</button>
+        <button onclick="window.location.href='/calendario/'">Calendário</button>
+        <button onclick="window.location.href='/chat/aluno/'">Chat</button>
+        <button onclick="window.location.href='/horario/'">Horário</button>
+    </div>
+
+    <div class="main">
+        <h2>Lista de Avisos</h2>
+        {% if avisos %}
+            {% for aviso in avisos %}
+                <div class="aviso-card">
+                    <div class="aviso-data">{{ aviso.data_criacao|date:"d/m/Y H:i" }}</div>
+                    <h4>{{ aviso.titulo }}</h4>
+                    <p>{{ aviso.mensagem }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="sem-avisos">Nenhum aviso disponível no momento.</p>
         {% endif %}
     </div>
 
-    {% if avisos %}
-        {% for aviso in avisos %}
-            <div class="aviso-card">
-                <div class="aviso-data">{{ aviso.data_criacao|date:"d/m/Y H:i" }}</div>
-                <h4>{{ aviso.titulo }}</h4>
-                <p>{{ aviso.mensagem }}</p>
-            </div>
-        {% endfor %}
-    {% else %}
-        <p class="sem-avisos">Nenhum aviso disponível no momento.</p>
-    {% endif %}
-</div>
-
-            <button onclick="window.location.href='/aluno/'"
-        style="background-color: red; color: white; padding: 20px; border: 2px solid black; z-index: 9999;">
-    ⬅ TESTE VOLTAR
-</button>
-{% endblock %}
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
+        }
+    </script>
+</body>
+</html>

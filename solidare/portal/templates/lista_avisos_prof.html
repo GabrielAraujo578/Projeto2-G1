@@ -161,7 +161,7 @@
         <h1 class = "h1">Lista de Avisos</h1>
 
         {% if request.user.is_authenticated and request.user.professor %}
-        <div style="text-align: center; margin: 20px 0;">
+    <div style="text-align: center; margin: 20px 0;">
         <a href="{% url 'criar_aviso' %}" class="criar-aviso">Criar Aviso</a>
         </div>
         {% endif %}

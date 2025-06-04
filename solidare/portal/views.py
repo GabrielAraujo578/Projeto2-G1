@@ -34,13 +34,13 @@ def login_view(request):
 
             # Verifica se é professor
             if Professor.objects.filter(user=user).exists():
-                return redirect('pagina_professor')
+                return redirect('lista_avisos_prof')
 
             # Verifica se é um candidato
             try:
                 candidato = Candidato.objects.get(user=user)
                 if candidato.aprovado:
-                    return redirect('pagina_aluno')
+                    return redirect('lista_avisos_aluno')
                 else:
                     return render(request, 'candidato_em_analise.html', {'candidato': candidato})
             except Candidato.DoesNotExist:

@@ -2,23 +2,116 @@
 
 {% block content %}
 <style>
+    /* Estilos do header e sidebar copiados do segundo exemplo */
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+    }
+
+    .header {
+        width: 100%;
+        height: 60px;
+        background: #FBEE4F;
+        color: black;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .toggle-btn {
+        font-size: 24px;
+        margin-right: 20px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: black;
+    }
+
+    .nome_aluno {
+        font-weight: bold;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 250px;
+        height: calc(100% - 60px);
+        background: #FBEE4F;
+        padding: 20px;
+        box-sizing: border-box;
+        transition: transform 0.3s ease;
+        overflow-y: auto;
+    }
+
+    .sidebar.closed {
+        transform: translateX(-100%);
+    }
+
+    .sidebar h3 {
+        color: black;
+        margin-top: 0;
+        text-align: left;
+    }
+
+    .sidebar button {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        background: white;
+        color: black;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .sidebar button:hover {
+        background: #f0f0f0;
+    }
+
+    /* Área principal da página, ajustada para margem esquerda */
+    .main {
+        margin-top: 60px;
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+    }
+
+    .sidebar.closed ~ .main {
+        margin-left: 0;
+    }
+
+    /* Seus estilos do chat (adaptados para o main) */
     .back-button {
-        position: absolute;
-        top: 20px;
-        left: 20px;
         padding: 10px 20px;
         font-size: 16px;
         background-color: #f0f0f0;
         border: 1px solid #ccc;
         border-radius: 5px;
         cursor: pointer;
+        display: inline-block;
+        margin-bottom: 15px;
     }
 
     .chat-container {
         max-width: 800px;
-        margin: 20px auto;
+        margin: 0 auto;
         border: 1px solid #ddd;
         border-radius: 8px;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        height: 600px;
     }
     
     .chat-header {
@@ -29,7 +122,7 @@
     }
     
     .chat-messages {
-        height: 400px;
+        flex-grow: 1;
         overflow-y: auto;
         padding: 15px;
     }
@@ -61,6 +154,7 @@
         display: flex;
         padding: 15px;
         border-top: 1px solid #ddd;
+        border-radius: 0 0 8px 8px;
     }
     
     .chat-form input {
@@ -79,35 +173,80 @@
         border-radius: 4px;
         cursor: pointer;
     }
+
+    @media (max-width: 768px) {
+        .sidebar {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
+        }
+
+        .main {
+            margin-left: 0;
+        }
+
+        .sidebar.open ~ .main {
+            margin-left: 250px;
+        }
+    }
 </style>
 
-<a href="{% url 'pagina_aluno' %}" class="back-button">⬅</a>
+<!-- Header -->
+<div class="header">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="nome_aluno">
+        {{ request.user.first_name }} {{ request.user.last_name }}<br>
+        Turma: {{ request.user.turma.nome|default:"-" }}
+    </div>
+</div>
 
-<div class="chat-container">
-    <div class="chat-header">
-        <h2>Chat com Professor {{ professor.nome }}</h2>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+    <h3>Menu</h3>
+    <button onclick="window.location.href='/avisosA/'">Avisos</button>
+    <button onclick="window.location.href='/turmas/aluno/'">Minhas Turmas</button>
+    <button onclick="window.location.href='/calendario/'">Calendário</button>
+    <button onclick="window.location.href='/chat/aluno/'">Chat</button>
+    <button onclick="window.location.href='/horario/'">Horário</button>
+</div>
+
+
+<!-- Conteúdo principal -->
+<div class="main">
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <h2>Chat com Professor {{ professor.nome }}</h2>
+        </div>
+        
+        <div class="chat-messages" id="chat-messages">
+            {% for mensagem in mensagens %}
+                <div class="mensagem {% if mensagem.remetente == request.user %}enviada{% else %}recebida{% endif %}">
+                    <div class="mensagem-conteudo">{{ mensagem.conteudo }}</div>
+                    <div class="mensagem-hora">{{ mensagem.data_envio|date:'H:i' }}</div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <form method="post" class="chat-form">
+            {% csrf_token %}
+            <input type="text" name="mensagem" placeholder="Digite sua mensagem..." required>
+            <button type="submit">Enviar</button>
+        </form>
     </div>
-    
-    <div class="chat-messages" id="chat-messages">
-        {% for mensagem in mensagens %}
-            <div class="mensagem {% if mensagem.remetente == request.user %}enviada{% else %}recebida{% endif %}">
-                <div class="mensagem-conteudo">{{ mensagem.conteudo }}</div>
-                <div class="mensagem-hora">{{ mensagem.data_envio|date:'H:i' }}</div>
-            </div>
-        {% endfor %}
-    </div>
-    
-    <form method="post" class="chat-form">
-        {% csrf_token %}
-        <input type="text" name="mensagem" placeholder="Digite sua mensagem..." required>
-        <button type="submit">Enviar</button>
-    </form>
 </div>
 
 <script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('closed');
+    }
+
     const chatMessages = document.getElementById('chat-messages');
     chatMessages.scrollTop = chatMessages.scrollHeight;
-    
+
     // Auto-scroll to bottom on new messages
     setInterval(() => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
