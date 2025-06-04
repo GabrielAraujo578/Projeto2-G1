@@ -22,6 +22,93 @@
 
 </details>
 
+<details>
+  <summary><strong>SR2</strong></summary>
+
+### 🔗 Links importantes
+
+- **Jira Board**: [Acessar Jira](https://leonardojadm.atlassian.net/jira/software/projects/KAN/boards/1)
+- **Figma Design**: [Acessar Figma](https://www.figma.com/design/9ReksTr1F9ioQS0nLxh8uD/Design-Site---App?node-id=0-1&p=f&t=4Yl58wzYC7nyVaBB-0)
+- **Screencast**: [Assistir vídeo](https://www.youtube.com/watch?v=fthNQrWa0UU)
+
+### 📋 
+
+- **Sprint do  Jira**  
+
+- **Backlog**  
+
+- **Bug Tracker**  
+
+
+</details>
+
+<details>
+  <summary><strong>Instruções</strong></summary>
+
+### 🧭 Navegação da Aplicação
+Ao acessar a aplicação, o usuário terá três opções principais na tela inicial:
+
+### 🔐 Log in
+Permite acessar uma conta de professor ou aluno, com funcionalidades distintas para cada perfil.
+
+### 📝 Cadastro
+Página destinada ao candidato, onde ele deve preencher seus dados pessoais. Esses dados serão posteriormente analisados por um professor, que poderá aprová-lo como aluno.
+
+### 🏫 Sobre a Instituição
+Nesta seção, é possível:
+
+- Visualizar a história da instituição;
+
+- Preencher um formulário de contato, que envia uma mensagem para o e-mail informado pelo visitante.
+
+## 👩‍🏫 Funcionalidades do Professor
+Após o login, o professor tem acesso às seguintes funcionalidades no menu inicial:
+
+### 📋 Lista de Candidatos: visualizar os candidatos cadastrados e aprovar aqueles que se tornarão alunos.
+
+### 📢 Avisos: criar avisos para os alunos.
+
+### 🏫 Gerenciar Turmas:
+
+- Visualizar as turmas que leciona;
+
+- Criar novas turmas;
+
+- Adicionar conteúdo às turmas.
+
+### 🗓️ Lista de Presença:
+
+- Selecionar uma turma e o dia da aula;
+
+- Registrar a presença dos alunos.
+
+### 📆 Calendário: visualizar e adicionar eventos no calendário institucional.
+
+### 💬 Chat com Alunos: enviar mensagens diretas para os alunos.
+
+## 👨‍🎓 Funcionalidades do Aluno
+Após o login, o aluno tem acesso às seguintes funcionalidades no menu inicial:
+
+### 📚 Minhas Turmas:
+
+- Acessar as turmas nas quais está matriculado;
+
+- Visualizar os conteúdos das turmas;
+
+- Se matricular em novas turmas utilizando um código fornecido pelo professor.
+
+### 📆 Calendário: visualizar os eventos programados no calendário.
+
+### 📢 Avisos: visualizar avisos enviados pelos professores.
+
+### 💬 Chat: enviar mensagens para os professores.
+
+### 📅 Horário: visualizar o horário das aulas, com o dia e o nome do professor.
+
+
+
+</details>
+
 ---
 
 ## 👨‍💻 Desenvolvedores
