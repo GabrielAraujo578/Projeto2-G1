@@ -1,16 +1,108 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block content %}
+{% block style %}
 <style>
-  .horario-grid {
-    display: grid;
-    grid-template-columns: auto repeat(7, 1fr);
-    gap: 1px;
-    background-color: #ddd;
-    margin: 20px;
-    border: 1px solid #ddd;
-  }
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+    }
+
+    .header {
+        width: 100%;
+        height: 60px;
+        background: {% if request.user.professor %}#D9261C{% else %}#FBEE4F{% endif %};
+        color: {% if request.user.professor %}white{% else %}black{% endif %};
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .toggle-btn {
+        font-size: 24px;
+        margin-right: 20px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: {% if request.user.professor %}white{% else %}black{% endif %};
+    }
+
+    .nome_aluno {
+        font-weight: bold;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 250px;
+        height: calc(100% - 60px);
+        background: {% if request.user.professor %}#D9261C{% else %}#FBEE4F{% endif %};
+        padding: 20px;
+        box-sizing: border-box;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.closed {
+        transform: translateX(-100%);
+    }
+
+    .sidebar h3 {
+        color: {% if request.user.professor %}white{% else %}black{% endif %};
+        margin-top: 0;
+    }
+
+    .sidebar button {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        background: white;
+        color: black;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .sidebar button img {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+    }
+
+    .sidebar button:hover {
+        background: #f0f0f0;
+    }
+
+    .content {
+        margin-left: 250px;
+        margin-top: 60px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+    }
+
+    .content.sidebar-closed {
+        margin-left: 0;
+    }
+
+    /* Estilos existentes do horário */
+    .horario-grid {
+        display: grid;
+        grid-template-columns: auto repeat(7, 1fr);
+        gap: 1px;
+        background-color: #ddd;
+        margin: 20px;
+        border: 1px solid #ddd;
+    }
 
   .horario-header, .horario-time, .horario-cell {
     background-color: white;
@@ -120,57 +212,85 @@
     background-color: #357abd;
   }
 </style>
+{% endblock %}
 
-<div class="container position-relative">
-  <a href="{% url 'lista_avisos_aluno' %}" class="voltar-btn">
-    <i class="fas fa-arrow-left"></i> Voltar
-  </a>
-
-  <h2 class="title">Meu Horário de Aulas</h2>
-
-  <div class="horario-grid">
-    <div class="horario-header"></div>
-    <div class="horario-header">Domingo</div>
-    <div class="horario-header">Segunda</div>
-    <div class="horario-header">Terça</div>
-    <div class="horario-header">Quarta</div>
-    <div class="horario-header">Quinta</div>
-    <div class="horario-header">Sexta</div>
-    <div class="horario-header">Sábado</div>
-
-    {% for hora in horas %}
-      <div class="horario-time">{{ hora }}</div>
-      {% for dia in "0123456"|make_list %}
-        <div class="horario-cell">
-          {% for chave, aulas_bloco in grade_items %}
-            {% if chave == dia|stringformat:"s"|add:"-"|add:hora %}
-              {% for aula in aulas_bloco %}
-                <div class="aula-marcada"
-                    onclick="abrirModal('{{ aula.disciplina }}', '{{ aula.professor }}', '{{ aula.horario }}', '{{ aula.dia_semana }}')">
-                  <div>{{ aula.disciplina }}</div>
-                  <div>{{ aula.professor }}</div>
-                </div>
-              {% endfor %}
-            {% endif %}
-          {% endfor %}
-        </div>
-      {% endfor %}
-    {% endfor %}
-  </div>
+{% block content %}
+<div class="header">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="nome_aluno">{% if request.user.professor %}Supervisor de Turma{% else %}{{ request.user.first_name }} {{ request.user.last_name }}{% endif %}</div>
 </div>
 
-<div id="modalAula" class="modal">
-  <div class="modal-content">
-    <h3>Detalhes da Aula</h3>
-    <p><strong>Disciplina:</strong> <span id="modalDisciplina"></span></p>
-    <p><strong>Professor:</strong> <span id="modalProfessor"></span></p>
-    <p><strong>Dia:</strong> <span id="modalDia"></span></p>
-    <p><strong>Horário:</strong> <span id="modalHorario"></span></p>
-    <button onclick="fecharModal()">Fechar</button>
-  </div>
+<div class="sidebar" id="sidebar">
+    <h3>Menu</h3>
+    {% if request.user.professor %}
+    <button onclick="window.location.href='/avisos/'">
+        <img src="{% static 'img/sino.png' %}" alt="Avisos">Avisos
+    </button>
+    <button onclick="window.location.href='/candidatos/'">
+        <img src="{% static 'img/estudante.png' %}" alt="Candidatos">Candidatos
+    </button>
+    <button onclick="window.location.href='/gerenciar-turmas/'">
+        <img src="{% static 'img/capelo.png' %}" alt="Gerenciar Turmas">Gerenciar Turmas
+    </button>
+    <button onclick="window.location.href='/lista-presenca/'">
+        <img src="{% static 'img/frequencia.png' %}" alt="Lista de Presença">Lista de Presença
+    </button>
+    <button onclick="window.location.href='/calendario/'">
+        <img src="{% static 'img/calendario.png' %}" alt="Calendário">Calendário
+    </button>
+    <button onclick="window.location.href='/chat-alunos/'" class="chat-btn">
+        <img src="{% static 'img/conversa.png' %}" alt="Chat">Chat com Alunos
+        <span class="mensagens-nao-lidas" id="mensagens-nao-lidas"></span>
+    </button>
+    {% else %}
+    <button onclick="window.location.href='/avisosA/'">Avisos</button>
+    <button onclick="window.location.href='/turmas/aluno/'">Minhas Turmas</button>
+    <button onclick="window.location.href='/calendario/'">Calendário</button>
+    <button onclick="window.location.href='/chat/aluno/'">Chat</button>
+    <button onclick="window.location.href='/horario/'">Horário</button>
+    {% endif %}
+</div>
+
+<div class="content">
+    <div class="horario-grid">
+        <div class="horario-header"></div>
+        <div class="horario-header">Domingo</div>
+        <div class="horario-header">Segunda</div>
+        <div class="horario-header">Terça</div>
+        <div class="horario-header">Quarta</div>
+        <div class="horario-header">Quinta</div>
+        <div class="horario-header">Sexta</div>
+        <div class="horario-header">Sábado</div>
+
+        {% for hora in horas %}
+          <div class="horario-time">{{ hora }}</div>
+          {% for dia in "0123456"|make_list %}
+            <div class="horario-cell">
+              {% for chave, aulas_bloco in grade_items %}
+                {% if chave == dia|stringformat:"s"|add:"-"|add:hora %}
+                  {% for aula in aulas_bloco %}
+                    <div class="aula-marcada"
+                        onclick="abrirModal('{{ aula.disciplina }}', '{{ aula.professor }}', '{{ aula.horario }}', '{{ aula.dia_semana }}')">
+                      <div>{{ aula.disciplina }}</div>
+                      <div>{{ aula.professor }}</div>
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% endfor %}
+        {% endfor %}
+    </div>
 </div>
 
 <script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const content = document.querySelector('.content');
+        sidebar.classList.toggle('closed');
+        content.classList.toggle('sidebar-closed');
+    }
+
   const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
   function abrirModal(disciplina, professor, horario, dia) {

@@ -1,31 +1,96 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load widget_tweaks %}
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>Calendário Estilo Real</title>
-  <style>
+
+{% block title %}Calendário{% endblock %}
+
+{% block style %}
+<style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #eee;
-      display: flex;
-      justify-content: center;
-      align-items: start;
-      height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
     }
 
-    .calendar {
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      width: 95%;
-      max-width: 1100px;
-      margin-top: 30px;
+    .header {
+        width: 100%;
+        height: 60px;
+        background: {% if request.user.professor %}#D9261C{% else %}#FBEE4F{% endif %};
+        color: {% if request.user.professor %}white{% else %}black{% endif %};
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
     }
 
+    .toggle-btn {
+        font-size: 24px;
+        margin-right: 20px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: {% if request.user.professor %}white{% else %}black{% endif %};
+    }
+
+    .nome_aluno {
+        font-weight: bold;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 250px;
+        height: calc(100% - 60px);
+        background: {% if request.user.professor %}#D9261C{% else %}#FBEE4F{% endif %};
+        padding: 20px;
+        box-sizing: border-box;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.closed {
+        transform: translateX(-100%);
+    }
+
+    .sidebar h3 {
+        color: {% if request.user.professor %}white{% else %}black{% endif %};
+        margin-top: 0;
+    }
+
+    .sidebar button {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        background: white;
+        color: black;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .sidebar button:hover {
+        background: #f0f0f0;
+    }
+
+    .content {
+        margin-left: 250px;
+        margin-top: 60px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+    }
+
+    .content.sidebar-closed {
+        margin-left: 0;
+    }
+
+    /* Mantenha os outros estilos do calendário */
     .calendar header {
       display: flex;
       justify-content: space-between;
@@ -122,59 +187,75 @@
     }
 
     .evento.meeting {
-      background-color: #2ecc71;
+      background-color: {% if request.user.professor %}#D9261C{% else %}#FBEE4F{% endif %};
     }
 
     .evento.lunch {
       background-color: #e74c3c;
     }
 
+    /* Remova os estilos do body original e do back-arrow */
     .back-arrow {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      text-decoration: none;
-      font-size: 20px;
-      color: #333;
-      background-color: #fff;
-      padding: 8px 12px;
-      border-radius: 6px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      transition: background-color 0.2s;
-      z-index: 1000;
+        display: none;
     }
+</style>
+{% endblock %}
 
-    .back-arrow:hover {
-      background-color: #ddd;
-    }
+{% block content %}
+<div class="header">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="nome_aluno">{% if request.user.professor %}Supervisor de Turma{% else %}{{ request.user.first_name }} {{ request.user.last_name }}{% endif %}</div>
+</div>
 
-  </style>
-</head>
-<body>
-  <a href="{% if request.user.professor %}/avisos/{% else %}/avisosA/{% endif %}" class="back-arrow">←</a>
+<div class="sidebar" id="sidebar">
+    <h3>Menu</h3>
+    {% if request.user.professor %}
+    <button onclick="window.location.href='/avisos/'">Avisos</button>
+    <button onclick="window.location.href='/candidatos/'">Candidatos</button>
+    <button onclick="window.location.href='/gerenciar-turmas/'">Gerenciar Turmas</button>
+    <button onclick="window.location.href='/lista-presenca/'">Lista de Presença</button>
+    <button onclick="window.location.href='/calendario/'">Calendário</button>
+    <button onclick="window.location.href='/chat-alunos/'">Chat com Alunos</button>
+    {% else %}
+    <button onclick="window.location.href='/avisosA/'">Avisos</button>
+    <button onclick="window.location.href='/turmas/aluno/'">Minhas Turmas</button>
+    <button onclick="window.location.href='/calendario/'">Calendário</button>
+    <button onclick="window.location.href='/chat/aluno/'">Chat</button>
+    <button onclick="window.location.href='/horario/'">Horário</button>
+    {% endif %}
+</div>
 
-  <div class="calendar">
-    <header>
-      <button id="prev">◀</button>
-      <h2 id="monthYear"></h2>
-      <button id="next">▶</button>
-    </header>
+<div class="content">
+    <div class="calendar">
+        <header>
+            <button id="prev">◀</button>
+            <h2 id="monthYear"></h2>
+            <button id="next">▶</button>
+        </header>
 
-    <div class="weekdays">
-      <div>Dom</div>
-      <div>Seg</div>
-      <div>Ter</div>
-      <div>Qua</div>
-      <div>Qui</div>
-      <div>Sex</div>
-      <div>Sáb</div>
+        <div class="weekdays">
+            <div>Dom</div>
+            <div>Seg</div>
+            <div>Ter</div>
+            <div>Qua</div>
+            <div>Qui</div>
+            <div>Sex</div>
+            <div>Sáb</div>
+        </div>
+
+        <div class="days" id="days"></div>
     </div>
+</div>
 
-    <div class="days" id="days"></div>
-  </div>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const content = document.querySelector('.content');
+        sidebar.classList.toggle('closed');
+        content.classList.toggle('sidebar-closed');
+    }
 
-  <!-- Variáveis passadas do backend para JS -->
-  <script>
+    // Mantenha o resto do script do calendário
     const isProfessor = {{ request.user.professor|yesno:"true,false" }};
     const adicionarEventoBaseURL = "{% url 'adicionar_evento' %}";
     const eventos = JSON.parse('{{ eventos_json|escapejs }}');
@@ -267,6 +348,6 @@
 
     renderCalendar();
   </script>
-
+{% endblock %}
 </body>
 </html>
