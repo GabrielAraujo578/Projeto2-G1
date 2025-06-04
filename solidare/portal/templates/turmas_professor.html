@@ -5,56 +5,104 @@
     <title>Gerenciar Turmas</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
+        /* --- BODY --- */
         body {
             margin: 0;
-            font-family: 'Google Sans', Roboto, Arial, sans-serif;
-            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
         }
 
+        /* --- HEADER --- */
         .header {
-            background-color: #CE2C25;
+            width: 100%;
+            height: 60px;
+            background: #CE2C25;
             color: white;
-            padding: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            position: relative;
             display: flex;
             align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
         }
 
-        .btn-voltar {
-            background-color: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+        .toggle-btn {
+            font-size: 24px;
+            margin-right: 20px;
             cursor: pointer;
-            transition: background-color 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 1rem;
+            background: none;
+            border: none;
+            color: white;
         }
 
-        .btn-voltar:hover {
-            background-color: rgba(255, 255, 255, 0.3);
+        .nome_professor {
+            font-weight: bold;
+            flex-grow: 1;
         }
 
-        .btn-voltar i {
-            font-size: 1.2rem;
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            height: calc(100% - 60px);
+            background: #CE2C25;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            z-index: 999;
         }
 
-        .container {
+        .sidebar.closed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar h3 {
+            color: white;
+            margin-top: 0;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .sidebar button:hover {
+            background: #f0f0f0;
+        }
+
+        /* --- CONTEÚDO --- */
+        .content {
+            margin-top: 60px;
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
             max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
         }
 
+        .sidebar.closed ~ .content {
+            margin-left: 0;
+        }
+
+        /* --- GRID DE TURMAS --- */
         .turmas-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 1.5rem;
-            padding: 1rem;
+            padding: 1rem 0;
         }
 
         .turma-card {
@@ -114,6 +162,7 @@
             cursor: pointer;
             font-size: 0.9rem;
             transition: background-color 0.2s;
+            text-decoration: none;
         }
 
         .btn-gerenciar:hover {
@@ -148,6 +197,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0,0,0,0.5);
+            z-index: 2000;
         }
 
         .modal-content {
@@ -177,6 +227,38 @@
             gap: 1rem;
         }
 
+        .horarios-container h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .horario-input {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .horario-input select,
+        .horario-input input[type="time"] {
+            padding: 0.3rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .horario-input button {
+            background: #CE2C25;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0 0.6rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .horario-input button:hover {
+            background: #b9221e;
+        }
+
         @media (max-width: 600px) {
             .turmas-grid {
                 grid-template-columns: 1fr;
@@ -185,14 +267,26 @@
     </style>
 </head>
 <body>
+
     <div class="header">
-        <button class="btn-voltar" onclick="window.location.href='/professor/'">
-            <i class="fas fa-arrow-left"></i>
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
         </button>
-        <h1>Gerenciar Turmas</h1>
+        <div class="nome_professor">Supervisor de Turma</div>
     </div>
 
-    <div class="container">
+    <div class="sidebar" id="sidebar">
+        <h3>Menu</h3>
+        <button onclick="window.location.href='/avisos/'">Avisos</button>
+        <button onclick="window.location.href='/candidatos/'">Candidatos</button>
+        <button onclick="window.location.href='/turmas/professor/'">Gerenciar Turmas</button>
+        <button onclick="window.location.href='/turmas/listar/'">Lista de Presença</button>
+        <button onclick="window.location.href='/calendario/'">Calendário</button>
+        <button onclick="window.location.href='/chat/professor/'">Chat com Alunos</button>
+    </div>
+
+    <div class="content">
+        <h1>Gerenciar Turmas</h1>
+
         <div class="turmas-grid">
             {% for turma in turmas %}
             <div class="turma-card">
@@ -218,14 +312,6 @@
         </button>
     </div>
 
-    <style>
-        .btn-container {
-            position: fixed;
-            right: 2rem;
-            bottom: 2rem;
-        }
-    </style>
-
     <div id="modalCriarTurma" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -250,6 +336,7 @@
                         <input type="time" name="hora_inicio[]" required>
                         <input type="time" name="hora_fim[]" required>
                         <button type="button" onclick="adicionarHorario()">+</button>
+                    </div>
                 </div>
                 <textarea name="descricao" class="modal-input" placeholder="Descrição da turma" rows="3"></textarea>
                 <div class="modal-actions">
@@ -261,6 +348,11 @@
     </div>
 
     <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
+        }
+
         function abrirModal() {
             document.getElementById('modalCriarTurma').style.display = 'block';
         }
@@ -268,28 +360,19 @@
         function fecharModal() {
             document.getElementById('modalCriarTurma').style.display = 'none';
         }
-    </script>
-    <script>
-    function abrirModal() {
-        document.getElementById('modalCriarTurma').style.display = 'block';
-    }
 
-    function fecharModal() {
-        document.getElementById('modalCriarTurma').style.display = 'none';
-    }
+        function adicionarHorario() {
+            const container = document.querySelector('.horarios-container');
+            const novoHorario = document.querySelector('.horario-input').cloneNode(true);
 
-    function adicionarHorario() {
-        const container = document.querySelector('.horarios-container');
-        const novoHorario = document.querySelector('.horario-input').cloneNode(true);
+            // Limpar campos do clone
+            novoHorario.querySelector('select[name="dia_semana[]"]').selectedIndex = 0;
+            novoHorario.querySelectorAll('input[type="time"]').forEach(input => {
+                input.value = '';
+            });
 
-        // Limpar campos do clone
-        novoHorario.querySelector('select[name="dia_semana[]"]').selectedIndex = 0;
-        novoHorario.querySelectorAll('input[type="time"]').forEach(input => {
-            input.value = '';
-        });
-
-        container.appendChild(novoHorario);
-    }
+            container.appendChild(novoHorario);
+        }
     </script>
 
 </body>

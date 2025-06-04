@@ -3,8 +3,8 @@
 {% block title %}Minhas Turmas{% endblock %}
 
 {% block style %}
-<!-- Font Awesome para o ícone de voltar -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
     body {
         font-family: 'Google Sans', Arial, sans-serif;
@@ -13,61 +13,105 @@
         padding: 0;
     }
 
+    /* HEADER FIXO */
     .header {
-    background-color: #ce2c25;
-    color: white;
-    padding: 1rem 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-
-    width: 100vw;
-    box-sizing: border-box;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    }
-
-    .btn-voltar {
-        background-color: rgba(255, 255, 255, 0.2);
+        background-color: #ce2c25;
         color: white;
-        border: none;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: background-color 0.2s;
+        padding: 0 1.5rem;
+        height: 60px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        margin-right: 1rem;
-        text-decoration: none;
+        gap: 1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        width: 100vw;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
     }
 
-    .btn-voltar:hover {
-        background-color: rgba(255, 255, 255, 0.3);
+    /* BOTAO DE TOGGLE DA SIDEBAR */
+    .toggle-btn {
+        font-size: 24px;
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
     }
 
-    .btn-voltar i {
-        font-size: 1.2rem;
+    /* SIDEBAR FIXA */
+    .sidebar {
+        position: fixed;
+        top: 60px; /* abaixo do header */
+        left: 0;
+        width: 250px;
+        height: calc(100% - 60px);
+        background: #CE2C25;
+        padding: 20px;
+        box-sizing: border-box;
+        transition: transform 0.3s ease;
+        overflow-y: auto;
+        z-index: 900;
     }
 
-    .container {
-    max-width: 900px;
-    margin: 100px auto 30px auto; 
-    padding: 0 20px;
+    .sidebar.closed {
+        transform: translateX(-100%);
     }
 
-    h1 {
-        color: #ffffff;
+    .sidebar h3 {
+        color: white;
+        margin-top: 0;
+        margin-bottom: 1rem;
         text-align: left;
+    }
+
+    .sidebar button {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        background: white;
+        color: black;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .sidebar button:hover {
+        background: #f0f0f0;
+    }
+
+    .nome_professor {
+            font-weight: bold;
+        }
+    
+    /* CONTEUDO PRINCIPAL */
+    .container {
+        max-width: 900px;
+        margin: 80px auto 30px auto; /* espaço do header + 20px */
+        padding: 0 20px;
+        transition: margin-left 0.3s ease;
+        margin-left: 250px; /* espaço para sidebar aberta */
+    }
+
+    /* Quando sidebar fechada, conteúdo ocupa 100% */
+    .sidebar.closed ~ .container {
+        margin-left: 0;
+    }
+
+    /* TÍTULO */
+    h1 {
+        color: #202124;
         font-weight: 500;
         font-size: 2.5rem;
         margin-bottom: 20px;
+        font-weight: bold;
     }
 
+    /* Lista de turmas */
     .turmas-list {
         display: flex;
         flex-direction: column;
@@ -138,17 +182,32 @@
 {% endblock %}
 
 {% block content %}
+<!-- Header com botão toggle da sidebar e botão voltar -->
 <header class="header">
-    <a href="{% url 'pagina_professor' %}" class="btn-voltar" title="Voltar">
-        <i class="fas fa-arrow-left"></i>
-    </a>
-    <h1 style="margin: 0; font-size: 1.25rem;">Minhas Turmas</h1>
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <div class="nome_professor">Supervisor de Turma</div>
 </header>
 
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+        <h3>Menu</h3>
+        <button onclick="window.location.href='/avisos/'">Avisos</button>
+        <button onclick="window.location.href='/candidatos/'">Candidatos</button>
+        <button onclick="window.location.href='/turmas/professor/'">Gerenciar Turmas</button>
+        <button onclick="window.location.href='/turmas/listar/'">Lista de Presença</button>
+        <button onclick="window.location.href='/calendario/'">Calendário</button>
+        <button onclick="window.location.href='/chat/professor/'">Chat com Alunos</button>
+    </div>
+
+<!-- Conteúdo principal -->
 <div class="container">
+    
+    <h1>Minhas Turmas</h1>
     <div class="turmas-list">
         {% for turma in turmas %}
+        
         <div class="turma-card"
+        
              onclick="window.location.href='{% url 'dias_aula' turma.id %}'"
              role="button"
              tabindex="0"
@@ -174,4 +233,11 @@
         {% endfor %}
     </div>
 </div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('closed');
+    }
+</script>
 {% endblock %}
