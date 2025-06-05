@@ -1,24 +1,43 @@
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.chrome.options import Options
 
 class SignUpFormTest(unittest.TestCase):
 
     def setUp(self):
-        self.driver = webdriver.Chrome()
-        self.driver.maximize_window()
-    
+        chrome_options = Options()
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+        chrome_options.add_argument("--disable-notifications")
+        chrome_options.add_argument("--disable-geolocation")
+        prefs = {
+            "credentials_enable_service": False,
+            "profile.password_manager_enabled": False,
+            'translate_whitelists': {'YOUR_LANGUAGE_CODE': 'en'},
+            'translate': {'enabled': 'False'}
+        }
+        chrome_options.add_experimental_option("prefs", prefs)
+        chrome_options.add_argument("--disable-infobars")
+        chrome_options.add_argument("--disable-extensions")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--start-maximized")
+        chrome_options.add_argument("--disable-popup-blocking")
+
+        self.driver = webdriver.Chrome(options=chrome_options)
+
     def test_submit_sign_up_form_successfully(self):
-        url = "localhost:8000/candidato/cadastro/"
+        url = "http://localhost:8000/candidato/cadastro/"
         driver = self.driver                            
         wait = WebDriverWait(driver, 10)
         user_data = {
             'name': 'John Doe',
-            'date': '05/05/2003',
+            'date': '2003-05-05',
             'gender': 'Feminino',
             'race': 'Branco',
             'id': '123.456.789-00',
@@ -35,57 +54,68 @@ class SignUpFormTest(unittest.TestCase):
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/input[1]'))
         )
         input_name.send_keys(user_data['name'])
+        self.assertEqual(input_name.get_attribute("value"), user_data['name'])
 
         input_date = wait.until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/input[2]'))
         )
-        input_date.send_keys(user_data['date'])
-    
+        driver.execute_script("arguments[0].value = arguments[1]", input_date, user_data['date'])
+        self.assertEqual(input_date.get_attribute("value"), user_data['date'])
+
         select_gender_element = wait.until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/select'))
         )
         select_gender = Select(select_gender_element)
         select_gender.select_by_visible_text(user_data['gender'])
+        self.assertEqual(select_gender.first_selected_option.text, user_data['gender'])
 
         input_race = wait.until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/input[3]'))
         )
         input_race.send_keys(user_data['race'])
+        self.assertEqual(input_race.get_attribute("value"), user_data['race'])
 
         input_id = wait.until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/input[4]'))
         )
         input_id.send_keys(user_data['id'])
+        self.assertEqual(input_id.get_attribute("value"), user_data['id'])
 
         input_telephone = wait.until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/input[5]'))
         )
         input_telephone.send_keys(user_data['telephone'])
+        self.assertEqual(input_telephone.get_attribute("value"), user_data['telephone'])
 
         input_whatsapp = wait.until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/input[6]'))
         )
         input_whatsapp.click()
+        self.assertTrue(input_whatsapp.is_selected() or input_whatsapp.get_attribute("checked"))
 
         input_civil = wait.until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/input[7]'))
         )
         input_civil.send_keys(user_data['civil'])
+        self.assertEqual(input_civil.get_attribute("value"), user_data['civil'])
 
         input_email = wait.until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/input[8]'))
         )
         input_email.send_keys(user_data['email'])
+        self.assertEqual(input_email.get_attribute("value"), user_data['email'])
 
         input_password = wait.until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/input[9]'))
         )
         input_password.send_keys(user_data['password'])
+        self.assertEqual(input_password.get_attribute("value"), user_data['password'])
 
         input_confirm_password = wait.until(
             EC.visibility_of_element_located((By.XPATH, '//*[@id="step-1-content"]/input[10]'))
         )
         input_confirm_password.send_keys(user_data['confirm_password'])
+        self.assertEqual(input_confirm_password.get_attribute("value"), user_data['confirm_password'])
 
         next_button = wait.until(
             EC.element_to_be_clickable((By.XPATH, '//*[@id="next-btn"]'))
