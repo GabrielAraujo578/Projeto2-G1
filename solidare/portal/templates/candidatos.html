@@ -10,7 +10,6 @@
         background: #f5f5f5;
     }
 
-    /* Header igual ao segundo exemplo */
     .header {
         width: 100%;
         height: 60px;
@@ -39,10 +38,9 @@
         font-weight: bold;
     }
 
-    /* Sidebar igual ao segundo exemplo */
     .sidebar {
         position: fixed;
-        top: 60px; /* abaixo do header */
+        top: 60px;
         left: 0;
         width: 250px;
         height: calc(100% - 60px);
@@ -65,7 +63,7 @@
 
     .sidebar button, .sidebar a {
         display: block;
-            width: 90%;
+            width: 100%;
             margin: 10px 0;
             padding: 10px;
             background: white;
@@ -83,7 +81,6 @@
         background: #f0f0f0;
     }
 
-    /* Conteúdo com margens para header e sidebar */
     .content {
         margin-top: 60px;
             margin-left: 250px;
@@ -91,7 +88,6 @@
             transition: margin-left 0.3s ease;
     }
 
-    /* Seu estilo da tabela e botões mantém-se igual */
     .content h1 {
         color: black;
         font-size: 1.8rem;
@@ -192,12 +188,35 @@
 <!-- Sidebar fixo -->
 <div class="sidebar" id="sidebar">
     <h3>Menu</h3>
-    <a href="/avisos/">Avisos</a>
-    <a href="/candidatos/">Candidatos</a>
-    <a href="/turmas/professor/">Gerenciar Turmas</a>
-    <a href="/turmas/listar/">Lista de Presença</a>
-    <a href="/calendario/">Calendário</a>
-    <a href="/chat/professor/">Chat com Alunos</a>
+        <button onclick="window.location.href='/avisos/'">
+            <img src="/static/portal/img/avisos.png" alt="Avisos" style="width:20px; height:20px; margin-right:8px;">
+            Avisos
+        </button>
+
+        <button onclick="window.location.href='/candidatos/'">
+            <img src="/static/portal/img/candidatos.png" alt="Candidatos" style="width:20px; height:20px; margin-right:8px;">
+            Candidatos
+        </button>
+
+        <button onclick="window.location.href='/turmas/professor/'">
+            <img src="/static/portal/img/turmas.png" alt="Gerenciar Turmas" style="width:20px; height:20px; margin-right:8px;">
+            Gerenciar Turmas
+        </button>
+
+        <button onclick="window.location.href='/turmas/listar/'">
+            <img src="/static/portal/img/presenca.png" alt="Lista de Presença" style="width:20px; height:20px; margin-right:8px;">
+            Lista de Presença
+        </button>
+
+        <button onclick="window.location.href='/calendario/'">
+            <img src="/static/portal/img/papel.png" alt="Calendário" style="width:20px; height:20px; margin-right:8px;">
+            Calendário
+        </button>
+
+        <button onclick="window.location.href='/chat/professor/'">
+            <img src="/static/portal/img/chat.png" alt="Chat com Alunos" style="width:20px; height:20px; margin-right:8px;">
+            Chat com Alunos
+        </button>
 </div>
 
 <div class="content">
