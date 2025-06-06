@@ -43,12 +43,8 @@ jobs:
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
       - name: Zip artifact for deployment
-        run: |
-          cd solidare/
-          zip release.zip ./* -r
-          cd ..
-          mv solidare/release.zip .
-
+        run: zip release.zip ./* -r
+        
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
         with:
@@ -80,9 +76,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_152C251581B746DA8CB6D98D1FF1696B }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_BABF5B06F0B1419CADAD1270DF90C89B }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D88CFFC82F0748538188B23320732698 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_52D0F01DD1B541A2B08528BEB67ABD22 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_53EB6A159F434F3495B86021576897A1 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9E4261526F0E4DC3B8478AFA0B015394 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
