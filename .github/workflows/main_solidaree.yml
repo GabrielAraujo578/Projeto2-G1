@@ -30,12 +30,24 @@ jobs:
           source venv/bin/activate
       
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r solidare/requirements.txt
+      
+      - name: Cleaning testing files
+        run: |
+          cd solidare/
+          rm -f db.sqlite3
+          rm -f .env
+          cd ..
+
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
 
       - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+        run: |
+          cd solidare/
+          zip release.zip ./* -r
+          cd ..
+          mv solidare/release.zip .
 
       - name: Upload artifact for deployment jobs
         uses: actions/upload-artifact@v4
@@ -68,9 +80,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_52D0F01DD1B541A2B08528BEB67ABD22 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_53EB6A159F434F3495B86021576897A1 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_9E4261526F0E4DC3B8478AFA0B015394 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_152C251581B746DA8CB6D98D1FF1696B }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_BABF5B06F0B1419CADAD1270DF90C89B }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D88CFFC82F0748538188B23320732698 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
@@ -78,4 +90,3 @@ jobs:
         with:
           app-name: 'solidaree'
           slot-name: 'Production'
-          
