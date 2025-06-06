@@ -34,11 +34,12 @@
 ### 📋 
 
 - **Sprint do  Jira**  
+![Image](https://github.com/user-attachments/assets/4e27c873-8782-491b-849a-461f0fc7d695)
 
 - **Backlog**  
-
+![Image](https://github.com/user-attachments/assets/9f344bab-f01a-4e49-be05-cfb8ae64aa85)
 - **Bug Tracker**  
-
+![Image](https://github.com/user-attachments/assets/303a2753-f06a-4f29-9066-e8f6b2f1389c)
 
 </details>
 
