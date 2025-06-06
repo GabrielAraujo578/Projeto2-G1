@@ -28,7 +28,7 @@
 Cypress.Commands.add('loginProfessor', () => {
   cy.visit('http://localhost:8000')
   cy.contains('Login').click()
-  cy.get('#id_email').type('jirafales@email.com')
+  cy.get('#id_email').type('girafales@email.com')
   cy.get('#id_password').type('Professor123')
   cy.get('button.btn').click()
 })
