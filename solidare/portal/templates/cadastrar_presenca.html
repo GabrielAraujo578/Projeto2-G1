@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Presença - {{ turma.nome }}{% endblock %}
+
+{% block style %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Google Sans', Arial, sans-serif;
+        background-color: #f2f2f2;
+    }
+
+    header.header {
+        background-color: #CE2C25;
+        color: white;
+        padding: 1rem 2rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        width: 100vw;
+        box-sizing: border-box;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .btn-voltar {
+        background-color: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: none;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        font-size: 1.2rem;
+    }
+
+    .btn-voltar:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .header-title {
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .presenca-container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 0 20px;
+    }
+
+    .presenca-container h1,
+    .presenca-container h2 {
+        margin-bottom: 10px;
+    }
+
+    .alunos-lista {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+
+    .aluno-item {
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+
+    .aluno-item:last-child {
+        border-bottom: none;
+    }
+
+    .checkbox-container {
+        display: flex;
+        align-items: center;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+        margin-right: 15px;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .btn-salvar {
+        background: #CE2C25;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+
+    .btn-salvar:hover {
+        background: #b52520;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<header class="header">
+    <button class="btn-voltar" onclick="window.location.href='{% url 'dias_aula' turma.id %}'">
+        ←
+    </button>
+    <h1 class="header-title">Presença - {{ turma.nome }}</h1>
+</header>
+
+<div class="presenca-container">
+    <h2>Data: {{ dia_aula.data|date:"d/m/Y" }}</h2>
+    
+    <form method="POST">
+        {% csrf_token %}
+        <div class="alunos-lista">
+            {% for aluno in alunos %}
+            <div class="aluno-item">
+                <label class="checkbox-container">
+                    <input type="checkbox" name="aluno_{{ aluno.id }}" 
+                           {% if aluno.id in presencas %}checked{% endif %}>
+                    {{ aluno.candidato.nome_completo }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="actions">
+            <button type="submit" class="btn-salvar">Salvar Presenças</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

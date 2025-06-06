@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Candidato(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -133,11 +134,56 @@ class Aluno(models.Model):
 
 class Turma(models.Model):
     nome = models.CharField(max_length=100)
-    horario = models.CharField(max_length=100)
     professor = models.ForeignKey('Professor', on_delete=models.SET_NULL, null=True)
+    codigo = models.CharField(max_length=20, unique=True, default='DEFAULT001')
+    descricao = models.TextField(blank=True)
+    data_criacao = models.DateTimeField(default=timezone.now)
+    alunos = models.ManyToManyField('Aluno', related_name='turmas', blank=True)
 
     def __str__(self):
         return self.nome
+
+class DiaSemana(models.Model):
+    DIAS_SEMANA = [
+        (0, 'Domingo'),
+        (1, 'Segunda-feira'),
+        (2, 'Terça-feira'),
+        (3, 'Quarta-feira'),
+        (4, 'Quinta-feira'),
+        (5, 'Sexta-feira'),
+        (6, 'Sábado'),
+    ]
+    
+    dia = models.IntegerField(choices=DIAS_SEMANA)
+    horario_turma = models.ForeignKey('HorarioTurma', on_delete=models.CASCADE, related_name='dias')
+
+    class Meta:
+        unique_together = ['dia', 'horario_turma']
+
+    def __str__(self):
+        return self.get_dia_display()
+
+class HorarioTurma(models.Model):
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='horarios')
+    hora_inicio = models.TimeField()
+    hora_fim = models.TimeField()
+
+    class Meta:
+        ordering = ['hora_inicio']
+
+    def __str__(self):
+        dias = ", ".join([dia.get_dia_display() for dia in self.dias.all()])
+        return f"{dias} - {self.hora_inicio.strftime('%H:%M')} às {self.hora_fim.strftime('%H:%M')}"
+
+class ConteudoTurma(models.Model):
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='conteudos')
+    titulo = models.CharField(max_length=200)
+    descricao = models.TextField()
+    arquivo = models.FileField(upload_to='conteudos/', null=True, blank=True)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.turma.nome} - {self.titulo}"
 
 class Professor(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -150,10 +196,10 @@ class Professor(models.Model):
         return f'Prof. {self.nome}'
 
 class Aviso(models.Model):
-    titulo = models.CharField(max_length=100)
+    titulo = models.CharField(max_length=200)
     mensagem = models.TextField()
     data_criacao = models.DateTimeField(auto_now_add=True)
-    autor = models.ForeignKey(User, on_delete=models.CASCADE)
+    criado_por = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.titulo
@@ -174,3 +220,70 @@ class EventoCalendario(models.Model):
 
     def __str__(self):
         return f"{self.titulo} - {self.data}"
+
+
+class MensagemChat(models.Model):
+    remetente = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensagens_enviadas')
+    destinatario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mensagens_recebidas')
+    conteudo = models.TextField()
+    data_envio = models.DateTimeField(auto_now_add=True)
+    lida = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['data_envio']
+
+    def __str__(self):
+        return f'Mensagem de {self.remetente} para {self.destinatario}'
+
+
+class HorarioAula(models.Model):
+    DIAS_SEMANA = [
+        (0, 'Domingo'),
+        (1, 'Segunda-feira'),
+        (2, 'Terça-feira'),
+        (3, 'Quarta-feira'),
+        (4, 'Quinta-feira'),
+        (5, 'Sexta-feira'),
+        (6, 'Sábado'),
+    ]
+
+    aluno = models.ForeignKey(User, on_delete=models.CASCADE, related_name='horarios_aula')
+    dia_semana = models.IntegerField(choices=DIAS_SEMANA)
+    horario = models.TimeField()
+    horario_fim = models.TimeField(null=True, blank=True)
+    disciplina = models.CharField(max_length=100)
+    professor = models.CharField(max_length=100)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+    data_atualizacao = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Horário de Aula'
+        verbose_name_plural = 'Horários de Aulas'
+        ordering = ['dia_semana', 'horario']
+        # Garante que não haja conflito de horários para o mesmo aluno
+        unique_together = ['aluno', 'dia_semana', 'horario']
+
+    def __str__(self):
+        return f"{self.get_dia_semana_display()} - {self.horario.strftime('%H:%M')} - {self.disciplina}"
+
+class DiaAula(models.Model):
+    turma = models.ForeignKey(Turma, on_delete=models.CASCADE, related_name='dias_aula')
+    data = models.DateField()
+    
+    class Meta:
+        ordering = ['data']
+        unique_together = ['turma', 'data']
+
+    def __str__(self):
+        return f"{self.turma.nome} - {self.data}"
+
+class Presenca(models.Model):
+    aluno = models.ForeignKey(Aluno, on_delete=models.CASCADE)
+    dia_aula = models.ForeignKey(DiaAula, on_delete=models.CASCADE)
+    presente = models.BooleanField(default=False)
+    
+    class Meta:
+        unique_together = ['aluno', 'dia_aula']
+
+    def __str__(self):
+        return f"{self.aluno.candidato.nome_completo} - {self.dia_aula.data}"

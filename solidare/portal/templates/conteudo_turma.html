@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ turma.nome }}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Google Sans', Roboto, Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-professor {
+            background-color: #CE2C25;
+            color: white;
+        }
+
+        .header-aluno {
+            background-color: #FBEE4F;
+            color: white;
+        }
+
+        .turma-info {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .turma-titulo {
+            font-size: 2rem;
+            margin: 0;
+            margin-bottom: 0.5rem;
+        }
+
+        .turma-detalhes {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .btn-voltar-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-voltar-header:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .conteudo-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+        }
+
+        .conteudo-titulo {
+            font-size: 1.2rem;
+            margin: 0;
+            margin-bottom: 1rem;
+            color: #1967d2;
+        }
+
+        .conteudo-descricao {
+            color: #3c4043;
+            margin-bottom: 1rem;
+        }
+
+        .conteudo-arquivo {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            background-color: #f1f3f4;
+            border-radius: 4px;
+            color: #3c4043;
+            text-decoration: none;
+            transition: background-color 0.2s;
+        }
+
+        .conteudo-arquivo:hover {
+            background-color: #e8eaed;
+        }
+
+        .conteudo-arquivo i {
+            margin-right: 0.5rem;
+        }
+
+        .conteudo-data {
+            font-size: 0.9rem;
+            color: #5f6368;
+            margin-top: 1rem;
+        }
+
+        .btn-adicionar {
+            position: fixed;
+            right: 2rem;
+            bottom: 2rem;
+            background-color: #CE2C25;
+            color: white;
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: {% if is_professor %}block{% else %}none{% endif %};
+        }
+
+        .btn-adicionar:hover {
+            background-color: #b32420;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+        }
+
+        .modal-header {
+            margin-bottom: 1rem;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-gerenciar {
+            padding: 0.5rem 1rem;
+            background-color: #1967d2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-gerenciar:hover {
+            background-color: #1459b0;
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .turma-titulo {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header {% if is_professor %}header-professor{% else %}header-aluno{% endif %}">
+        <div class="turma-info">
+            <a href="{% if is_professor %}{% url 'turmas_professor' %}{% else %}{% url 'turmas_aluno' %}{% endif %}" class="btn-voltar-header">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div>
+                <h1 class="turma-titulo">{{ turma.nome }}</h1>
+                <div class="turma-detalhes">
+                    <p>Professor: {{ turma.professor.nome }}</p>
+                    <p>Horário: {{ turma.horario }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        {% for conteudo in conteudos %}
+        <div class="conteudo-card">
+            <h3 class="conteudo-titulo">{{ conteudo.titulo }}</h3>
+            <div class="conteudo-descricao">{{ conteudo.descricao }}</div>
+            {% if conteudo.arquivo %}
+            <a href="{{ conteudo.arquivo.url }}" class="conteudo-arquivo" target="_blank">
+                <i class="fas fa-file"></i>
+                Download do Material
+            </a>
+            {% endif %}
+            <div class="conteudo-data">
+                Adicionado em {{ conteudo.data_criacao|date:"d/m/Y H:i" }}
+            </div>
+        </div>
+        {% empty %}
+        <div class="conteudo-card">
+            <p>Nenhum conteúdo disponível ainda.</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if is_professor %}
+    <button class="btn-adicionar" onclick="abrirModal()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <div id="modalConteudo" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Novo Conteúdo</h2>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="text" name="titulo" class="modal-input" placeholder="Título" required>
+                <textarea name="descricao" class="modal-input" placeholder="Descrição" rows="3" required></textarea>
+                <input type="file" name="arquivo" class="modal-input">
+                <div class="modal-actions">
+                    <button type="button" class="btn-gerenciar" style="background-color: #666" onclick="fecharModal()">Cancelar</button>
+                    <button type="submit" class="btn-gerenciar">Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function abrirModal() {
+            document.getElementById('modalConteudo').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalConteudo').style.display = 'none';
+        }
+    </script>
+    {% endif %}
+</body>
+</html>

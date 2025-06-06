@@ -1,32 +1,96 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load widget_tweaks %}
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <title>Calendário Estilo Real</title>
-  <style>
+
+{% block title %}Calendário{% endblock %}
+
+{% block style %}
+<style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #eee;
-      display: flex;
-      justify-content: center;
-      align-items: start;
-      height: 100vh;
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
     }
 
-    .calendar {
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-      width: 95%;
-      max-width: 1100px;
-      margin-top: 30px;
+    .header {
+        width: 100%;
+        height: 60px;
+        background: {% if request.user.professor %}#D9261C{% else %}#FBEE4F{% endif %};
+        color: {% if request.user.professor %}white{% else %}black{% endif %};
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
     }
 
+    .toggle-btn {
+        font-size: 24px;
+        margin-right: 20px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: {% if request.user.professor %}white{% else %}black{% endif %};
+    }
+
+    .nome_aluno {
+        font-weight: bold;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 250px;
+        height: calc(100% - 60px);
+        background: {% if request.user.professor %}#D9261C{% else %}#FBEE4F{% endif %};
+        padding: 20px;
+        box-sizing: border-box;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.closed {
+        transform: translateX(-100%);
+    }
+
+    .sidebar h3 {
+        color: {% if request.user.professor %}white{% else %}black{% endif %};
+        margin-top: 0;
+    }
+
+    .sidebar button {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        background: white;
+        color: black;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .sidebar button:hover {
+        background: #f0f0f0;
+    }
+
+    .content {
+        margin-left: 250px;
+        margin-top: 60px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+    }
+
+    .content.sidebar-closed {
+        margin-left: 0;
+    }
+
+    /* Mantenha os outros estilos do calendário */
     .calendar header {
       display: flex;
       justify-content: space-between;
@@ -116,55 +180,128 @@
       font-weight: 500;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       display: inline-block;
-      width: 80%;        
-      white-space: nowrap; 
-      overflow: hidden;    
+      width: 80%;
+      white-space: nowrap;
+      overflow: hidden;
       text-overflow: ellipsis;
     }
 
-
     .evento.meeting {
-      background-color: #2ecc71;
+      background-color: {% if request.user.professor %}#D9261C{% else %}#FBEE4F{% endif %};
     }
 
     .evento.lunch {
       background-color: #e74c3c;
     }
-  </style>
-</head>
-<body>
-  <a href="{% url 'pagina_aluno' %}" class="home-icon">
-    <i class="fas fa-arrow-left"></i>
-  </a> 
-  <div class="calendar"> 
-    <header>
-      <button id="prev">◀</button>
-      <h2 id="monthYear"></h2>
-      <button id="next">▶</button>
-    </header>
 
-    <div class="weekdays">
-      <div>Dom</div>
-      <div>Seg</div>
-      <div>Ter</div>
-      <div>Qua</div>
-      <div>Qui</div>
-      <div>Sex</div>
-      <div>Sáb</div>
+    /* Remova os estilos do body original e do back-arrow */
+    .back-arrow {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="header">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="nome_aluno">{% if request.user.professor %}Supervisor de Turma{% else %}{{ request.user.first_name }} {{ request.user.last_name }}{% endif %}</div>
+</div>
+
+<div class="sidebar" id="sidebar">
+    <h3>Menu</h3>
+    {% if request.user.professor %}
+    <button onclick="window.location.href='/avisos/'">
+            <img src="/static/portal/img/avisos.png" alt="Avisos" style="width:20px; height:20px; margin-right:8px;">
+            Avisos
+        </button>
+
+        <button onclick="window.location.href='/candidatos/'">
+            <img src="/static/portal/img/candidatos.png" alt="Candidatos" style="width:20px; height:20px; margin-right:8px;">
+            Candidatos
+        </button>
+
+        <button onclick="window.location.href='/turmas/professor/'">
+            <img src="/static/portal/img/turmas.png" alt="Gerenciar Turmas" style="width:20px; height:20px; margin-right:8px;">
+            Gerenciar Turmas
+        </button>
+
+        <button onclick="window.location.href='/turmas/listar/'">
+            <img src="/static/portal/img/presenca.png" alt="Lista de Presença" style="width:20px; height:20px; margin-right:8px;">
+            Lista de Presença
+        </button>
+
+        <button onclick="window.location.href='/calendario/'">
+            <img src="/static/portal/img/papel.png" alt="Calendário" style="width:20px; height:20px; margin-right:8px;">
+            Calendário
+        </button>
+
+        <button onclick="window.location.href='/chat/professor/'">
+            <img src="/static/portal/img/chat.png" alt="Chat com Alunos" style="width:20px; height:20px; margin-right:8px;">
+            Chat com Alunos
+        </button>
+    {% else %}
+    <button onclick="window.location.href='/avisosA/'">
+            <img src="/static/portal/img/avisos.png" alt="Avisos" style="width:20px; height:20px; margin-right:8px;">
+            Avisos
+        </button>
+        <button onclick="window.location.href='/turmas/aluno/'">
+            <img src="/static/portal/img/turmas.png" alt="Minhas Turmas" style="width:20px; height:20px; margin-right:8px;">
+            Minhas Turmas
+        </button>
+        <button onclick="window.location.href='/calendario/'">
+            <img src="/static/portal/img/papel.png" alt="Calendário" style="width:20px; height:20px; margin-right:8px;">
+            Calendário
+        </button>
+        <button onclick="window.location.href='/chat/aluno/'">
+            <img src="/static/portal/img/chat.png" alt="Chat com Alunos" style="width:20px; height:20px; margin-right:8px;">
+            Chat com Alunos
+        </button>
+        <button onclick="window.location.href='/horario'">
+            <img src="/static/portal/img/livro.png" alt="Diario de Classe" style="width:20px; height:20px; margin-right:8px;">
+            Diário de Classe
+        </button>
+    {% endif %}
+</div>
+
+<div class="content">
+    <div class="calendar">
+        <header>
+            <button id="prev">◀</button>
+            <h2 id="monthYear"></h2>
+            <button id="next">▶</button>
+        </header>
+
+        <div class="weekdays">
+            <div>Dom</div>
+            <div>Seg</div>
+            <div>Ter</div>
+            <div>Qua</div>
+            <div>Qui</div>
+            <div>Sex</div>
+            <div>Sáb</div>
+        </div>
+
+        <div class="days" id="days"></div>
     </div>
+</div>
 
-    <div class="days" id="days"></div>
-  </div>
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const content = document.querySelector('.content');
+        sidebar.classList.toggle('closed');
+        content.classList.toggle('sidebar-closed');
+    }
 
-  <script>
+    // Mantenha o resto do script do calendário
+    const isProfessor = {{ request.user.professor|yesno:"true,false" }};
+    const adicionarEventoBaseURL = "{% url 'adicionar_evento' %}";
+    const eventos = JSON.parse('{{ eventos_json|escapejs }}');
+
     const daysContainer = document.getElementById("days");
     const monthYear = document.getElementById("monthYear");
     const prevBtn = document.getElementById("prev");
     const nextBtn = document.getElementById("next");
-
-    const adicionarEventoBaseURL = "{% url 'adicionar_evento' %}";
-
-    const eventos = JSON.parse('{{ eventos_json|escapejs }}');
 
     const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho",
                     "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -194,27 +331,31 @@
         number.classList.add("day-number");
         number.textContent = d;
 
-        const plus = document.createElement("button");
-        plus.textContent = "+";
-        plus.classList.add("add-btn");
-
-        const dayStr = String(d).padStart(2, '0');
-        const monthStr = String(month + 1).padStart(2, '0');
-        const url = `${adicionarEventoBaseURL}?data=${year}-${monthStr}-${dayStr}`;
-        plus.onclick = () => {
-          window.location.href = url;
-        };
-
         const today = new Date();
         if (d === today.getDate() && month === today.getMonth() && year === today.getFullYear()) {
           day.classList.add("today");
         }
 
         day.appendChild(number);
-        day.appendChild(plus);
 
-        // Adiciona eventos se houver
-        const eventosDoDia = eventos.filter(ev =>ev.dia === d && ev.mes === (month + 1) && ev.ano === year);
+        // Adiciona o botão "+" somente se for professor
+        if (isProfessor) {
+          const plus = document.createElement("button");
+          plus.textContent = "+";
+          plus.classList.add("add-btn");
+
+          const dayStr = String(d).padStart(2, '0');
+          const monthStr = String(month + 1).padStart(2, '0');
+          const url = `${adicionarEventoBaseURL}?data=${year}-${monthStr}-${dayStr}`;
+          plus.onclick = () => {
+            window.location.href = url;
+          };
+
+          day.appendChild(plus);
+        }
+
+        // Adiciona eventos do dia
+        const eventosDoDia = eventos.filter(ev => ev.dia === d && ev.mes === (month + 1) && ev.ano === year);
         eventosDoDia.forEach(ev => {
           const e = document.createElement("div");
           e.classList.add("evento");
@@ -245,6 +386,6 @@
 
     renderCalendar();
   </script>
-
+{% endblock %}
 </body>
 </html>

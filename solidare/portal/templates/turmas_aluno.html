@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Turmas</title>
+    <style>
+        /* --- Reset e body --- */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        /* --- HEADER --- */
+        .header {
+            width: 100%;
+            height: 60px;
+            background: #FBEE4F;
+            color: black;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .toggle-btn {
+            font-size: 24px;
+            margin-right: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: black;
+        }
+
+        .nome_aluno {
+            font-weight: bold;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            height: calc(100% - 60px);
+            background: #FBEE4F;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar.closed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar h3 {
+            color: black;
+            margin-top: 0;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .sidebar button:hover {
+            background: #f0f0f0;
+        }
+
+        /* --- MAIN CONTENT --- */
+        .main {
+            margin-top: 60px;
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.closed ~ .main {
+            margin-left: 0;
+        }
+
+        /* --- Grid das turmas --- */
+        .turmas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem 0 0 0;
+        }
+
+        .turma-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+            transition: box-shadow 0.3s;
+        }
+
+        .turma-card:hover {
+            box-shadow: 0 1px 3px 0 rgba(60,64,67,0.3), 0 4px 8px 3px rgba(60,64,67,0.15);
+        }
+
+        .turma-header {
+            height: 100px;
+            background-color: #1967d2;
+            color: white;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .turma-codigo {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.2);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .turma-titulo {
+            font-size: 1.5rem;
+            margin: 0;
+            position: absolute;
+            bottom: 1rem;
+        }
+
+        .turma-conteudo {
+            padding: 1rem;
+        }
+
+        .turma-footer {
+            padding: 1rem;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-acessar {
+            background-color: #1967d2;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-acessar:hover {
+            background-color: #1557b0;
+        }
+
+        /* Botão flutuante matrícula */
+        .btn-matricular {
+            position: fixed;
+            right: 2rem;
+            bottom: 2rem;
+            background-color: #FBEE4F;
+            color: black;
+            border: none;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            font-size: 24px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-matricular:hover {
+            background-color: #e6d843;
+        }
+
+        /* Modal - pode manter o original */
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 1001;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin: 1rem 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Responsividade - toggle sidebar */
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main {
+                margin-left: 0;
+            }
+            .sidebar.open ~ .main {
+                margin-left: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <div class="nome_aluno">
+            {{ request.user.first_name }} {{ request.user.last_name }}<br>
+            Turma: {{ request.user.turma.nome|default:"-" }}
+        </div>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <h3>Menu</h3>
+        <button onclick="window.location.href='/avisosA/'">
+            <img src="/static/portal/img/avisos.png" alt="Avisos" style="width:20px; height:20px; margin-right:8px;">
+            Avisos
+        </button>
+        <button onclick="window.location.href='/turmas/aluno/'">
+            <img src="/static/portal/img/turmas.png" alt="Minhas Turmas" style="width:20px; height:20px; margin-right:8px;">
+            Minhas Turmas
+        </button>
+        <button onclick="window.location.href='/calendario/'">
+            <img src="/static/portal/img/papel.png" alt="Calendário" style="width:20px; height:20px; margin-right:8px;">
+            Calendário
+        </button>
+        <button onclick="window.location.href='/chat/aluno/'">
+            <img src="/static/portal/img/chat.png" alt="Chat com Alunos" style="width:20px; height:20px; margin-right:8px;">
+            Chat com Alunos
+        </button>
+        <button onclick="window.location.href='/horario'">
+            <img src="/static/portal/img/livro.png" alt="Diario de Classe" style="width:20px; height:20px; margin-right:8px;">
+            Diário de Classe
+        </button>
+    </div>
+
+    <div class="main">
+        <h1>Minhas Turmas</h1>
+        <div class="turmas-grid">
+            {% for turma in turmas %}
+            <div class="turma-card">
+                <div class="turma-header">
+                    <div class="turma-codigo">Código: {{ turma.codigo }}</div>
+                    <h2 class="turma-titulo">{{ turma.nome }}</h2>
+                </div>
+                <div class="turma-conteudo">
+                    <p>{{ turma.descricao }}</p>
+                    {% if turma.horarios.all %}
+                    <div class="horarios-section">
+                        <h3>Horários das Aulas:</h3>
+                        {% for horario in turma.horarios.all %}
+                        <div class="horario-item">
+                            <p>
+                                {% for dia in horario.dias.all %}
+                                <span class="dia-semana">{{ dia.get_dia_display }}</span>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            <p class="horario">{{ horario.hora_inicio|time:"H:i" }} às {{ horario.hora_fim|time:"H:i" }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="turma-footer">
+                    <a href="{% url 'conteudo_turma' turma.id %}" class="btn-acessar">Acessar</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Botão flutuante de matrícula -->
+    <button class="btn-matricular" onclick="abrirModal()">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <!-- Modal de matrícula -->
+    <div id="modalMatricula" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Matricular em Nova Turma</h2>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="text" name="codigo" class="modal-input" placeholder="Digite o código da turma" required>
+                <div class="modal-actions">
+                    <button type="button" class="btn-acessar" style="background-color: #666" onclick="fecharModal()">Cancelar</button>
+                    <button type="submit" class="btn-acessar">Matricular</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
+        }
+
+        function abrirModal() {
+            document.getElementById('modalMatricula').style.display = 'block';
+        }
+
+        function fecharModal() {
+            document.getElementById('modalMatricula').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Avisos do Aluno</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .header {
+            width: 100%;
+            height: 60px;
+            background: #FBEE4F;
+            color: black;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .toggle-btn {
+            font-size: 24px;
+            margin-right: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: black;
+        }
+
+        .nome_aluno {
+            font-weight: bold;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            height: calc(100% - 60px);
+            background: #FBEE4F;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar.closed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar h3 {
+            color: black;
+            margin-top: 0;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .sidebar button:hover {
+            background: #f0f0f0;
+        }
+
+        .main {
+            margin-top: 60px;
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .sidebar.closed ~ .main {
+            margin-left: 0;
+        }
+
+        .aviso-card {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .aviso-card h4 {
+            color: #FBEE4F;
+            margin-bottom: 10px;
+        }
+
+        .aviso-card p {
+            margin: 0;
+        }
+
+        .aviso-data {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .sem-avisos {
+            font-style: italic;
+            color: #777;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main {
+                margin-left: 0;
+            }
+
+            .sidebar.open ~ .main {
+                margin-left: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <div class="nome_aluno">
+            {{ request.user.first_name }} {{ request.user.last_name }}<br />
+            Turma: {{ request.user.turma.nome|default:"-" }}
+        </div>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <h3>Menu</h3>
+        <button onclick="window.location.href='/avisosA/'">
+            <img src="/static/portal/img/avisos.png" alt="Avisos" style="width:20px; height:20px; margin-right:8px;">
+            Avisos
+        </button>
+        <button onclick="window.location.href='/turmas/aluno/'">
+            <img src="/static/portal/img/turmas.png" alt="Minhas Turmas" style="width:20px; height:20px; margin-right:8px;">
+            Minhas Turmas
+        </button>
+        <button onclick="window.location.href='/calendario/'">
+            <img src="/static/portal/img/papel.png" alt="Calendário" style="width:20px; height:20px; margin-right:8px;">
+            Calendário
+        </button>
+        <button onclick="window.location.href='/chat/aluno/'">
+            <img src="/static/portal/img/chat.png" alt="Chat com Alunos" style="width:20px; height:20px; margin-right:8px;">
+            Chat com Alunos
+        </button>
+        <button onclick="window.location.href='/horario'">
+            <img src="/static/portal/img/livro.png" alt="Diario de Classe" style="width:20px; height:20px; margin-right:8px;">
+            Diário de Classe
+        </button>
+    </div>
+
+    <div class="main">
+        <h2>Lista de Avisos</h2>
+        {% if avisos %}
+            {% for aviso in avisos %}
+                <div class="aviso-card">
+                    <div class="aviso-data">{{ aviso.data_criacao|date:"d/m/Y H:i" }}</div>
+                    <h4>{{ aviso.titulo }}</h4>
+                    <p>{{ aviso.mensagem }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="sem-avisos">Nenhum aviso disponível no momento.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('closed');
+        }
+    </script>
+</body>
+</html>

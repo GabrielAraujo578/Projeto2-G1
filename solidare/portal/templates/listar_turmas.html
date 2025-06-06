@@ -1,0 +1,266 @@
+{% extends "base.html" %}
+
+{% block title %}Minhas Turmas{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    body {
+        font-family: 'Google Sans', Arial, sans-serif;
+        background-color: #f1f3f4;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* HEADER FIXO */
+    .header {
+        background-color: #ce2c25;
+        color: white;
+        padding: 0 1.5rem;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        width: 100vw;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    /* BOTAO DE TOGGLE DA SIDEBAR */
+    .toggle-btn {
+        font-size: 24px;
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+    }
+
+    /* SIDEBAR FIXA */
+    .sidebar {
+        position: fixed;
+        top: 60px; /* abaixo do header */
+        left: 0;
+        width: 250px;
+        height: calc(100% - 60px);
+        background: #CE2C25;
+        padding: 20px;
+        box-sizing: border-box;
+        transition: transform 0.3s ease;
+        overflow-y: auto;
+        z-index: 900;
+    }
+
+    .sidebar.closed {
+        transform: translateX(-100%);
+    }
+
+    .sidebar h3 {
+        color: white;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        text-align: left;
+    }
+
+    .sidebar button {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        background: white;
+        color: black;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .sidebar button:hover {
+        background: #f0f0f0;
+    }
+
+    .nome_professor {
+            font-weight: bold;
+        }
+    
+    /* CONTEUDO PRINCIPAL */
+    .container {
+        max-width: 900px;
+        margin: 80px auto 30px auto; /* espaço do header + 20px */
+        padding: 0 20px;
+        transition: margin-left 0.3s ease;
+        margin-left: 250px; /* espaço para sidebar aberta */
+    }
+
+    /* Quando sidebar fechada, conteúdo ocupa 100% */
+    .sidebar.closed ~ .container {
+        margin-left: 0;
+    }
+
+    /* TÍTULO */
+    h1 {
+        color: #202124;
+        font-weight: 500;
+        font-size: 2.5rem;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
+
+    /* Lista de turmas */
+    .turmas-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .turma-card {
+        background: white;
+        border-radius: 8px;
+        padding: 15px 25px;
+        box-shadow: 0 1px 3px rgb(60 64 67 / 0.3);
+        border-left: 6px solid #1a73e8;
+        transition: box-shadow 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100px;
+    }
+
+    .turma-card:hover {
+        box-shadow: 0 4px 20px rgb(60 64 67 / 0.3);
+    }
+
+    .turma-header {
+        margin-bottom: 8px;
+    }
+
+    .turma-header h2 {
+        margin: 0;
+        color: #202124;
+        font-weight: 600;
+        font-size: 1.3rem;
+    }
+
+    .turma-codigo {
+        color: #5f6368;
+        font-size: 0.85rem;
+        margin-top: 2px;
+        font-weight: 500;
+    }
+
+    .turma-info p {
+        margin: 0;
+        color: #3c4043;
+        font-size: 0.95rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .horarios {
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: #5f6368;
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .horario-item {
+        background: #e8f0fe;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Header com botão toggle da sidebar e botão voltar -->
+<header class="header">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+        <div class="nome_professor">Supervisor de Turma</div>
+</header>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+        <h3>Menu</h3>
+        <button onclick="window.location.href='/avisos/'">
+            <img src="/static/portal/img/avisos.png" alt="Avisos" style="width:20px; height:20px; margin-right:8px;">
+            Avisos
+        </button>
+
+        <button onclick="window.location.href='/candidatos/'">
+            <img src="/static/portal/img/candidatos.png" alt="Candidatos" style="width:20px; height:20px; margin-right:8px;">
+            Candidatos
+        </button>
+
+        <button onclick="window.location.href='/turmas/professor/'">
+            <img src="/static/portal/img/turmas.png" alt="Gerenciar Turmas" style="width:20px; height:20px; margin-right:8px;">
+            Gerenciar Turmas
+        </button>
+
+        <button onclick="window.location.href='/turmas/listar/'">
+            <img src="/static/portal/img/presenca.png" alt="Lista de Presença" style="width:20px; height:20px; margin-right:8px;">
+            Lista de Presença
+        </button>
+
+        <button onclick="window.location.href='/calendario/'">
+            <img src="/static/portal/img/papel.png" alt="Calendário" style="width:20px; height:20px; margin-right:8px;">
+            Calendário
+        </button>
+
+        <button onclick="window.location.href='/chat/professor/'">
+            <img src="/static/portal/img/chat.png" alt="Chat com Alunos" style="width:20px; height:20px; margin-right:8px;">
+            Chat com Alunos
+        </button>
+    </div>
+
+<!-- Conteúdo principal -->
+<div class="container">
+    
+    <h1>Minhas Turmas</h1>
+    <div class="turmas-list">
+        {% for turma in turmas %}
+        
+        <div class="turma-card"
+        
+             onclick="window.location.href='{% url 'dias_aula' turma.id %}'"
+             role="button"
+             tabindex="0"
+             onkeypress="if(event.key==='Enter'){window.location.href='{% url 'dias_aula' turma.id %}'}">
+            <div class="turma-header">
+                <h2>{{ turma.nome }}</h2>
+                <span class="turma-codigo">Código: {{ turma.codigo }}</span>
+            </div>
+            <div class="turma-info">
+                <p>{{ turma.descricao }}</p>
+                <div class="horarios">
+                    {% for horario in turma.horarios.all %}
+                    <div class="horario-item">
+                        {% for dia in horario.dias.all %}
+                        <span>{{ dia.get_dia_display }}</span>
+                        {% endfor %}
+                        {{ horario.hora_inicio|time:"H:i" }} - {{ horario.hora_fim|time:"H:i" }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('closed');
+    }
+</script>
+{% endblock %}

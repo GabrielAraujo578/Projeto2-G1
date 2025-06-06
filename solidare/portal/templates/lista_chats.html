@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+    }
+
+    .header {
+        width: 100%;
+        height: 60px;
+        background: #CE2C25;
+        color: white;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+    }
+
+    .toggle-btn {
+        font-size: 24px;
+        margin-right: 20px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: white;
+    }
+
+    .nome_professor {
+        font-weight: bold;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        width: 250px;
+        height: calc(100% - 60px);
+        background: #CE2C25;
+        padding: 20px;
+        box-sizing: border-box;
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.closed {
+        transform: translateX(-100%);
+    }
+
+    .sidebar h3 {
+        color: white;
+        margin-top: 0;
+        font-weight: normal;
+        font-size: 19px;
+        text-decoration: none;
+        text-align: left;
+        font-weight: bold;
+    }
+
+    .sidebar button {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        padding: 10px;
+        background: white;
+        color: black;
+        border: none;
+        cursor: pointer;
+        text-align: left;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 13px;
+    }
+
+    .sidebar button:hover {
+        background: #f0f0f0;
+    }
+
+    .content {
+        margin-top: 60px;
+        margin-left: 250px;
+        padding: 20px;
+        transition: margin-left 0.3s ease;
+    }
+
+    .sidebar.closed ~ .content {
+        margin-left: 0;
+    }
+
+    .back-button {
+        margin-bottom: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #CE2C25;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+        background-color: #a3201c;
+    }
+
+    .chats-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .alunos-lista {
+        margin-top: 20px;
+    }
+
+    .aluno-item {
+        border: 1px solid #ddd;
+        margin-bottom: 10px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .aluno-item:hover {
+        background: #f8f9fa;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .aluno-link {
+        display: flex;
+        padding: 15px;
+        text-decoration: none;
+        color: inherit;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .aluno-info h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    .ultima-mensagem {
+        color: #666;
+        margin: 5px 0;
+        font-size: 0.9em;
+    }
+
+    .mensagem-hora {
+        font-size: 0.8em;
+        color: #888;
+    }
+
+    .badge {
+        background: #007bff;
+        color: white;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.8em;
+    }
+
+    .sem-mensagens {
+        text-align: center;
+        color: #666;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+
+    .page-title {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+        font-size: 24px;
+    }
+</style>
+
+<div class="header">
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+    <div class="nome_professor">Supervisor de Turma</div>
+</div>
+
+<div class="sidebar" id="sidebar">
+    <h3>Menu</h3>
+    <button onclick="window.location.href='/avisos/'">
+            <img src="/static/portal/img/avisos.png" alt="Avisos" style="width:20px; height:20px; margin-right:8px;">
+            Avisos
+        </button>
+
+        <button onclick="window.location.href='/candidatos/'">
+            <img src="/static/portal/img/candidatos.png" alt="Candidatos" style="width:20px; height:20px; margin-right:8px;">
+            Candidatos
+        </button>
+
+        <button onclick="window.location.href='/turmas/professor/'">
+            <img src="/static/portal/img/turmas.png" alt="Gerenciar Turmas" style="width:20px; height:20px; margin-right:8px;">
+            Gerenciar Turmas
+        </button>
+
+        <button onclick="window.location.href='/turmas/listar/'">
+            <img src="/static/portal/img/presenca.png" alt="Lista de Presença" style="width:20px; height:20px; margin-right:8px;">
+            Lista de Presença
+        </button>
+
+        <button onclick="window.location.href='/calendario/'">
+            <img src="/static/portal/img/papel.png" alt="Calendário" style="width:20px; height:20px; margin-right:8px;">
+            Calendário
+        </button>
+
+        <button onclick="window.location.href='/chat/professor/'">
+            <img src="/static/portal/img/chat.png" alt="Chat com Alunos" style="width:20px; height:20px; margin-right:8px;">
+            Chat com Alunos
+        </button>
+</div>
+
+<div class="content">
+
+    <div class="chats-container">
+        <h2 class="page-title">Conversas com Alunos</h2>
+
+        <div class="alunos-lista">
+            {% for aluno in alunos %}
+                <div class="aluno-item">
+                    <a href="{% url 'chat_professor' aluno.id %}" class="aluno-link">
+                        <div class="aluno-info">
+                            <h3>{{ aluno.candidato.nome_completo }}</h3>
+                            {% with ultima_msg=aluno.mensagens_enviadas.last %}
+                                {% if ultima_msg %}
+                                    <p class="ultima-mensagem">
+                                        {{ ultima_msg.conteudo|truncatechars:50 }}
+                                    </p>
+                                    <span class="mensagem-hora">{{ ultima_msg.data_envio|date:'d/m H:i' }}</span>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                        {% with nao_lidas=aluno.mensagens_enviadas.filter.count %}
+                            {% if nao_lidas > 0 %}
+                                <span class="badge">{{ nao_lidas }}</span>
+                            {% endif %}
+                        {% endwith %}
+                    </a>
+                </div>
+            {% empty %}
+                <p class="sem-mensagens">Nenhuma conversa iniciada.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('closed');
+    }
+</script>
+{% endblock %}
